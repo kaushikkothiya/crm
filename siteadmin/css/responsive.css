@@ -1,0 +1,86 @@
+img{
+	max-width:100%;
+	height:auto;
+	width:auto\9;/*ie8*/
+}
+
+@media screen and (max-width: 1280px){}
+@media screen and (max-width: 1024px){}
+@media screen and (max-width: 980px){}
+@media screen and (max-width: 800px){
+.wrapper{
+	width:98%;
+}
+}
+@media screen and (max-width: 768px){}
+@media screen and (max-width: 640px){
+.frmpadd {
+    padding: 10px;
+}
+.propertyleft, .propertyright{
+	width:100%;
+	float:none;
+	padding-left:0px;
+	border-left:none;
+}
+.inpselect1{
+	width:98.5%;
+	padding:4px;	
+}
+.textarea1{
+	width:97%;
+	padding:4px;	
+}
+}
+@media screen and (max-width: 600px){}
+@media screen and (max-width: 480px){
+.wrapper{
+	width:95%;
+}
+.fldimg{
+	float:none;
+	text-align:center;
+	width:100%;
+	padding:0px 0px 10px 0px;
+}
+.fldimg-txt{
+	float:none;
+	width:100%;
+	padding-bottom:15px;
+}
+.leftpart, .rightpart{
+	float:none;
+	width:100%;
+	padding:0px;
+}
+.propertypadd{
+	padding:10px;
+}
+.fildleft, .fildright, .lable{
+	width:100%;
+	float:none;
+	padding:2px 0px;
+}
+.twofildmain{
+	padding:0px 0px 5px 0px;
+}
+.inpselect2{
+	width:98.5%;
+	padding:4px;
+}
+
+/*Menu Css*/
+.row-fluid .span2 {
+    width: 100%;
+}
+.row-fluid .span10 {
+    width: 100%;
+}
+#cssmenu {
+  width: 100%!important;
+  color: #ffffff;
+}
+
+}
+@media screen and (max-width: 360px){}
+@media screen and (max-width: 320px){}

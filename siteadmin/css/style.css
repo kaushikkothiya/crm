@@ -1,0 +1,172 @@
+body{
+	margin:0px;
+	padding:0px;
+	font-family:roboto;
+}
+.clear{
+	clear:both;
+}
+.wrapper{
+	width:800px;
+	margin:0 auto;
+}
+
+.header{
+	padding:20px 0px;
+}
+.logo{
+	float:left;
+}
+.sep{
+	padding-bottom:10px!important;
+}
+.title{
+	text-align:center;
+	padding:15px 0px;
+	font-size:20px;
+	background:#f3f3f3;
+	border-bottom:solid 1px #cccccc;
+	border-radius:6px 6px 0px 0px;
+}
+.formmain{
+	border:solid 1px #cccccc;
+	border-radius:6px;
+}
+.frmpadd{
+	padding:20px;
+}
+.fldimg{
+	float:left;
+	width:26.5%;
+	
+	padding:0px 20px 20px 0px;
+}
+.fldimg img{
+	border:solid 1px #f6f6f6;
+	width:200px;
+}
+.fldimg-txt{
+	float:left;
+	width:32%;
+}
+.fldimg-txt1{
+	float:left;
+	width:32%;
+}
+.lable{
+	color:#000000;
+}
+.data{
+	color:#585858;
+}
+.description{
+	background:#f8f8f8;
+	padding:10px;
+	border:solid 1px #cccccc;
+	margin-bottom:10px;
+}
+.fild{
+	padding:5px 0px;
+}
+.leftpart{
+	float:left;
+	width:47%;
+}
+.rightpart{
+	float:left;
+	width:50%;
+	padding-left:3%;
+}
+
+/*--Property Part--*/
+.propertymain{
+	margin:0px;
+}
+.propertymain h1{
+	margin:0px;
+	padding:0px;
+	font-size:18px;
+	font-weight:normal;
+}
+.propertypadd{
+	padding:15px;
+}
+.inpselect1{
+	width:200px;
+	padding:4px;	
+}
+.inpselect2{
+	width:390px;
+	padding:4px;	
+}
+.textarea1{
+	width:300px;
+	padding:4px;	
+}
+
+.radiomain{
+	padding:10px 0px;
+	font-size:14px;
+}
+.radio{
+	padding:0px;
+	margin:0px;
+}
+
+button, input, optgroup, select, textarea {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+.propertyleft{
+	width:40%;
+	float:left;
+}
+.propertyright{
+	width:55%;
+	float:left;
+	padding-left:30px;
+	border-left:solid 1px #cccccc;
+}
+
+.line1{
+	border-top:solid 1px #cccccc;
+	padding-bottom:10px;
+}
+.line2{
+	border-top:double 3px #333;
+	padding-bottom:20px;
+}
+.checkboxmain{
+	padding:5px 0px;
+	font-size:14px;
+}
+.twofildmain{
+	padding:0px 0px 20px 0px;
+}
+.fildleft{
+	width:180px;
+	float:left;
+}
+.fildright{
+	width:300px;
+	float:left;
+}
+
+.radioparts{
+	padding:0px 20px 0px 0px;
+	font-size:14px;
+	float:left;
+}
+.radiosection{
+	padding-bottom:15px;
+}
+
+
+/*new*/
+.phonefld1{
+	width: 58%!important;
+}
+.btn.btn-navbar{
+	display: none!important;
+}

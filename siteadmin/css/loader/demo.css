@@ -1,0 +1,26 @@
+.modal {
+        display:    none;
+        position:   fixed;
+        z-index:    9999;
+        height:     10%;
+        width:      5%;
+        left: 70%;
+        top: 80%;
+        border : none;
+
+        background: url('../../img/loading.gif') 
+                    50% 50% 
+                    no-repeat;
+    }
+
+    /* When the body has the loading class, we turn
+       the scrollbar off with overflow:hidden */
+    body.loading {
+        overflow: hidden;   
+    }
+
+    /* Anytime the body has the loading class, our
+       modal element will be visible */
+    body.loading .modal {
+        display: block;
+    }
