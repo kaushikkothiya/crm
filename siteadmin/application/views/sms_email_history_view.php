@@ -25,6 +25,7 @@ $this->load->view('header');
                 <?php
                 $this->load->view('leftmenu');
                 ?>
+                <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
             </div>
         </div>
         <div class="span10 body-container">
@@ -59,8 +60,10 @@ $this->load->view('header');
                                         <th hidden>id</th>
                                         <th>Subject</th>
                                         <th>Type</th>
-                                        <th>Reciever Email/Mobile</th>
-                                        <th>Reciever Name</th>
+                                        <th>Receiver Email/Mobile</th>
+                                        <th>Receiver Name</th>
+                                        <th>Send Date</th>
+                                        <th>Text</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -76,6 +79,8 @@ $this->load->view('header');
                                                 <td><?php echo $value->type; ?>
                                                 <td><?php echo $value->reciever; ?>
                                                 <td><?php echo $value->fname." ".$value->lname; ?>
+                                                <td><?php echo date("d-M-Y", strtotime($value->created_date)); ?>
+                                                <td><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'>View</a></div></td>
                                                 <!--<td>
                                                  <td>
                                                     <span style='text-align:left;width: 50%;float: left;'><i class='icon-pencil'></i>&nbsp;
@@ -99,9 +104,48 @@ $this->load->view('header');
         </div>
     </div>
 </div>
+<div id="popup2" class="overlay">
+    <div class="popup">
+        <h2 id="type"></h2>
+        <a class="close" href="#">×</a>
+        <div class="content">
+            <div class="row-fluid">
+              <div class="">
+                <div class="">
+                <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>/index.php/Excelread/inquire_export" enctype="multipart/form-data">
+                <fieldset>
+                    <div id="set_text">
+
+                    </div>
+                </fieldset>
+            </form>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php
 $this->load->view('footer');
 ?>
+<script>
+function setInquiryId(type,id)
+{
+    $.ajax({
+        type: "post",
+        url:baseurl+"index.php/inquiry/get_sms_email_text",
+        data: 'id='+id,
+        success: function(msg){
+
+            $("#set_text").html(msg);
+            $("#type").html(type);
+        }
+    });
+          
+        
+   
+}
+</script>
 
 
 

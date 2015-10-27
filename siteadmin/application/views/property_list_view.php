@@ -40,7 +40,7 @@ $this->load->view('header');
                             </span></li>
                         		<li style="float:right;"><a href="add_property"><input type="button" value="Add New" /></a></li>
                                 <?if ($this->session->userdata('logged_in_super_user')) { ?>
-                                    <li style="float:right;"><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
+                                    <li style="float:right;  margin-right:10px;"><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
                                 <?php } ?>
                     </ul>
                 </div>
@@ -55,6 +55,7 @@ $this->load->view('header');
                 <div class="span12"><section class="utopia-widget">
                         <div class="utopia-widget-title">
                             <span>Property Management </span>
+                            
                         </div>
                         <div class="utopia-widget-content">
                             <div class="table-responsive">
@@ -129,8 +130,8 @@ $this->load->view('header');
 
                                         }
                                         echo "<td>";
-                                            //echo "<span style='text-align:left;width: 50%;float: left;'><div class='box'><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br>";
-                                        echo "<span style='text-align:left;width: 50%;float: ;'><i class='icon-plus-sign'></i>".anchor('home/propertyExatraImages/'.$user[$i]->id, 'Extra Images')."<div class='box'><i class='icon-fast-forward'></i><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_property/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";
+                                        //echo "<span style='text-align:left;width: 50%;float: ;'><i class='icon-plus-sign'></i>".anchor('home/propertyExatraImages/'.$user[$i]->id, 'Extra Images')."<div class='box'><i class='icon-fast-forward'></i><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_property/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";    
+                                        echo "<span style='text-align:left;width: 50%;float: ;'><div class='box'><i class='icon-fast-forward'></i><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_property/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";
                                         $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
                                         echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$user[$i]->id, 'View',$arrayName )."  ";
                                         

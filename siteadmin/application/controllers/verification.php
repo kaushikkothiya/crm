@@ -70,7 +70,7 @@ class Verification extends CI_Controller {
             
     }
     function unic_inquiry_num() {
-        $inquiry_num = 'inquiry'.rand(10000000,99999999);
+        $inquiry_num = rand(10000000,99999999);
 
         $unic_number = $this->inquiry_model->check_unic_inquiry_num($inquiry_num);
 
@@ -103,39 +103,48 @@ class Verification extends CI_Controller {
                 $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
                 $insert_customer_inquiry = $this->inquiry_model->new_customer_inquiry_insert($query,$inquiry_num,$property_buy_sale);
                 
+                $sendSMSFlag = "";
+                $sendEmailFlag = "";
+                $history_type_sms="";
+                $history_type="";
                 /* sms send start */
                 if(!empty($_POST['mobile_no']))
                 {
-                        $country_code = $this->user->get_contry_code($_POST['county_code']);               
-                        if(!empty($country_code)){    
-                            $mcode = substr($country_code[0]->prefix_code, 1);
-                            $count_mcode = strlen($mcode);
-                            if($count_mcode < 2 ){
-                                $mobile_code = '000'.$mcode;
-                            }elseif($count_mcode < 3 ){
-                                $mobile_code = '00'.$mcode;
-                            }
-                            elseif($count_mcode < 4 ){
-                                $mobile_code = '0'.$mcode;
-                            }else{
-                                $mobile_code = $mcode;
-                            }
+                    $country_code = $this->user->get_contry_code($_POST['county_code']);               
+                    if(!empty($country_code)){    
+                        $mcode = substr($country_code[0]->prefix_code, 1);
+                        $mobile_code="00".$mcode;
+                        // $count_mcode = strlen($mcode);
+                        // if($count_mcode < 2 ){
+                        //     $mobile_code = '000'.$mcode;
+                        // }elseif($count_mcode < 3 ){
+                        //     $mobile_code = '00'.$mcode;
+                        // }
+                        // elseif($count_mcode < 4 ){
+                        //     $mobile_code = '0'.$mcode;
+                        // }else{
+                        //     $mobile_code = $mcode;
+                        // }
 
-                            $message = "Dear ".$fname." ".$lname.",";
-                            $message .= " Welcome and Thank you for choosing our company to find your ideal property.";
-                            $message .= " Your Customer ID:".$unic;
-                            $message .= " For any further info call: 8000 7000";
-                            
-                            $this->load->library('CMSMS');
-                            CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
+                        $message = "Dear ".$fname." ".$lname.",";
+                        $message .= " Welcome and Thank you for choosing our company to find your ideal property.";
+                        $message .= " Your Customer ID:".$unic;
+                        $message .= " For any further info call: 8000 7000";
+                        
+                        $this->load->library('CMSMS');
+                        $sms_res=CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
+                        if(empty($sms_res))
+                        {
+                            $sendSMSFlag = "SMS";
+                        }
 
-                            $history_text_sms       = $message;
-                            $history_subject_sms    = "Welcome to Monopolion System";
-                            $history_type_sms       = "SMS";
-                            $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
-                            $history_reciever_id_sms    = $query;
+                        $history_text_sms       = $message;
+                        $history_subject_sms    = "Welcome to Monopolion System";
+                        $history_type_sms       = "SMS";
+                        $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
+                        $history_reciever_id_sms    = $query;
 
-                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                        // $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }
                 /* sms send end */
@@ -157,7 +166,10 @@ class Verification extends CI_Controller {
                     $this->email->subject('Welcome to Monopolion System');
                     $email_layout = $this->load->view('email/inquiry_email', $data,TRUE);
                     $this->email->message($email_layout);
-                    $this->email->send();
+                    if($this->email->send())
+                    {
+                        $sendEmailFlag = "E-mail";   
+                    }
                     
                     // Save to sms_email history table
                     $history_text       = $email_layout;
@@ -166,18 +178,49 @@ class Verification extends CI_Controller {
                     $history_reciever   = $email;
                     $history_reciever_id    = $query;
 
+                    // $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    //  $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
+                }
+                if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
+                {
+                    $history_type_sms   = "SMS/E-mail";
+                    $history_type       = "SMS/E-mail";
+
+                    // SMS
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    
+                    // Email
                     $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
-                     $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
+
+                    $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
+                redirect('/inquiry/property', 'refresh');
                 }
-                 redirect('/inquiry/property', 'refresh');
+                elseif ($sendSMSFlag == "SMS")
+                {
+                    
+                    // SMS
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+
+                    $this->session->set_flashdata('success', 'SMS sent successfull Please check Your SMS.');
+                    redirect('/inquiry/property', 'refresh');
+                }
+                elseif ($sendEmailFlag == "E-mail")
+                {
+                    // Email
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+
+                    $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
+                    redirect('/inquiry/property', 'refresh');
       
-                } else {
-                    $this->load->view('add_new_client', array('error' => ''));
                 }
+                
+            } else {
+                $this->load->view('add_new_client', array('error' => ''));
+            }
             } 
         }
     function unic_num() {
-        $num = 'crm'.rand(10000000,99999999);
+        $num = rand(10000000,99999999);
 
         $unic_number = $this->user->check_unic_num($num);
 
@@ -230,23 +273,26 @@ class Verification extends CI_Controller {
                 $fname  = $this->input->post('fname');  
                 $lname  = $this->input->post('lname');    
 
+                $sendSMSFlag = "";
+                $sendEmailFlag = "";
                 /* sms send start */
                 if(!empty($_POST['mobile_no']))
                 {
                      $country_code = $this->user->get_contry_code($_POST['county_code']);               
                      if(!empty($country_code)){
                         $mcode = substr($country_code[0]->prefix_code, 1);
-                        $count_mcode = strlen($mcode);
-                        if($count_mcode < 2 ){
-                            $mobile_code = '000'.$mcode;
-                        }elseif($count_mcode < 3 ){
-                            $mobile_code = '00'.$mcode;
-                        }
-                        elseif($count_mcode < 4 ){
-                            $mobile_code = '0'.$mcode;
-                        }else{
-                            $mobile_code = $mcode;
-                        }
+                        $mobile_code="00".$mcode;
+                        // $count_mcode = strlen($mcode);
+                        // if($count_mcode < 2 ){
+                        //     $mobile_code = '000'.$mcode;
+                        // }elseif($count_mcode < 3 ){
+                        //     $mobile_code = '00'.$mcode;
+                        // }
+                        // elseif($count_mcode < 4 ){
+                        //     $mobile_code = '0'.$mcode;
+                        // }else{
+                        //     $mobile_code = $mcode;
+                        // }
                         
                         $message = "Dear ".$fname." ".$lname.",";
                         $message .= " Welcome and Thank you for choosing our company to find your ideal property.";
@@ -254,7 +300,11 @@ class Verification extends CI_Controller {
                         $message .= " For any further info call: 8000 7000\n";
                         
                         $this->load->library('CMSMS');
-                        CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
+                        $sms_res=CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
+                        
+                        if(empty($sms_res)){
+                            $sendSMSFlag = "SMS";
+                        }
 
                         /* sms send end */
 
@@ -264,7 +314,7 @@ class Verification extends CI_Controller {
                         $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
                         $history_reciever_id_sms    = $query;
 
-                        $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                        //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }   
 
@@ -288,19 +338,51 @@ class Verification extends CI_Controller {
                         $this->email->subject('Welcome to Monopolion System');
                         $email_layout = $this->load->view('email/inquiry_email', $data,TRUE);
                         $this->email->message($email_layout);
-                        $this->email->send();
-                        
+                        if($this->email->send())
+                        {
+                            $sendEmailFlag = "E-mail";   
+                        }
                         // Save to sms_email history table
                         $history_text       = $email_layout;
                         $history_subject    = "Welcome to Monopolion System";
-                        $history_type       = "Email";
+                        $history_type       = "E-mail";
                         $history_reciever   = $email;
                         $history_reciever_id    = $query;
 
-                        $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                        //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                     }   
-                        $this->session->set_flashdata('success', 'Client added successfull.');
-                        redirect('/home/customer_manage', 'refresh');
+                if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
+                {
+                    $history_type_sms   = "SMS/E-mail";
+                    $history_type       = "SMS/E-mail";
+
+                    // SMS
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    
+                    // Email
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->session->set_flashdata('success', 'Client added successfull. check your E-mail or SMS');
+                    redirect('/home/customer_manage', 'refresh');
+                }
+                elseif ($sendSMSFlag == "SMS")
+                {
+                    
+                    // SMS
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    
+                    $this->session->set_flashdata('success', 'Client added successfull. check SMS');
+                    redirect('/home/customer_manage', 'refresh');
+                }
+                elseif ($sendEmailFlag == "E-mail")
+                {
+                    // Email
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    
+                    $this->session->set_flashdata('success', 'Client added successfull. check your E-mail');
+                    redirect('/home/customer_manage', 'refresh');      
+                }
+                        //$this->session->set_flashdata('success', 'Client added successfull.');
+                        //redirect('/home/customer_manage', 'refresh');
                 } else {
                     $this->load->view('add_customer_view', array('error' => ''));
                 }
@@ -478,29 +560,29 @@ class Verification extends CI_Controller {
                 
                 if ($query = $this->user->property_insert($imageName)) {    
                                                 
-                    if($_POST['pro_add'] =="Add Property"){
-                        $this->session->set_flashdata('success', 'Property added successfull.');
-                        $url = "/home/property_manage/";
-                        redirect($url , 'refresh');
-                    }else{
+                    // if($_POST['pro_add'] =="Add Property"){
+                    //     $this->session->set_flashdata('success', 'Property added successfull.');
+                    //     $url = "/home/property_manage/";
+                    //     redirect($url , 'refresh');
+                    // }else{
 
                         $url = "/home/propertyExatraImages/".$query;
                         redirect($url , 'refresh');
-                    }
+                    //}
                 } else {
                     $this->load->view('add_property_view', array('error' => ''));
                 }
             } else {
                 if ($query = $this->user->property_update($imageName,$id)) {
                     
-                    if($_POST['pro_up'] =="Update Property"){
-                        $this->session->set_flashdata('success', 'Property updated successfull.');
-                        $url = "/home/property_manage/";
-                        redirect($url, 'refresh');
-                    }else{
+                    // if($_POST['pro_up'] =="Update Property"){
+                    //     $this->session->set_flashdata('success', 'Property updated successfull.');
+                    //     $url = "/home/property_manage/";
+                    //     redirect($url, 'refresh');
+                    // }else{
                          $url = "/home/propertyExatraImages/".$id;
                         redirect($url, 'refresh');
-                    }         
+                    //}         
                 } else {
                     $this->load->view('add_store_view', array('error' => ''));
                 }

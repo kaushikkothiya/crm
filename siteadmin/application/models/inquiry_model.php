@@ -417,13 +417,16 @@ Class Inquiry_model extends CI_Model {
     }
 
     function saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id)
-    {
+    {   
+        $today_date = date('Y-m-d H:i:s');
         $sms_email_data = array(
             'text' => $history_text,
             'subject' => $history_subject,
             'type' => $history_type,
             'reciever' => $history_reciever,
             'reciever_id' => $history_reciever_id,
+            'created_date'=>$today_date,
+            'updated_date'=>$today_date,
         );
         $success_data = $this->db->insert('sms_email_history', $sms_email_data);
         $success_data = $this->db->insert_id();
@@ -689,6 +692,17 @@ Class Inquiry_model extends CI_Model {
     {
         $q = $this->db->select("*")
                 ->from('user')
+                ->where('id',$id)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+    function get_sms_email_text($id)
+    {
+        $q = $this->db->select("text,type")
+                ->from('sms_email_history')
                 ->where('id',$id)
                 ->get();
         if ($q->num_rows() > 0) {

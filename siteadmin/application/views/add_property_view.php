@@ -752,7 +752,10 @@ $this->load->view('leftmenu');
 					<div class="data" id="ScrollCB" style="height:200px;width:400px;overflow-y:scroll;border:1px solid #ccc; padding:5px;">
 						<?php
 							$all_genral_facility = $this->inquiry_model->get_genral_facility();
-							$facility_id= array_column($facility_id,"facility_id");
+							//$facility_id= array_map($facility_id,"facility_id");
+							 $facility_id = array_map(function ($value) {
+    							return  $value['facility_id'];
+ 							},$facility_id);
 							foreach ($all_genral_facility as $key => $value) {
 								if(in_array($key, $facility_id)){
 								$selected = "checked";		
@@ -1163,10 +1166,10 @@ if (isset($user[0])) {
 		<?php
 		if ($id=="") {
 			echo form_submit('pro_add', 'Add Property', "class='btn'");?>&nbsp;&nbsp;<?php
-			echo form_submit('pro_add', 'Add Property With Extra images', "class='btn'");
+			//echo form_submit('pro_add', 'Add Property With Extra images', "class='btn'");
 		} else { 
 			echo form_submit('pro_up', 'Update Property', "class='btn'");?>&nbsp;&nbsp;<?php
-			echo form_submit('pro_up', 'Update Property With Extra images', "class='btn'");
+			//echo form_submit('pro_up', 'Update Property With Extra images', "class='btn'");
 		}
 		?>&nbsp;&nbsp;
 		<?php echo anchor('home/property_manage', 'Cancel', array('title' => 'Cancel', 'class' => 'btn')); ?>
