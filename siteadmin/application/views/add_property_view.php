@@ -315,7 +315,7 @@ $this->load->view('leftmenu');
 									if($selected =="0" || $selected==""){
 										$selected = 24;
 									}
-									$device = 'id="county_code" style="width: 94px; float:left; margin-right:5px; "';
+									$device = 'id="county_code" style="width: 94px; float:left; margin-right:5px;" '.$disable;
 									echo form_dropdown('county_code', $country, $selected, $device);
 
 							$contact = array(

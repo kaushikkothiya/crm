@@ -46,22 +46,31 @@ Class Inquiry_model extends CI_Model {
     }
     
     function getAllinquiry($inc_view,$client) {
-        if($inc_view !=""){
+        if($this->session->userdata('logged_in_agent')){
+            $sessionData = $this->session->userdata('logged_in_agent');
+            $created_id = $sessionData['id'];
+
+            if($inc_view !=""){
             if($client =='1'){
                $this->db->select('inquiry.*,user.fname,user.lname');
                $this->db->from('inquiry');
                $this->db->join('user','user.id =inquiry.created_by'); 
-               $this->db->where('customer_id',$inc_view);
+               $this->db->where('inquiry.customer_id',$inc_view);
+               $this->db->where('inquiry.created_by',$created_id);
+               $this->db->order_by('inquiry.created_date','DESC');
                $query = $this->db->get();
                return $query->result();
             }else{
                $this->db->select('inquiry.*,user.fname,user.lname');
                $this->db->from('inquiry');
                if($inc_view !="latest"){
-                    $this->db->where('aquired',$inc_view);
-                    $this->db->or_where('aquired','both');
+                    $this->db->where('inquiry.aquired',$inc_view);
+                    $this->db->or_where('inquiry.aquired','both');
+                    $this->db->order_by('inquiry.created_date','DESC');
+                    $this->db->where('inquiry.created_by',$created_id);
                 }else{
-                    $this->db->order_by('created_date','DESC');
+                    $this->db->order_by('inquiry.created_date','DESC');
+                    $this->db->where('inquiry.created_by',$created_id);
                 }
                $this->db->join('user','user.id =inquiry.created_by'); 
                $query = $this->db->get();
@@ -71,6 +80,8 @@ Class Inquiry_model extends CI_Model {
             $q = $this->db->select('inquiry.*,user.fname,user.lname')
                     ->from('inquiry')
                     ->join('user','user.id =inquiry.created_by')
+                    ->where('inquiry.created_by',$created_id)
+                    ->order_by('inquiry.created_date','DESC')
                     ->get();
             if ($q->num_rows() > 0) {
                 return $q->result();
@@ -78,6 +89,43 @@ Class Inquiry_model extends CI_Model {
             return array();
                 
         }
+        }else{
+        if($inc_view !=""){
+            if($client =='1'){
+               $this->db->select('inquiry.*,user.fname,user.lname');
+               $this->db->from('inquiry');
+               $this->db->join('user','user.id =inquiry.created_by'); 
+               $this->db->where('inquiry.customer_id',$inc_view);
+               $this->db->order_by('inquiry.created_date','DESC');
+               $query = $this->db->get();
+               return $query->result();
+            }else{
+               $this->db->select('inquiry.*,user.fname,user.lname');
+               $this->db->from('inquiry');
+               if($inc_view !="latest"){
+                    $this->db->where('inquiry.aquired',$inc_view);
+                    $this->db->or_where('inquiry.aquired','both');
+                    $this->db->order_by('inquiry.created_date','DESC');
+                }else{
+                    $this->db->order_by('inquiry.created_date','DESC');
+                }
+               $this->db->join('user','user.id =inquiry.created_by'); 
+               $query = $this->db->get();
+               return $query->result();
+           }
+        }else{
+            $q = $this->db->select('inquiry.*,user.fname,user.lname')
+                    ->from('inquiry')
+                    ->join('user','user.id =inquiry.created_by')
+                    ->order_by('inquiry.created_date','DESC')
+                    ->get();
+            if ($q->num_rows() > 0) {
+                return $q->result();
+            }
+            return array();
+                
+        }
+    }
 
         // $this->db->select('inquiry.*,user.fname,user.lname,user.email,user.mobile_no')->distinct();
         // $this->db->from('inquiry');
@@ -101,13 +149,17 @@ Class Inquiry_model extends CI_Model {
         $this->db->join('city_area','city_area.id =property.city_area');
         $this->db->join('city','city.id =property.city_id');
         $this->db->from('property');
-        
         if(!empty($post['property_type'])){
             if($post['property_type'] !='3'){
-                $this->db->where('property.type', $post['property_type']);
-                $this->db->or_where('property.type','3');
+                $this->db->where("( property.type = '". $post['property_type']."' OR property.type = '3' )");
             }
         }
+        // if(!empty($post['property_type'])){
+        //     if($post['property_type'] !='3'){
+        //         $this->db->where('property.type', $post['property_type']);
+        //         $this->db->or_where('property.type','3');
+        //     }
+        // }
         // if(!empty($post['location']))
         //     $this->db->like('property.address', $post['location']);
 

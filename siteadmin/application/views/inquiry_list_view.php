@@ -40,7 +40,7 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                             <span class="divider">/
                             </span></li>
                             <?if ($this->session->userdata('logged_in_super_user')) { ?>
-								<li style="float:right;"><a href='#popup1'><input type="button" value="Import Inquiry Datails" /></a></li>
+								<li style="float:left;"><a href='#popup1'><input type="button" value="Import Inquiry Details" /></a></li>
                             <?php } ?>
                     </ul>
                 </div>

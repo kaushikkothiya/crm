@@ -36,11 +36,11 @@ $this->load->view('header');
                             <span class="divider">/
                             </span></li>
                         <li><?php echo anchor('home/property_manage', 'Property Management', "title='Property Management'"); ?>
-                            <span class="divider">
+                            <span class="divider">/
                             </span></li>
                         		<li style="float:right;"><a href="add_property"><input type="button" value="Add New" /></a></li>
                                 <?if ($this->session->userdata('logged_in_super_user')) { ?>
-                                    <li style="float:right;  margin-right:10px;"><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
+                                    <li style="float:left;  margin-right:10px;"><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
                                 <?php } ?>
                     </ul>
                 </div>
