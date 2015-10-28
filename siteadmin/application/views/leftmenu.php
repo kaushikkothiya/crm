@@ -74,14 +74,14 @@
   </li>
   <li><a href='<?php echo base_url(); ?>inquiry/new_exist_client'><span>Inquiry Center</span></a></li>
 
-  <li class='has-sub'><a href='#'><span>Email / SMS</span></a>
+  <!-- <li class='has-sub'><a href='#'><span>Email / SMS</span></a>
     <ul>
          <li><a href='<?php echo base_url(); ?>home/sms_newsletter_list'><span>SMS Newsletter</span></a></li>
          <li><a href='<?php echo base_url(); ?>home/email_newsletter_list'><span>Email Newsletter</span></a></li>
          <li><a href='<?php echo base_url(); ?>home/sms_email_history'><span>Individual SMS / Email History</span></a></li>
       </ul>
 
-   </li>
+   </li> -->
    <?php } ?>
 </ul>
 </div>

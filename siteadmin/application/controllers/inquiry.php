@@ -132,6 +132,7 @@ class Inquiry extends CI_Controller {
                 $history_type_agent      = "E-mail";
                 $history_reciever_agent_email  = $agent_detail[0]->email;
                 $history_reciever_id_agent   = $agent_detail[0]->id;
+                $history_reciever_usertype_agent ="2";
                 //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
             }
             if(!empty($customer_detail[0]->email))
@@ -154,6 +155,7 @@ class Inquiry extends CI_Controller {
                 $history_type       = "E-mail";
                 $history_reciever   = $customer_detail[0]->email;
                 $history_reciever_id    = $customer_detail[0]->id;
+                $history_reciever_usertype ="1";
                 //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
 
                 }
@@ -193,6 +195,7 @@ class Inquiry extends CI_Controller {
                     $history_type_sms       = "SMS";
                     $history_reciever_sms   = $mobile_code.$customer_detail[0]->mobile_no;
                     $history_reciever_id_sms    = $customer_detail[0]->id;
+                    $history_reciever_usertype_sms ="1";
                     //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
             
                 }
@@ -235,6 +238,7 @@ class Inquiry extends CI_Controller {
                     $history_type_sms_agent       = "SMS";
                     $history_reciever_agent   = $mobile_code_agent.$agent_detail[0]->mobile_no;
                     $history_reciever_id_agent    = $agent_detail[0]->id;
+                    $history_reciever_usertype_agent="2";
                     //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_agent, $history_reciever_id_agent);
             
                 }
@@ -245,24 +249,24 @@ class Inquiry extends CI_Controller {
                     $history_type       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                     
                 }
                 elseif ($sendSMSFlag == "SMS")
                 {
                     
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
                     
                     
                 }
                 elseif ($sendEmailFlag == "E-mail")
                 {
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                     
                 }
             if($sendSMSFlag1 == "SMS" && $sendEmailFlag1 == "E-mail")
@@ -271,24 +275,24 @@ class Inquiry extends CI_Controller {
                     $history_type_agent       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_agent, $history_reciever_id_agent);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_agent, $history_reciever_id_agent,$history_reciever_usertype_agent);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent_email, $history_reciever_id_agent);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent_email, $history_reciever_id_agent,$history_reciever_usertype_agent);
                     
                 }
                 elseif ($sendSMSFlag1 == "SMS")
                 {
                     
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_agent, $history_reciever_id_agent);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_agent, $history_reciever_id_agent,$history_reciever_usertype_agent);
                     
                     
                 }
                 elseif ($sendEmailFlag1 == "E-mail")
                 {
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent_email, $history_reciever_id_agent);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent_email, $history_reciever_id_agent,$history_reciever_usertype_agent);
                     
                 }
 
@@ -382,7 +386,7 @@ class Inquiry extends CI_Controller {
     function property() {
        if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
             //$this->session->unset_userdata('selected_property_id');
-       
+      
             $data['inquiry_flag'] = "1";
         if($this->session->userdata('customer_property_id')){
                 if(!empty($_POST['aquired'])){
@@ -404,6 +408,8 @@ class Inquiry extends CI_Controller {
                         $data['inquiry_flag'] = "0";
                     }
                     $data['post_property_data']=$_POST;
+                    
+                    
                     $data['search_detail'] = $this->inquiry_model->getrelated_property($_POST);
                     $this->load->view('search_property_view', $data);
                 }else{
@@ -529,7 +535,8 @@ class Inquiry extends CI_Controller {
                             $history_type       = "E-mail";
                             $history_reciever   = $customer_detail[0]->email;
                             $history_reciever_id    = $customer_detail[0]->id;
-                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                            $history_reciever_usertype="1";
+                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                         }
                         $this->session->unset_userdata('customer_property_id');   
                         redirect('inquiry/inquiry_manage');
@@ -588,7 +595,8 @@ class Inquiry extends CI_Controller {
                                 $history_type       = "SMS";
                                 $history_reciever   = $mobile_code.$customer_detail[0]->mobile_no;
                                 $history_reciever_id    = $customer_detail[0]->id;
-                                $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                                $history_reciever_usertype="1";
+                                $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                         
                             }
                         }    
@@ -631,6 +639,7 @@ class Inquiry extends CI_Controller {
                             $history_type       = "Email";
                             $history_reciever   = $customer_detail[0]->email;
                             $history_reciever_id    = $customer_detail[0]->id;
+                            $history_reciever_usertype="1";
                             //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                         }
                         
@@ -684,6 +693,7 @@ class Inquiry extends CI_Controller {
                                 $history_type_sms       = "SMS";
                                 $history_reciever_sms   = $mobile_code.$customer_detail[0]->mobile_no;
                                 $history_reciever_id_sms    = $customer_detail[0]->id;
+                                $history_reciever_usertype="1";
                                // $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                             }
                         }
@@ -693,10 +703,10 @@ class Inquiry extends CI_Controller {
                             $history_type       = "SMS/E-mail";
 
                             // SMS
-                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
                             
                             // Email
-                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                             $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. check your E-mail or SMS!');
                             redirect('inquiry/inquiry_manage');
                         }
@@ -704,7 +714,7 @@ class Inquiry extends CI_Controller {
                         {
                             
                             // SMS
-                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
                             
                             $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check SMS!');
                             redirect('inquiry/inquiry_manage');
@@ -712,7 +722,7 @@ class Inquiry extends CI_Controller {
                         elseif ($sendEmailFlag == "E-mail")
                         {
                             // Email
-                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                             
                             $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check your E-mail!');
                             redirect('inquiry/inquiry_manage');      
@@ -757,6 +767,7 @@ class Inquiry extends CI_Controller {
 
                 $pro_agent_id = $this->inquiry_model->get_related_property_agent_id($inquiryDetail[0]->property_id);
                 $this->session->set_userdata('selected_agent_id', $pro_agent_id[0]->agent_id);
+                $this->session->set_userdata('schedule_inquiry_id', $inquiryId);
                 redirect('/inquiry/agent_calendar', 'refresh');
             }
         }
@@ -934,8 +945,6 @@ class Inquiry extends CI_Controller {
             $inquiryDetailHtml .= '<lable><b>Maximum Price</b></lable> :<lable>'.$data[0]->maxprice.'</lable> ';
             $inquiryDetailHtml .=  '<br><br>';
         }
-         
-        
         $inquiryDetailHtml .=  '</fieldset>';          
                     
         echo $inquiryDetailHtml;

@@ -301,7 +301,7 @@ Both</label>
 
 </div>
 <div class="control-group">
-<label class="control-label" for="textarea">Status
+<label class="control-label" for="textarea">
 </label>
 
 <?php echo form_hidden('status', 'Active'); ?>

@@ -33,6 +33,19 @@ $this->load->view('header');
 			<?php } ?>
 			
 			<div class="fldimg-txt">
+				<?php if(!empty($data[0]->CityTitle)){ ?>	
+					<div class="lable">City:</div>
+					<div class="data"><?php echo $data[0]->CityTitle; ?></div>
+				<?php } ?>
+				
+				<?php if(!empty($data[0]->CityareaTitle)){ ?>	
+					<div class="lable">City area:</div>
+					<div class="data"><?php echo $data[0]->CityareaTitle; ?></div>
+				<?php } ?>
+				
+			</div>
+
+			<div class="fldimg-txt1">
 				<?php if(!empty($data[0]->reference_no)){ ?>	
 					<div class="lable">Reference number:</div>
 					<div class="data"><?php echo $data[0]->reference_no ; ?></div>
@@ -46,18 +59,6 @@ $this->load->view('header');
 				<?php if(!empty($data[0]->address)){ ?>	
 					<div class="lable">Address:</div>
 					<div class="data"><?php echo $data[0]->address; ?></div>
-				<?php } ?>
-			</div>
-
-			<div class="fldimg-txt1">
-				<?php if(!empty($data[0]->CityTitle)){ ?>	
-					<div class="lable">City:</div>
-					<div class="data"><?php echo $data[0]->CityTitle; ?></div>
-				<?php } ?>
-				
-				<?php if(!empty($data[0]->CityareaTitle)){ ?>	
-					<div class="lable">City area:</div>
-					<div class="data"><?php echo $data[0]->CityareaTitle; ?></div>
 				<?php } ?>
 			</div>
 
@@ -115,24 +116,12 @@ $this->load->view('header');
 			<?php if(!empty($data[0]->short_decs)){ ?>
 			<div class="clear"></div>
 			<div class="description">
-				<div class="lable">Description:</div>
+				<div class="lable">Property Description:</div>
 				<div class="data"><?php echo $data[0]->short_decs; ?></div>
 			</div>
 			<?php } ?>
 			<div class="clear"></div>
 			<div class="leftpart">
-				<?php if(!empty($data[0]->bedroom)){ ?>
-				<div class="fild">
-					<div class="lable">Bedroom:</div>
-					<div class="data"><?php echo $data[0]->bedroom; ?></div>
-				</div>
-				<?php } ?>
-				<?php if(!empty($data[0]->bathroom)){ ?>
-				<div class="fild">
-					<div class="lable">Bathroom:</div>
-					<div class="data"><?php echo $data[0]->bathroom; ?></div>
-				</div>
-				<?php } ?>
 				<?php if($data[0]->sale_price !='0'){ ?>
 				 <div class="fild">
 					<div class="lable">Selling Price (€):</div>
@@ -145,6 +134,19 @@ $this->load->view('header');
 					<div class="data"><?php if($data[0]->rent_price !='0' ){ echo $data[0]->rent_price;}else{ echo "";} ?></br><?php if($data[0]->rent_val =='0'){ echo "incl. common expenses";}else{ echo "Plus common expenses";}?></div>
 				</div> 
 				<?php } ?>
+				<?php if(!empty($data[0]->bedroom)){ ?>
+				<div class="fild">
+					<div class="lable">Bedroom:</div>
+					<div class="data"><?php echo $data[0]->bedroom; ?></div>
+				</div>
+				<?php } ?>
+				<?php if(!empty($data[0]->bathroom)){ ?>
+				<div class="fild">
+					<div class="lable">Bathroom:</div>
+					<div class="data"><?php echo $data[0]->bathroom; ?></div>
+				</div>
+				<?php } ?>
+				
 				<?php if(!empty($architectural_design)){ ?>
 				<div class="fild">
 					<div class="lable">Architectural Design:</div>
@@ -177,12 +179,16 @@ $this->load->view('header');
 				</div>
 				<?php } ?>
 				<?php if($data[0]->uncover_area !='0' && !empty($data[0]->uncover_area)){ ?>
-				<div class="lable">Uncover Area (m²):</div>
-				<div class="data"><?php echo $data[0]->uncover_area; ?></div>
+				<div class="fild">
+					<div class="lable">Uncover Area (m²):</div>
+					<div class="data"><?php echo $data[0]->uncover_area; ?></div>
+				</div>
 				<?php } ?>
 				<?php if($data[0]->plot_lan_area !='0' && !empty($data[0]->plot_lan_area)){ ?>
-				<div class="lable">Plot/land Area (m²):</div>
-				<div class="data"><?php echo $data[0]->plot_lan_area; ?></div>
+				<div class="fild">
+					<div class="lable">Plot/land Area (m²):</div>
+					<div class="data"><?php echo $data[0]->plot_lan_area; ?></div>
+				</div>
 				<?php } ?>
 				<?php if(!empty($data[0]->kitchen)){ ?>
 				<div class="fild">
@@ -196,8 +202,8 @@ $this->load->view('header');
 					<div class="data"><?php echo $room_size; ?></div>
 				</div>
 				<?php } ?>
-			</div>
-			<div class="fild">
+			
+				<div class="fild">
 					<div class="lable">From Supermarket:</div>
 					<div class="data"><?php echo $data[0]->from_supermarket; ?></div>
 				</div>
@@ -213,11 +219,10 @@ $this->load->view('header');
 					<div class="lable">From Highway:</div>
 					<div class="data"><?php echo $data[0]->from_high_way; ?></div>
 				</div>
-			<div class="clear"></div>
 			
-		</div>
+			</div>
+		<div class="clear"></div>
 	</div>
-	
 	<br /><br />
 	
 </div>

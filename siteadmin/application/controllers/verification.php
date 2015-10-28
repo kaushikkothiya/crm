@@ -143,7 +143,7 @@ class Verification extends CI_Controller {
                         $history_type_sms       = "SMS";
                         $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
                         $history_reciever_id_sms    = $query;
-
+                        $history_reciever_usertype_sms ="1";
                         // $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }
@@ -177,6 +177,7 @@ class Verification extends CI_Controller {
                     $history_type       = "Email";
                     $history_reciever   = $email;
                     $history_reciever_id    = $query;
+                    $history_reciever_usertype ="1";
 
                     // $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                     //  $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
@@ -187,10 +188,10 @@ class Verification extends CI_Controller {
                     $history_type       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
 
                     $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
                 redirect('/inquiry/property', 'refresh');
@@ -313,7 +314,7 @@ class Verification extends CI_Controller {
                         $history_type_sms       = "SMS";
                         $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
                         $history_reciever_id_sms    = $query;
-
+                        $history_reciever_usertype_sms="1";
                         //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }   
@@ -348,6 +349,7 @@ class Verification extends CI_Controller {
                         $history_type       = "E-mail";
                         $history_reciever   = $email;
                         $history_reciever_id    = $query;
+                        $history_reciever_usertype ="1";
 
                         //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                     }   
@@ -357,10 +359,10 @@ class Verification extends CI_Controller {
                     $history_type       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                     $this->session->set_flashdata('success', 'Client added successfull. check your E-mail or SMS');
                     redirect('/home/customer_manage', 'refresh');
                 }

@@ -160,8 +160,8 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                         if ($this->session->userdata('logged_in_super_user')) {
                                         echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . anchor('inquiry/delete_inquiry/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure you want to delete?')")). "</span></td>";
                                         }else{$arrayName = array();
-                                        echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . 'Delete'. "</span></td>";
-                                            
+                                        //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . 'Delete'. "</span></td>";
+                                          echo "</td>";  
                                         }
                                       echo "</tr>";
 

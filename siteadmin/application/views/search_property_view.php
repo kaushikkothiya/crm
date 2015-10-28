@@ -168,6 +168,7 @@ $this->load->view('leftmenu');
 
                             <!-- Search Results parts here -->
                             <?php
+                            
                             if(!empty($search_detail))
                             {
                             ?> 
@@ -183,6 +184,7 @@ $this->load->view('leftmenu');
                            <!-- <form name="selected_property_frm" id="selected_property_frm" method="post" action="agent_calendar"> -->
                             
                                     <?php 
+
                                     if($inquiry_flag == "1")
                                         echo form_open_multipart('inquiry/sendMultipleInquiry', array('class' => 'form-horizontal'));
                                     else
@@ -377,9 +379,7 @@ $this->load->view('footer');
                                 })
                                 //.on( 'page.dt',   function () { eventFired( 'Page' ); } )
                                 .DataTable();
-                            });
-
-
+                            
                             $('select.multiselect').multipleSelect({
                                 filter: true,
                             });

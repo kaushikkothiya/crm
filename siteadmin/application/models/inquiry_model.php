@@ -384,10 +384,22 @@ Class Inquiry_model extends CI_Model {
 
     function get_sms_email_history()
     {
-        $this->db->select('sms_email_history.*,customer.fname,customer.lname,customer.type as customerType');
-        $this->db->join('customer','customer.id =sms_email_history.reciever_id');
+        $this->db->select('*');
         $this->db->from('sms_email_history');
-        
+        $query = $this->db->get();
+        return $query->result();
+    }
+    function get_sms_email_history_recievername($user_type)
+    {
+        if($user_type =="1"){
+            $this->db->select('sms_email_history.*,customer.fname,customer.lname,customer.type as customerType');
+            $this->db->join('customer','customer.id =sms_email_history.reciever_id');
+            $this->db->from('sms_email_history');
+        }elseif ($user_type =="2") {
+            $this->db->select('sms_email_history.*,user.fname,user.lname,user.type as userType');
+            $this->db->join('user','user.id =sms_email_history.reciever_id');
+            $this->db->from('sms_email_history');
+        }
         $query = $this->db->get();
         return $query->result();
     }
@@ -416,7 +428,7 @@ Class Inquiry_model extends CI_Model {
         return $insert;
     }
 
-    function saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id)
+    function saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype)
     {   
         $today_date = date('Y-m-d H:i:s');
         $sms_email_data = array(
@@ -425,6 +437,7 @@ Class Inquiry_model extends CI_Model {
             'type' => $history_type,
             'reciever' => $history_reciever,
             'reciever_id' => $history_reciever_id,
+            'user_type' => $history_reciever_usertype,
             'created_date'=>$today_date,
             'updated_date'=>$today_date,
         );

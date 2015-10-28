@@ -1119,7 +1119,7 @@ if (isset($user[0])) {
 	<div class="line2"></div>
 	
 	<div class="description">
-		<div class="lable">Description:</div>
+		<div class="lable">Property Description:</div>
 		<style type="text/css">
 			.cleditorMain{
 				width: 100% !important;
