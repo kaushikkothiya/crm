@@ -80,7 +80,7 @@ $this->load->view('header');
                                                 <td><?php echo $value->reciever; ?>
                                                 <td><?php echo $value->fname." ".$value->lname; ?>
                                                 <td><?php echo date("d-M-Y", strtotime($value->created_date)); ?>
-                                                <td><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'>View</a></div></td>
+                                                <td><a class="btn btn-default btn-small" href="#popup2" title="View" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'><i class="icon-zoom-in"></i></a></td>
                                                 <!--<td>
                                                  <td>
                                                     <span style='text-align:left;width: 50%;float: left;'><i class='icon-pencil'></i>&nbsp;

@@ -144,7 +144,7 @@ Class Inquiry_model extends CI_Model {
     }
      function getrelated_property($post) {
        
-        //echo'<pre>';print_r($_POST);exit;
+        
         $this->db->select('property.*,city_area.title,city.id as city_id');
         $this->db->join('city_area','city_area.id =property.city_area');
         $this->db->join('city','city.id =property.city_id');
@@ -165,13 +165,16 @@ Class Inquiry_model extends CI_Model {
 
         if(!empty($post['city']) && $post['city'] !='0')
             $this->db->where('property.city_id', $post['city']);
-        
+        if(!empty($post['furnished_type']))
+        {
+           $this->db->where_in('property.furnished_type',$post['furnished_type']);
+        }
         if(!empty($post['selectItemcity_area']))
         {
            $this->db->where_in('property.city_area',$post['selectItemcity_area']);
         }
         if(!empty($post['property_category']))
-            $this->db->where('property.property_type', $post['property_category']);
+            $this->db->where_in('property.property_type', $post['property_category']);
 
         if(!empty($post['bedroom']))
             $this->db->where('property.bedroom', $post['bedroom']);
@@ -364,6 +367,7 @@ Class Inquiry_model extends CI_Model {
             'created_date' => $today_date,
             'updated_date' => $today_date,
             'created_by' => $created_id,
+            'status' => "1"
             
         );
         $insert = $this->db->insert('inquiry', $new_user_insert_data);
@@ -375,43 +379,66 @@ Class Inquiry_model extends CI_Model {
       // echo'<pre>';print_r($_POST);exit;$user['tindt'] = date("m-d-Y", strtotime($post['tin_date']));
         $cust_id = $this->session->userdata('customer_property_id');
         
-        if($this->session->userdata('logged_in_super_user')){
-            $sessionData = $this->session->userdata('logged_in_super_user');
-            $created_id = $sessionData['id'];
-        }
-        if($this->session->userdata('logged_in_agent')){
-            $sessionData = $this->session->userdata('logged_in_agent');
-            $created_id = $sessionData['id'];
-        }
+        $this->db->select('*');
+        $this->db->from('inquiry');
+        $this->db->where('property_id',$property_id);
+        $this->db->where('customer_id',$cust_id);
+        $this->db->where('status !=',"4");
+        $this->db->where('status !=',"5");
+        $query = $this->db->get();
+        $recorde=$query->result();
+        
+        if(empty($recorde))
+        {
+            if($this->session->userdata('logged_in_super_user')){
+                $sessionData = $this->session->userdata('logged_in_super_user');
+                $created_id = $sessionData['id'];
+            }
+            if($this->session->userdata('logged_in_agent')){
+                $sessionData = $this->session->userdata('logged_in_agent');
+                $created_id = $sessionData['id'];
+            }
 
-        if($this->session->userdata('logged_in_employee')){
-            $sessionData = $this->session->userdata('logged_in_employee');
-            $id = $sessionData['id'];
-            $created_id = $sessionData['id'];
+            if($this->session->userdata('logged_in_employee')){
+                $sessionData = $this->session->userdata('logged_in_employee');
+                $id = $sessionData['id'];
+                $created_id = $sessionData['id'];
+            }else{
+                $id="";
+            }
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'property_id' => $property_id,
+                'property_ref_no' => $property_detail[0]->reference_no,
+                'aquired' => $property_buy_sale,
+                'customer_id' => $cust_id,
+                'agent_id' => $this->input->post('agent'),
+                'employee_id' => $id,
+                'incquiry_ref_no' => $inquiry_num,
+                'short_decs' => "fhsdfghfggsdfhgshdf",
+                'appoint_start_date' => date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
+                'appoint_end_date' =>date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'created_date' => $today_date,
+                'updated_date' => $today_date,
+                'created_by' => $created_id,
+                
+            );
+            $insert = $this->db->insert('inquiry', $new_user_insert_data);
+            $insert = $this->db->insert_id();
+            return $insert;
         }else{
-            $id="";
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'agent_id' => $this->input->post('agent'),
+                'appoint_start_date' => date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
+                'appoint_end_date' =>date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'updated_date' => $today_date,
+            );
+            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_update_data);
+            return $recorde[0]->id;
         }
-        $today_date = date('Y-m-d H:i:s');
-        $new_user_insert_data = array(
-            'property_id' => $property_id,
-            'property_ref_no' => $property_detail[0]->reference_no,
-            'aquired' => $property_buy_sale,
-            'customer_id' => $cust_id,
-            'agent_id' => $this->input->post('agent'),
-            'employee_id' => $id,
-            'incquiry_ref_no' => $inquiry_num,
-            'short_decs' => "fhsdfghfggsdfhgshdf",
-            'appoint_start_date' => date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
-            'appoint_end_date' =>date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
-            'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
-            'created_date' => $today_date,
-            'updated_date' => $today_date,
-            'created_by' => $created_id,
-            
-        );
-        $insert = $this->db->insert('inquiry', $new_user_insert_data);
-        $insert = $this->db->insert_id();
-        return $insert;
     }
 
      function deletePropertyExtImgById($propertyImgId)
@@ -499,46 +526,70 @@ Class Inquiry_model extends CI_Model {
     }
     
     function saveClientInquiry($customerId, $property_id, $property_ref_no, $inquiry_ref_no, $property_buy_sale) {
-        //$section_prefix = "agent_";
-// echo'<pre>';print_r($_POST);exit;$user['tindt'] = date("m-d-Y", strtotime($post['tin_date']));
-       if($this->session->userdata('logged_in_super_user')){
-            $sessionData = $this->session->userdata('logged_in_super_user');
-            $created_id = $sessionData['id'];
-        }
-        if($this->session->userdata('logged_in_agent')){
-            $sessionData = $this->session->userdata('logged_in_agent');
-            $created_id = $sessionData['id'];
-        }
+       
+        $this->db->select('*');
+        $this->db->from('inquiry');
+        $this->db->where('property_id',$propertyId);
+        $this->db->where('customer_id',$customerId);
+        $this->db->where('status !=',"4");
+        $this->db->where('status !=',"5");
+        $query = $this->db->get();
+        $recorde=$query->result();
+        if(empty($recorde))
+        {
 
-        if($this->session->userdata('logged_in_employee')){
-            $sessionData = $this->session->userdata('logged_in_employee');
-            $id = $sessionData['id'];
-            $created_id = $sessionData['id'];
+           if($this->session->userdata('logged_in_super_user')){
+                $sessionData = $this->session->userdata('logged_in_super_user');
+                $created_id = $sessionData['id'];
+            }
+            if($this->session->userdata('logged_in_agent')){
+                $sessionData = $this->session->userdata('logged_in_agent');
+                $created_id = $sessionData['id'];
+            }
+
+            if($this->session->userdata('logged_in_employee')){
+                $sessionData = $this->session->userdata('logged_in_employee');
+                $id = $sessionData['id'];
+                $created_id = $sessionData['id'];
+            }else{
+                $id="";
+            }
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'property_id' => $property_id,
+                'property_ref_no' => $property_ref_no,
+                'aquired' => $property_buy_sale,
+                'customer_id' => $customerId,
+                'agent_id' => "",
+                'employee_id' => $id,
+                'incquiry_ref_no' => $inquiry_ref_no,
+                'short_decs' => "fhsdfghfggsdfhgshdf",
+                'appoint_start_date' =>"", //date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
+                'appoint_end_date' =>"",//date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
+                'created_date' => $today_date,
+                'updated_date' => $today_date,
+                'created_by' => $created_id,
+                'status'=>'2',
+                
+            );
+            $insert = $this->db->insert('inquiry', $new_user_insert_data);
+            $insert = $this->db->insert_id();
+            return $insert;
+
         }else{
-            $id="";
+
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'updated_date' => $today_date,
+            );
+            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_update_data);
+            return $recorde[0]->id;
+            //$insert = $this->db->insert('inquiry', $new_user_insert_data);
+            //$insert = $this->db->insert_id();
+            //return $insert;
+
         }
-        $today_date = date('Y-m-d H:i:s');
-        $new_user_insert_data = array(
-            'property_id' => $property_id,
-            'property_ref_no' => $property_ref_no,
-            'aquired' => $property_buy_sale,
-            'customer_id' => $customerId,
-            'agent_id' => "",
-            'employee_id' => $id,
-            'incquiry_ref_no' => $inquiry_ref_no,
-            'short_decs' => "fhsdfghfggsdfhgshdf",
-            'appoint_start_date' =>"", //date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
-            'appoint_end_date' =>"",//date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
-            'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
-            'created_date' => $today_date,
-            'updated_date' => $today_date,
-            'created_by' => $created_id,
-            'status'=>'2',
-            
-        );
-        $insert = $this->db->insert('inquiry', $new_user_insert_data);
-        $insert = $this->db->insert_id();
-        return $insert;
     }
 
     function saveClientInquiry_history($post, $inquiry_id) {

@@ -966,11 +966,17 @@ class Home extends CI_Controller {
                 echo "true";exit;
             }
     }
-    function get_city_area(){
-        $citydata =$this->user->getallcity_area($_POST['city_id']);
-        $this->output->set_output(json_encode($citydata));
-        //echo $citydata;exit;
+     function get_city_area() {
+        $this->output->set_content_type('application/json');
+        $citydata = $this->user->getallcity_area($_POST['city_id']);
+        echo json_encode($citydata);
+        exit;
     }
+    // function get_city_area(){
+    //     $citydata =$this->user->getallcity_area($_POST['city_id']);
+    //     $this->output->set_output(json_encode($citydata));
+    //     //echo $citydata;exit;
+    // }
     function sms_send_mass(){
         $this->load->view('sms_send_mass');
         //echo $citydata;exit;

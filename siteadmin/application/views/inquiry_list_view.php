@@ -147,27 +147,45 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                                 <?php } } ?>
                                             </select>                                                                           
                                         </td>
-                                        <?
-                                        echo "<td>";
+                                        <?php
+                                            echo "<td>";
+                                            if (empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date == "0000-00-00 00:00:00")) {
+                                                echo anchor('inquiry/scheduleAppointment/' . $user[$i]->id, '<i class="icon-time"></i>', array('title'=>'Schedule Appointment','class'=>'btn btn-default btn-small'));
+                                                echo '<a class="btn btn-default btn-small" href="#popup2" title="View Inquiry" onclick="setInquiryId(' . $user[$i]->id . ')"><i class="icon-zoom-in"></i></a>';
+                                            } else {
+                                                echo '<span class="btn btn-default btn-small" title="Scheduled"><i class="icon-time"></i></span>';
+                                                echo '<a class="btn btn-default btn-small" href="#popup2" onclick="setInquiryId(' . $user[$i]->id . ') "><i class="icon-zoom-in"></i></a> ';
+                                            }
+                                            if ($this->session->userdata('logged_in_super_user')) {
+                                                echo anchor('inquiry/delete_inquiry/' . $user[$i]->id, '<i class="icon-trash"></i>', array('onclick' => "return confirm('Are you sure you want to delete?')",'title'=>'Delete Inquiry','class'=>'btn btn-default btn-small'));
+                                            // } else {
+                                            //     echo '<span class="btn btn-default btn-small" ><i class="icon-trash"></i></span>';
+                                            // }
+                                            echo "</td>";
+                                            echo "</tr>";
+                                        }
+                                        ?>
+                                        <!--  <?
+                                        //echo "<td>";
                                         if(empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date== "0000-00-00 00:00:00"))
                                         {
-                                            echo "<span style='text-align:left;width: 57%;float: left;'><i class='icon-time'></i>&nbsp;" . anchor('inquiry/scheduleAppointment/'.$user[$i]->id, 'Schedule', "title='Schedule Appointment'"). "</span>";
-                                            echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
+                                          //  echo "<span style='text-align:left;width: 57%;float: left;'><i class='icon-time'></i>&nbsp;" . anchor('inquiry/scheduleAppointment/'.$user[$i]->id, 'Schedule', "title='Schedule Appointment'"). "</span>";
+                                            //echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
                                         }else{
-                                            echo "<span style='text-align:left;width: 57%;float: left;'>Scheduled</span>";   
-                                            echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
+                                           // echo "<span style='text-align:left;width: 57%;float: left;'>Scheduled</span>";   
+                                           // echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
                                         }
                                         if ($this->session->userdata('logged_in_super_user')) {
-                                        echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . anchor('inquiry/delete_inquiry/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure you want to delete?')")). "</span></td>";
+                                        //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . anchor('inquiry/delete_inquiry/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure you want to delete?')")). "</span></td>";
                                         }else{$arrayName = array();
                                         //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . 'Delete'. "</span></td>";
-                                          echo "</td>";  
+                                          //echo "</td>";  
                                         }
-                                      echo "</tr>";
+                                      //echo "</tr>";
 
                                     }
 
-                                    ?>
+                                    ?>  -->
                                 </tbody>
                             </table>
                         </div>

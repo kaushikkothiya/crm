@@ -1,8 +1,4 @@
-<?php
-
-$this->load->view('header');
-
-?>
+<?php $this->load->view('header'); ?>
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span12">
@@ -38,10 +34,11 @@ $this->load->view('header');
                         <li><?php echo anchor('home/property_manage', 'Property Management', "title='Property Management'"); ?>
                             <span class="divider">/
                             </span></li>
-                        		<li style="float:right;"><a href="add_property"><input type="button" value="Add New" /></a></li>
-                                <?if ($this->session->userdata('logged_in_super_user')) { ?>
-                                    <li style="float:left;  margin-right:10px;"><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
+                            <?php if ($this->session->userdata('logged_in_super_user')) { ?>
+                                    <li><a href='#popup2'><input type="button" value="Import Excel File" /></a></li>
                                 <?php } ?>
+                        		<li style="float:right;"><a href="add_property"><input type="button" value="Add Property" /></a></li>
+                                
                     </ul>
                 </div>
             </div>
@@ -55,7 +52,6 @@ $this->load->view('header');
                 <div class="span12"><section class="utopia-widget">
                         <div class="utopia-widget-title">
                             <span>Property Management </span>
-                            
                         </div>
                         <div class="utopia-widget-content">
                             <div class="table-responsive">
@@ -66,9 +62,9 @@ $this->load->view('header');
                                        <th>Reference No</th>
                                        <th>Agent Name</th>
                                        <th>Property Area</th>
-                                       <th>Property Status</th>
-                                       <th>Price(€)</th>
-                                       <th>Furnish Type</th>
+                                       <th style="max-width: 70px">Property Status</th>
+                                       <th style="text-align: center; max-width: 80px">Price(€)</th>
+                                       <th style="min-width: 60px">Furnish Type</th>
                                        <th>Image</th>
                                        <th>Action</th>
                                     </tr>
@@ -85,21 +81,21 @@ $this->load->view('header');
                                         if($user[$i]->type =='1'){
                                             echo "<td>" .'Sale'. "</td>";
                                             if(!empty($user[$i]->sale_price)){
-                                                echo "<td>" .'€'.$user[$i]->sale_price. "</td>";
+                                                echo '<td  style="text-align: right">' .'€ '.number_format($user[$i]->sale_price, 0, ".", ",") . '</td>';
                                             }else{
                                                 echo "<td> </td>";
                                             }
                                         }elseif ($user[$i]->type =='2') {
                                            echo "<td>" .'Rent'. "</td>";
                                            if(!empty($user[$i]->rent_price)){
-                                                echo "<td>" .'€'.$user[$i]->rent_price. "</td>";
+                                                echo '<td  style="text-align: right">' .'€ '.number_format($user[$i]->rent_price, 0, ".", ","). '</td>';
                                             }else{
                                                 echo "<td> </td>";   
                                             }
                                         }elseif ($user[$i]->type =='3') {
                                            echo "<td>" .'Both(Sale/Rent)'. "</td>";
                                            if(!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)){
-                                                echo "<td> SP. €". $user[$i]->sale_price." / RP. €".$user[$i]->rent_price. "</td>";
+                                                echo '<td  style="text-align: min-width:85px" > SP. € '. number_format($user[$i]->sale_price, 0, ".", ",")." <br /> RP. € ".number_format($user[$i]->rent_price, 0, ".", ","). '</td>';
                                             }else{
                                              echo "<td> </td>";      
                                             }
@@ -107,19 +103,17 @@ $this->load->view('header');
                                             echo "<td> </td>"; 
                                             echo "<td> </td>"; 
                                         }
+                                        echo '<td style="min-width:60px">';
                                         if($user[$i]->furnished_type =='1'){
-                                            echo "<td> Furnished </td>";
-                                            
+                                             echo "Furnished";
                                         }elseif ($user[$i]->furnished_type =='2') {
-                                           echo "<td> Semi-Furnished</td>";
+                                            echo 'Semi-Furnished';
                                         }elseif ($user[$i]->furnished_type =='3') {
-                                           echo "<td>Un-Furnished </td>";
-                                          
-                                        }else{
-                                           echo "<td> </td>";  
+                                            echo 'Un-Furnished'; 
                                         }
+                                        echo "</td>";
                                         //echo "<td>" . substr($user[$i]->short_decs, 0, 20).".....</td>";
-     									if(!empty($user[$i]->image)){
+                                        if(!empty($user[$i]->image)){
                                             echo "<td>";
                                             echo '<img src="'.base_url().'upload/property/100x100/'.$user[$i]->image.'" width="75" height="75">';
                                             echo "</td>";
@@ -130,15 +124,16 @@ $this->load->view('header');
 
                                         }
                                         echo "<td>";
-                                        //echo "<span style='text-align:left;width: 50%;float: ;'><i class='icon-plus-sign'></i>".anchor('home/propertyExatraImages/'.$user[$i]->id, 'Extra Images')."<div class='box'><i class='icon-fast-forward'></i><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_property/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";    
-                                        echo "<span style='text-align:left;width: 50%;float: ;'><div class='box'><i class='icon-fast-forward'></i><a class='button' href='#popup1' onClick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_property/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";
-                                        $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
-                                        echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$user[$i]->id, 'View',$arrayName )."  ";
                                         
+                                            //echo "<span style='text-align:left;width: 50%;float: left;'><div class='box'><a class='button' href='#popup1' onclick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br>";
+                                        echo '<a class="btn btn-default btn-small" href="#popup1" title="Send Inquiry" onclick="setPropertyId('.$user[$i]->id.')"><i class="icon-fast-forward"></i></a>';
+                                        echo anchor('home/add_property/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>"Edit agent",'class'=>"btn btn-default btn-small")). "";
+                                        echo anchor('home/view_property/'.$user[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
                                         if ($this->session->userdata('logged_in_super_user')) {
-                                        echo "<span style='text-align:left;width: 50%;float: ;'><i class='icon-trash'></i>&nbsp;" . anchor('home/delete_property/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure want to delete this record?')")). "</span></td>";
+                                            echo anchor('home/delete_property/'.$user[$i]->id, '<i class="icon-trash"></i>', array('class'=>'btn btn-default btn-small','title'=>'Delete Property','onclick' => "return confirm('Are you sure want to delete this record?')"));
                                         }
-                                        echo "</tr>";
+                                        echo '</td>';
+                                        echo '</tr>';
 
                                     }
 

@@ -170,3 +170,116 @@ button, input, optgroup, select, textarea {
 .btn.btn-navbar{
 	display: none!important;
 }
+
+/*--Property Search--*/
+.buybtn{
+	float:left;
+	margin:0px 5px -1px 5px;
+	padding:10px 15px;
+	border-radius:6px 6px 0px 0px;
+	border:solid 1px #cccccc;
+	text-transform:uppercase;
+	font-size:14px;
+}
+.buybtn,.buybtn-select a{
+	color:#333333;
+	text-decoration:none;
+}
+.buybtn-select{
+	float:left;
+	margin:0px 5px -1px 5px;
+	padding:10px 15px;
+	border-radius:6px 6px 0px 0px;
+	border:solid 1px #cccccc;
+	background: #cccccc;
+	text-transform:uppercase;
+	font-size:14px;
+}
+.col-1{
+	width:31%;
+	float:left;
+}
+.col-2{
+	width:31.6%;
+	float:left;
+	margin-left:20px;
+}
+.border{
+	border:solid 1px #cccccc;
+}
+.bold{
+	font-weight:bold;
+	padding-bottom:8px;
+}
+.scroll-1{
+	width:93%;
+	border:solid 1px #cccccc;
+	overflow:scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	
+	height:200px;
+	padding:5px;
+	margin:5px 0px;
+}
+.scroll-1.height{
+	height:235px;
+}
+
+.inpselect-full{
+	width:98%;
+}
+.cktxt{
+	font-size:13px;
+	padding:6px 5px;
+}
+/*.cktxt:checked{
+	padding:0px 10px 0px 0px;
+}*/
+
+.smfildleft{
+	width:110px;
+	float:left;
+	font-size:14px;
+}
+.smfildright{
+	width:110px;
+	float:left;
+	padding-left:10px;
+}
+.smfild{
+	width:110px;
+	float:left;
+	padding:5px 3px;
+}
+.sminpselect{
+	width:90%;
+	padding:3px;	
+}
+.sminpselect1{
+	width:95%;
+	padding:3px;	
+}
+.fleft{
+	float:left;
+}
+.button{
+	border:solid 1px #cccccc;
+	border-radius:6px;	
+	cursor:pointer;
+	padding:10px 15px;
+	font-weight:bold;
+	margin-top:5px;
+	width: auto;
+}
+.largefd{
+	float:left;
+	width:80%;
+	padding:0px 0px 0px 10px;
+}
+.largefd-type{
+	width:97%;
+	border-radius:20px;	
+	border:solid 1px #cccccc;
+	padding:5px 10px;
+}

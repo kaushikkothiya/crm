@@ -76,9 +76,10 @@ $this->load->view('header');
                                         echo "<td>" . $user[$i]->email. "</td>";
                                         echo "<td>" . $user[$i]->mobile_no. "</td>";
      									echo "<td>" . $user[$i]->status. "</td>";
-                                        echo "<td><span style='text-align:left;width: 30%;float: left;'><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_customer/'.$user[$i]->id, 'Edit', "title='Edit Client'"). "</span>";
-                                        echo "<span style='text-align:left;width: 30%;float: left;'><i class='icon-zoom-in'></i>&nbsp;" . anchor('inquiry/inquiry_manage?view_client='.$user[$i]->id, 'View Inquiry'). "</span>";
-                                        echo "<span style='text-align:left;width: 30%;float: left;'><i class='icon-trash'></i>&nbsp;" . anchor('home/delete_customer/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure want to delete this record?')")). "</span>";
+                                        echo "<td>";
+                                            echo anchor('home/add_customer/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>'Edit Client','class'=>"btn btn-default btn-small"));
+                                            echo anchor('inquiry/inquiry_manage?view_client='.$user[$i]->id, '<i class="icon-zoom-in"></i>',array('title'=>'View Inquiry','class'=>'btn btn-default btn-small'));
+                                            echo anchor('home/delete_customer/'.$user[$i]->id, '<i class="icon-trash"></i>', array('onClick' => "return confirm('Are you sure want to delete this record?')",'title'=>'Delete Inquiry','class'=>'btn btn-default btn-small'));
                                         echo "</tr>";
 
                                     }

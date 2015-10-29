@@ -965,6 +965,7 @@ $this->load->view('leftmenu');
 							'value' => set_value('link_url', $link_url),
 							'size' => '30',
 							'class' => 'span10',
+							'onkeypress'=>'return spance_remove(event)'
 						);
 						echo form_input($link);
 					?>
@@ -982,6 +983,7 @@ $this->load->view('leftmenu');
 							'value' => set_value('link_url1', $link_url1),
 							'size' => '30',
 							'class' => 'span10',
+							'onkeypress'=>'return spance_remove(event)'
 						);
 						echo form_input($link1);
 					?>
@@ -999,6 +1001,7 @@ $this->load->view('leftmenu');
 							'value' => set_value('link_url2', $link_url2),
 							'size' => '30',
 							'class' => 'span10',
+							'onkeypress'=>'return spance_remove(event)'
 						);
 						echo form_input($link2);
 					?>
@@ -1223,6 +1226,12 @@ function numbersonly(e){
         if ((unicode<48||unicode>57) && unicode!=46 ) //if not a number
             return false //disable key press
     }
+}
+function spance_remove(e){ 	 
+    var unicode=e.charCode? e.charCode : e.keyCode;    
+        if (unicode == 32) //if not a number
+            return false //disable key press
+        
 }
         $(document).ready(function () {
          hide_agresive_div();

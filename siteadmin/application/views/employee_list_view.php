@@ -74,8 +74,10 @@ $this->load->view('header');
                                         echo "<td>" . $user[$i]->email. "</td>";
                                         echo "<td>" . $user[$i]->mobile_no. "</td>";
      									echo "<td>" . $user[$i]->status. "</td>";
-                                        echo "<td><span style='text-align:left;width: 50%;float: left;'><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_employee/'.$user[$i]->id, 'Edit', "title='Edit Employee'"). "</span>";
-                                        echo "<span style='text-align:left;width: 50%;float: left;'><i class='icon-trash'></i>&nbsp;" . anchor('home/delete_employee/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure want to delete this record?')")). "</span></td>";
+                                        echo "<td>";
+                                        echo anchor('home/add_employee/'.$user[$i]->id, '<i class="icon-pencil"></i>', array("title"=>'Edit Employee','class'=>"btn btn-default btn-small",'title'=>'Edit Employee'));
+                                        echo anchor('home/delete_employee/'.$user[$i]->id, '<i class="icon-trash"></i>', array('onClick' => "return confirm('Are you sure want to delete this record?')",'class'=>"btn btn-default btn-small",'title'=>'Delete Employee'));
+                                        echo "</td>";
                                         echo "</tr>";
 
                                     }

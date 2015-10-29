@@ -30,6 +30,11 @@ $this->load->view('leftmenu');
 ?>
 </div>
 </div>
+<style>
+.rent_sale{
+    cursor: pointer;
+}
+</style>
 <div class="span10 body-container">
 <div class="row-fluid">
 <div class="span12">
@@ -60,111 +65,133 @@ $this->load->view('leftmenu');
 							
                             <?php echo form_open_multipart('inquiry/property', array('class' => 'form-horizontal')); ?>
 							<fieldset>
-                                <?php //echo'<pre>';print_r($post_property_data);exit; ?>
-                                <div class="control-group">
-                                    Reference No : 
-                                    <input type="text"  name="reference_no" style="width:200px" id="reference_no" value="<?php echo !empty($post_property_data['reference_no']) ? $post_property_data['reference_no'] : '';  ?>"/>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
-                                    <!--  Size : 
-                                    <input type="text"  name="size" style="width:200px" id="size" value=""/>&nbsp; -->
+                               <div class="wrapper">
+    
+                                <br /><br />
                                 
-                                    <!--<input type="submit" name="btnSearch" id="btnSearch" value="Search" />
-                                    <input type="reset" name="btnSearch" id="btnSearch" value="Clear" />-->
-                                </div>
-                                <?php if($this->session->userdata('customer_property_buy_sale')){
-                                    $aquired_val=$this->session->userdata('customer_property_buy_sale');
-                                    //$this->session->unset_userdata('customer_property_buy_sale');
-                                   }else{
-                                    $aquired_val='';
-                                } ?>
-                                <div class="control-group">
-                                    <input type="radio" name="property_type" checked value="3" <?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='3' || $aquired_val=='both') ? 'checked' : '';  ?>> Both&nbsp;&nbsp;&nbsp;
-                                    <input type="radio" name="property_type" value="1" <?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='1' ||  $aquired_val=='sale') ? 'checked' : '';  ?>> Sale &nbsp;&nbsp;&nbsp; 
-                                    <input type="radio" name="property_type" value="2" <?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='2' ||  $aquired_val=='rent') ? 'checked' : '';  ?>> Rent &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<!-- Location : 
-									<input type="text"  name="location" style="width:200px" id="location" value=""/>&nbsp; -->
-            						City : 
-                                    <!--<input type="text"  name="city" style="width:200px" id="city" value=""/>&nbsp;
-                                    -->
-                                    <select name="city"  id="city" style="width:200px" onchange="get_city_area();">
-                                    <!--<option value="">Please Select City</option>-->   
-                                    <?php foreach($city as $key => $value){ ?>
-                                    <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['city']) && $post_property_data['city']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
-                                    <?php }?>                                           
-                                    </select>
-                                    City Area : 
-                                    <!--<input type="text"  name="city_area" style="width:200px" id="city_area" value=""/>&nbsp;
-                                   -->
-                                   <input type="hidden" id="city_area_selected_ids" value="<?php echo !empty($post_property_data['selectItemcity_area']) ? implode(",", $post_property_data['selectItemcity_area']) : "0"; ?>" >
-                                   <select name="city_area[]"  id="city_area" class="multiselect" style="width:200px">
-                                    <!-- <option value="0">Select city area</option> -->
-                                    <!--<?php foreach($city_area as $key => $value){ ?>
-                                    <option value="<?php echo $key;?>"><?php echo $value;?></option>
-                                    <?php }?>-->                                           
-                                    </select>
-                                </div></br>
-
-                                <div class="control-group">
-                                    
-                                    <!--Criteria : 
-                                    <input type="text"  name="criteria" style="width:80px" id="criteria" value=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
-                                    Property Type :
-                                     <select name="inc_id"  id="property_category" style="width:105px">
-                                    <option value="">Please select</option>
+                                <div class="propertymain">
+                                    <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='2') ? '-select' : empty($post_property_data['property_type']) ? '-select' : ''; ?> rent_sale" id="2">RENT</div>
+                                    <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='1') ? '-select' : ''; ?> rent_sale" id="1">BUY</div>
                                     <?php
-                                    asort($category);
-                                    foreach($category as $key => $value){ ?>
-                                    <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['inc_id']) && $post_property_data['inc_id']== $key) ? 'selected' : '';  ?> ><?php echo $value;?></option>
-                                    <?php }?>                                           
-                                    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Min Price:
-                                    <input type="text"  name="min_price" style="width:100px" id="min_price" value="<?php echo (!empty($post_property_data['min_price'])) ? $post_property_data['min_price'] : '';  ?>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Max Price:                                          
-                                    <input type="text"  name="max_price" style="width:100px" id="max_price" value="<?php echo (!empty($post_property_data['max_price'])) ? $post_property_data['max_price'] : '';  ?>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Bedrooms:                                          
-                                    <input type="text"  name="bedroom" style="width:100px" id="bedroom" value="<?php echo (!empty($post_property_data['bedroom'])) ? $post_property_data['bedroom'] : '';  ?>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        if(empty($post_property_data['property_type']))
+                                        {
+                                            $defId = "2";
+                                        }
+                                        else{
+                                            $defId = $post_property_data['property_type'];
+                                        }
+                                    ?>
+                                    <input type="hidden" name="property_type" id="property_type" value="<?php echo $defId; ?>">
+                                    <div class="largefd"><input class="largefd-type" type="text" name="reference_no" id="reference_no" value="<?php echo !empty($post_property_data['reference_no']) ? $post_property_data['reference_no'] : '';  ?>" placeholder="Enter reference number Here" /></div>
                                     
-                                    <!-- Bedrooms:                                          
-                                    <select name="bedroom"  id="bedroom" style="width:105px">
-                                    <option value="">Please select</option>
-                                    <?php foreach($bedroom as $key => $value){ ?>
-                                    <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['bedroom']) && $post_property_data['bedroom']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
-                                    <?php }?>                                           
-                                    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                     -->Bathrooms:                                          
-                                    <select name="bathroom"  id="bathroom" style="width:105px">
-                                    <option value="">Please select</option>
-                                    <?php foreach($bathroom as $key => $value){?>
-                                    <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['bathroom']) && $post_property_data['bathroom']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
-                                    <?php }?>                                           
-                                    </select>
-                                    <!--<input type="submit" name="btnSearch" id="btnSearch" value="Search" />
-                                    <input type="reset" name="btnSearch" id="btnSearch" value="Clear" />-->
-                               
-                                </div></br>
+                                    <div class="clear"></div>
+                                    
+                                    <div class="propertypadd border">
+                                        <div class="col-1">
+                                            <div class="bold">Property Location :</div>
+                                            <div class="fild">
+                                                <div class="data">
+                                                    <select class="inpselect-full" name="city"  id="city" onchange="get_city_area();">
+                                                        <?php foreach($city as $key => $value){ ?>
+                                                                <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['city']) && $post_property_data['city']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
+                                                         <?php }?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                            <input type="hidden" id="city_area_selected_ids" value="<?php echo !empty($post_property_data['selectItemcity_area']) ? implode(",", $post_property_data['selectItemcity_area']) : "0"; ?>" >
+                                               <select name="city_area[]"  id="city_area" class="inpselect-full multiselect" multiple>
+                                               </select>
+                                                            
+                                        </div>
+                                        
+                                        <div class="col-2">
+                                            <div class="bold">Property Type :</div>
+                                            <div class="scroll-1 height cktxt">
+                                                <?php
+                                                asort($category);
+                                               //echo'<pre>';print_r($post_property_data);exit;
+                                                if(!isset($post_property_data['property_category'])){
+                                                    $post_property_data['property_category']=array();
+                                                }
+                                                foreach($category as $key => $value){
+                                                 if(in_array($key, $post_property_data['property_category'])){
+                                                    $selected = "checked";      
+                                                }else{
+                                                    $selected = ""; 
+                                                }   
+                                                 ?>
+                                                <input type="checkbox" style="margin-right:5px;" <?php echo $selected; ?> value="<?php echo $key;?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
+                                                <?php }?>
+                                            </div>
+                                                            
+                                        </div>
+                                        
+                                        <div class="col-2">
+                                            <div class="bold">Property Details :</div>
+                                            <div class="fild">
+                                                <div class="smfildleft"><strong>Bedroom(s):</strong></div>
+                                                <div class="smfildright">
+                                                    <input  type="text" name="bedroom"  id="bedroom" value="<?php echo (!empty($post_property_data['bedroom'])) ? $post_property_data['bedroom'] : '';  ?>" class="sminpselect" />
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            
+                                            <div class="fild">
+                                                <div class="smfildleft"><strong>Bathroom(s):</strong></div>
+                                                <div class="smfildright">
+                                                    <select name="bathroom"  id="bathroom" class="sminpselect1">
+                                                       <option value="">Please select</option>
+                                                        <?php foreach($bathroom as $key => $value){?>
+                                                            <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['bathroom']) && $post_property_data['bathroom']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
+                                                        <?php }?>
+                                                    </select>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            
+                                            <div class="fild">
+                                                <div class="smfildleft"><strong>Furnished Type:</strong></div>
+                                                <div class="smfildright">
+                                                    <select name="furnished_type"  id="furnished_type" class="sminpselect1">
+                                                        <option value="">Please select</option>
+                                                        <option value="1" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 1) ? 'selected' : '';  ?>>Furnished</option>
+                                                        <option value="2" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 2) ? 'selected' : '';  ?>>Semi-Furnished</option>
+                                                        <option value="3" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 3) ? 'selected' : '';  ?>>Un-Furnished</option>
+                                                    </select>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            
+                                            <div class="fild">
+                                                <div class="smfildleft">Price ($):</div>
+                                                <div class="clear"></div>
+                                                
+                                                <div class="smfild"><input type="text" class="sminpselect" name="min_price" id="min_price" value="<?php echo (!empty($post_property_data['min_price'])) ? $post_property_data['min_price'] : '';  ?>" placeholder="Minimum"></div>
+                                                <div class="smfild"><input type="text" class="sminpselect" name="max_price" id="max_price" value="<?php echo (!empty($post_property_data['max_price'])) ? $post_property_data['max_price'] : '';  ?>" placeholder="Maximum"></div>
+                                                <div class="clear"></div>
+                                                
+                                                <div class="cktxt fleft"><label><input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"> Inquiry</label></div>
+                                                <div class="cktxt fleft"><label><input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> Appointment</label></div>
+                                                
+                                            </div>
+                                            <div class="clear"></div>
+                                            
 
-                                <div class="control-group">
-                                    <!--Reference No : 
-                                    <input type="text"  name="reference_no" style="width:83px" id="reference_no" value=""/>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; -->
-                                    <input type="radio" name="time_section" checked value="all" <?php echo (!empty($post_property_data['time_section']) && $post_property_data['time_section']=='all') ? 'checked' : '';  ?>> All&nbsp;&nbsp;&nbsp;
-                                    <input type="radio" name="time_section" value="day" <?php echo (!empty($post_property_data['time_section']) && $post_property_data['time_section']=='day') ? 'checked' : '';  ?>> Day &nbsp;&nbsp;&nbsp; 
-                                    <input type="radio" name="time_section" value="week" <?php echo (!empty($post_property_data['time_section']) && $post_property_data['time_section']=='week') ? 'checked' : '';  ?>> Week &nbsp;&nbsp;&nbsp;
-                                    <input type="radio" name="time_section" value="month" <?php echo (!empty($post_property_data['time_section']) && $post_property_data['time_section']=='month') ? 'checked' : '';  ?>> Month&nbsp;&nbsp;&nbsp;
-                                    
-                                    
-                                    <!--<input type="submit" name="btnSearch" id="btnSearch" value="Search" />
-                                    <input type="reset" name="btnSearch" id="btnSearch" value="Clear" />-->
-                                </div>
-                                </br></br>
-
-                                <center>
-                                    <div>
-                                        <input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"> Inquiry&nbsp;&nbsp;&nbsp;
-                                        <input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> Appointment &nbsp;&nbsp;&nbsp; 
+                                            <!-- <button class="button" >Find Property</button> -->
+                                             <input class="button" type="submit" name="btnSearch" id="btnSearch" value="Find Property" />                 
+                                        </div>
+                                        <div class="clear"></div>
                                     </div>
-                                    <br><input type="submit" name="btnSearch" id="btnSearch" value="Search Property" />
-                                </center>
-                            </fieldset>
-							</form>
+                                    
+                                </div>
+                                
+                                <br /><br />
+    
+                            </div>
+                        </fieldset>
+					</form>
 
                             <!-- Search Results parts here -->
                             <?php
@@ -284,9 +311,10 @@ $this->load->view('leftmenu');
                                                 }else{?>
                                                     <input type="radio" id="property_id" name="property_id" checked value="<?php echo trim($search_detail[$i]->id); ?>" />
                                                     <?php
-                                                    $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
-                                                     echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
-                                        
+                                                   // $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
+                                                    // echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
+                                                     echo anchor('home/view_property/'.$search_detail[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
+                                       
                                                         
                                                 }
                                                 ?>
@@ -388,46 +416,81 @@ $this->load->view('footer');
                              $('input[type=radio][name=inq_apment]').change(function() {
                                 $("#property_search_result").remove();
                             });   
+
+                             $('.rent_sale').click(function(){
+                                var property_type_id=$(this).attr('id');
+                               $('#property_type').val(property_type_id);
+                               $(".buybtn-select").addClass("buybtn");
+                               $(".buybtn-select").removeClass("buybtn-select");
+
+                               $(this).removeClass("buybtn");
+                               $(this).addClass("buybtn-select");
+
+                             });
                           
                           });
  
                         </script>
 <script>
-function get_city_area()
- {
-    $('#city_area').html('');
-    $.ajax({
-        type: "post",
-        url:baseurl+"index.php/home/get_city_area",
-        data: 'city_id=' +$("#city option:selected").val(),
-        success: function(msg){
-        var jason = $.parseJSON(msg);
-        var city_area_Ids = $("#city_area_selected_ids").val();
-        //alert(city_area_Ids);
-        var city_area_IdArr = [];   
-        if(city_area_Ids !="0")
-        {
-            city_area_IdArr = city_area_Ids.split(',');
-             
-        }
-        for (var i  in jason) 
-        {
-            if($.inArray(jason[i].id, city_area_IdArr) != -1)
-            {
-                selectedAreaId = "selected";   
-            }else{
-                selectedAreaId = "";   
+function get_city_area() {
+        $('#city_area').html('');
+        $.ajax({
+            type: "post",
+            url:baseurl + "index.php/home/get_city_area",
+            data: 'city_id=' + $("#city option:selected").val(),
+            dataType:'json',
+            success: function(msg){
+                var selected_city_area = <?php echo (isset($_POST['selectItemcity_area']))?json_encode($_POST['selectItemcity_area']):"[]"; ?>;
+                
+                for(var i=0;i<msg.length;i++){
+                    var selected = '';
+                    if($.inArray(msg[i].id,selected_city_area)!=-1){
+                        selected = 'selected="selected"';
+                    }
+                    $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
+                }
+                
+                $('#city_area.multiselect').multipleSelect({
+                    filter: true,
+                });
             }
+        });
+    }
+// function get_city_area()
+//  {
+//     $('#city_area').html('');
+//     $.ajax({
+//         type: "post",
+//         url:baseurl+"index.php/home/get_city_area",
+//         data: 'city_id=' +$("#city option:selected").val(),
+//         success: function(msg){
+//         var jason = $.parseJSON(msg);
+//         var city_area_Ids = $("#city_area_selected_ids").val();
+//         //alert(city_area_Ids);
+//         var city_area_IdArr = [];   
+//         if(city_area_Ids !="0")
+//         {
+//             city_area_IdArr = city_area_Ids.split(',');
+             
+//         }
+//         for (var i  in jason) 
+//         {
+//             if($.inArray(jason[i].id, city_area_IdArr) != -1)
+//             {
+//                 selectedAreaId = "selected";   
+//             }else{
+//                 selectedAreaId = "";   
+//             }
 
-           $('#city_area').append("<option value='"+jason[i].id+"' "+selectedAreaId+">"+jason[i].title+'</option>');
-        }
- $('#city_area.multiselect').multipleSelect({
-                                filter: true,
-                            });
-           }
+//            $('#city_area').append("<option value='"+jason[i].id+"' "+selectedAreaId+">"+jason[i].title+'</option>');
+//         }
+//  $('#city_area.multiselect').multipleSelect({
+//                                 filter: true,
+//                             });
+//            }
 
-         });
- }
+//          });
+//  }
 function getAllPropertyIds()
 {
     var allVals = [];

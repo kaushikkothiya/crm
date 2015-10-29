@@ -74,9 +74,11 @@ $this->load->view('header');
                                         echo "<td>" . $user[$i]->email. "</td>";
                                         echo "<td>" . $user[$i]->mobile_no. "</td>";
      									echo "<td>" . $user[$i]->status. "</td>";
-                                        echo "<td><span style='text-align:left;width: 50%;float: left;'><i class='icon-pencil'></i>&nbsp;" . anchor('home/add_agent/'.$user[$i]->id, 'Edit', "title='Edit agent'"). "</span>";
-                                        echo "<span style='text-align:left;width: 50%;float: left;'><i class='icon-trash'></i>&nbsp;" . anchor('home/delete_agent/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure want to delete this record?')")). "</span></td>";
-                                        echo "</tr>";
+                                        echo '<td>';
+                                        echo anchor('home/add_agent/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>'Edit agent','class'=>'btn btn-default btn-small'));
+                                        echo anchor('home/delete_agent/'.$user[$i]->id, '<i class="icon-trash"></i>', array('onclick' => "return confirm('Are you sure want to delete this record?')",'class'=>'btn btn-default btn-small','title'=>'Delete Agent'));
+                                        echo '</td>';
+                                        echo '</tr>';
 
                                     }
 
