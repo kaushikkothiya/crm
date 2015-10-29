@@ -123,103 +123,132 @@ $this->load->view('header');
 			<div class="clear"></div>
 			<div class="leftpart">
 				<?php if($data[0]->sale_price !='0'){ ?>
-				 <div class="fild">
-					<div class="lable">Selling Price (€):</div>
-					<div class="data"><?php if($data[0]->sale_price !='0' ){echo $data[0]->sale_price;}else{ echo ""; } ?></br><?php if($data[0]->rent_val =='0'){ echo " No V.A.T ";}else{ echo "Plus V.A.T";}?></div>
-				</div> 
+					 <div class="fild">
+						<div class="lable">Selling Price (€):</div>
+						<div class="data"><?php if($data[0]->sale_price !='0' ){echo $data[0]->sale_price;}else{ echo ""; } ?></br><?php if($data[0]->rent_val =='0'){ echo " No V.A.T ";}else{ echo "Plus V.A.T";}?></div>
+					</div> 
 				<?php } ?>
+
 				<?php if($data[0]->rent_price !='0'){ ?>
-				<div class="fild">
-					<div class="lable">Rental Price (€):</div>
-					<div class="data"><?php if($data[0]->rent_price !='0' ){ echo $data[0]->rent_price;}else{ echo "";} ?></br><?php if($data[0]->rent_val =='0'){ echo "incl. common expenses";}else{ echo "Plus common expenses";}?></div>
-				</div> 
+					<div class="fild">
+						<div class="lable">Rental Price (€):</div>
+						<div class="data"><?php if($data[0]->rent_price !='0' ){ echo $data[0]->rent_price;}else{ echo "";} ?></br><?php if($data[0]->rent_val =='0'){ echo "incl. common expenses";}else{ echo "Plus common expenses";}?></div>
+					</div> 
 				<?php } ?>
+
 				<?php if(!empty($data[0]->bedroom)){ ?>
-				<div class="fild">
-					<div class="lable">Bedroom:</div>
-					<div class="data"><?php echo $data[0]->bedroom; ?></div>
-				</div>
+					<div class="fild">
+						<div class="lable">Bedroom:</div>
+						<div class="data"><?php echo $data[0]->bedroom; ?></div>
+					</div>
 				<?php } ?>
-				<?php if(!empty($data[0]->bathroom)){ ?>
-				<div class="fild">
-					<div class="lable">Bathroom:</div>
-					<div class="data"><?php echo $data[0]->bathroom; ?></div>
-				</div>
+
+				<?php if(!empty($data[0]->bathroom) && $data[0]->bathroom !="0"){ ?>
+					<div class="fild">
+						<div class="lable">Bathroom:</div>
+						<div class="data"><?php echo $data[0]->bathroom; ?></div>
+					</div>
 				<?php } ?>
 				
 				<?php if(!empty($architectural_design)){ ?>
-				<div class="fild">
-					<div class="lable">Architectural Design:</div>
-					<div class="data"><?php echo $architectural_design; ?></div>
-				</div> 
+					<div class="fild">
+						<div class="lable">Architectural Design:</div>
+						<div class="data"><?php echo $architectural_design; ?></div>
+					</div> 
 				<?php } ?>
-				<div class="fild">
-					<div class="lable">From Playground:</div>
-					<div class="data"><?php echo $data[0]->from_playground; ?></div>
-				</div> 
-				<div class="fild">
-					<div class="lable">From Sea:</div>
-					<div class="data"><?php echo $data[0]->from_sea; ?></div>
-				</div> 
-				<div class="fild">
-					<div class="lable">From Cafeteria:</div>
-					<div class="data"><?php echo $data[0]->from_cafeteria; ?></div>
-				</div> 
-				<div class="fild">
-					<div class="lable">From Restaurent:</div>
-					<div class="data"><?php echo $data[0]->from_restaurent; ?></div>
-				</div> 
+
+				<?php if(!empty($data[0]->from_playground) && $data[0]->from_playground !="0"){ ?>
+					<div class="fild">
+						<div class="lable">From Playground:</div>
+						<div class="data"><?php echo $data[0]->from_playground; ?></div>
+					</div> 
+				<?php } ?>
+
+				<?php if(!empty($data[0]->from_sea) && $data[0]->from_sea !="0"){ ?>
+					<div class="fild">
+						<div class="lable">From Sea:</div>
+						<div class="data"><?php echo $data[0]->from_sea; ?></div>
+					</div> 
+				<?php } ?>
+
+				<?php if(!empty($data[0]->from_cafeteria) && $data[0]->from_cafeteria !="0"){ ?>
+					<div class="fild">
+						<div class="lable">From Cafeteria:</div>
+						<div class="data"><?php echo $data[0]->from_cafeteria; ?></div>
+					</div>
+				<?php } ?>
+
+				<?php if(!empty($data[0]->from_restaurent) && $data[0]->from_restaurent !="0"){ ?> 
+					<div class="fild">
+						<div class="lable">From Restaurent:</div>
+						<div class="data"><?php echo $data[0]->from_restaurent; ?></div>
+					</div>
+				<?php } ?> 
 			</div>
 			
 			<div class="rightpart">
-					<?php if($data[0]->cover_area !='0' && !empty($data[0]->cover_area)){ ?>
-				<div class="fild">
-					<div class="lable">Cover Area (m²):</div>
-					<div class="data"><?php echo $data[0]->cover_area; ?></div>
-				</div>
+				<?php if($data[0]->cover_area !='0' && !empty($data[0]->cover_area)){ ?>
+					<div class="fild">
+						<div class="lable">Cover Area (m²):</div>
+						<div class="data"><?php echo $data[0]->cover_area; ?></div>
+					</div>
 				<?php } ?>
+
 				<?php if($data[0]->uncover_area !='0' && !empty($data[0]->uncover_area)){ ?>
-				<div class="fild">
-					<div class="lable">Uncover Area (m²):</div>
-					<div class="data"><?php echo $data[0]->uncover_area; ?></div>
-				</div>
+					<div class="fild">
+						<div class="lable">Uncover Area (m²):</div>
+						<div class="data"><?php echo $data[0]->uncover_area; ?></div>
+					</div>
 				<?php } ?>
+
 				<?php if($data[0]->plot_lan_area !='0' && !empty($data[0]->plot_lan_area)){ ?>
-				<div class="fild">
-					<div class="lable">Plot/land Area (m²):</div>
-					<div class="data"><?php echo $data[0]->plot_lan_area; ?></div>
-				</div>
+					<div class="fild">
+						<div class="lable">Plot/land Area (m²):</div>
+						<div class="data"><?php echo $data[0]->plot_lan_area; ?></div>
+					</div>
 				<?php } ?>
-				<?php if(!empty($data[0]->kitchen)){ ?>
-				<div class="fild">
-					<div class="lable">Kitchen:</div>
-					<div class="data"><?php echo $data[0]->kitchen; ?></div>
-				</div>
+
+				<?php if(!empty($data[0]->kitchen) && $data[0]->kitchen !="0"){ ?>
+					<div class="fild">
+						<div class="lable">Kitchen:</div>
+						<div class="data"><?php echo $data[0]->kitchen; ?></div>
+					</div>
 				<?php } ?>
+
 				<?php if(!empty($room_size)){ ?>
-				<div class="fild">
-					<div class="lable">Room Size:</div>
-					<div class="data"><?php echo $room_size; ?></div>
-				</div>
+					<div class="fild">
+						<div class="lable">Room Size:</div>
+						<div class="data"><?php echo $room_size; ?></div>
+					</div>
 				<?php } ?>
-			
-				<div class="fild">
-					<div class="lable">From Supermarket:</div>
-					<div class="data"><?php echo $data[0]->from_supermarket; ?></div>
-				</div>
-				<div class="fild">
-					<div class="lable">From Bus Station:</div>
-					<div class="data"><?php echo $data[0]->from_bus_station; ?></div>
-				</div>
-				<div class="fild">
-					<div class="lable">From School:</div>
-					<div class="data"><?php echo $data[0]->from_school; ?></div>
-				</div>
-				<div class="fild">
-					<div class="lable">From Highway:</div>
-					<div class="data"><?php echo $data[0]->from_high_way; ?></div>
-				</div>
-			
+				
+				<?php if(!empty($data[0]->from_supermarket) && $data[0]->from_supermarket !="0"){ ?>			
+					<div class="fild">
+						<div class="lable">From Supermarket:</div>
+						<div class="data"><?php echo $data[0]->from_supermarket; ?></div>
+					</div>
+				<?php } ?>	
+
+				<?php if(!empty($data[0]->from_bus_station) && $data[0]->from_bus_station !="0"){ ?>
+					<div class="fild">
+						<div class="lable">From Bus Station:</div>
+						<div class="data"><?php echo $data[0]->from_bus_station; ?></div>
+					</div>
+				<?php } ?>	
+
+				<?php if(!empty($data[0]->from_school) && $data[0]->from_school !="0"){ ?>
+					<div class="fild">
+						<div class="lable">From School:</div>
+						<div class="data"><?php echo $data[0]->from_school; ?></div>
+					</div>
+				<?php } ?>
+				
+				<?php if(!empty($data[0]->from_high_way) && $data[0]->from_high_way !="0"){ ?>	
+					<div class="fild">
+						<div class="lable">From Highway:</div>
+						<div class="data"><?php echo $data[0]->from_high_way; ?></div>
+					</div>
+				<?php } ?>
 			</div>
 		<div class="clear"></div>
 	</div>

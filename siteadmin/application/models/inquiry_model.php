@@ -428,6 +428,7 @@ Class Inquiry_model extends CI_Model {
             $insert = $this->db->insert_id();
             return $insert;
         }else{
+            //echo'<pre>';print_r($recorde);exit;
             $today_date = date('Y-m-d H:i:s');
             $new_user_insert_data = array(
                 'agent_id' => $this->input->post('agent'),
@@ -436,7 +437,7 @@ Class Inquiry_model extends CI_Model {
                 'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
                 'updated_date' => $today_date,
             );
-            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_update_data);
+            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_insert_data);
             return $recorde[0]->id;
         }
     }
@@ -529,12 +530,13 @@ Class Inquiry_model extends CI_Model {
        
         $this->db->select('*');
         $this->db->from('inquiry');
-        $this->db->where('property_id',$propertyId);
+        $this->db->where('property_id',$property_id);
         $this->db->where('customer_id',$customerId);
         $this->db->where('status !=',"4");
         $this->db->where('status !=',"5");
         $query = $this->db->get();
         $recorde=$query->result();
+       
         if(empty($recorde))
         {
 
@@ -583,7 +585,7 @@ Class Inquiry_model extends CI_Model {
             $new_user_insert_data = array(
                 'updated_date' => $today_date,
             );
-            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_update_data);
+            $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_insert_data);
             return $recorde[0]->id;
             //$insert = $this->db->insert('inquiry', $new_user_insert_data);
             //$insert = $this->db->insert_id();

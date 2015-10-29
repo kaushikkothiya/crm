@@ -79,7 +79,7 @@ class Inquiry extends CI_Controller {
              }else{
                  $agentcn_mobile_code = "0000";
              }
-                
+              // echo'<pre>';print_r($customer_detail);exit; 
             $clientcountry_code = $this->user->get_contry_code($customer_detail[0]->coutry_code);               
             if(!empty($clientcountry_code))
             {
@@ -322,7 +322,7 @@ class Inquiry extends CI_Controller {
                  $data['user'][$z]->agent_name  = $this->inquiry_model->get_inc_agent($val->agent_id);
                  
                }
-               // echo'<pre>';print_r($data['user'][0]->agent_name[0]->fname);exit;
+                //echo'<pre>';print_r($data);exit;
                $data['all_client']=$this->user->getallclient();
 
             $this->load->view('inquiry_list_view', $data);
@@ -764,7 +764,7 @@ class Inquiry extends CI_Controller {
             {
                 $this->session->unset_userdata('selected_property_id');
                 $this->session->set_userdata('selected_property_id', $inquiryDetail[0]->property_id);
-
+                $this->session->set_userdata('customer_property_id', $inquiryDetail[0]->customer_id);
                 $pro_agent_id = $this->inquiry_model->get_related_property_agent_id($inquiryDetail[0]->property_id);
                 $this->session->set_userdata('selected_agent_id', $pro_agent_id[0]->agent_id);
                 $this->session->set_userdata('schedule_inquiry_id', $inquiryId);
