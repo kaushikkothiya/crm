@@ -67,8 +67,6 @@ $this->load->view('leftmenu');
 							<fieldset>
                                <div class="wrapper">
     
-                                <br /><br />
-                                
                                 <div class="propertymain">
                                     <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='2') ? '-select' : empty($post_property_data['property_type']) ? '-select' : ''; ?> rent_sale" id="2">RENT</div>
                                     <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='1') ? '-select' : ''; ?> rent_sale" id="1">BUY</div>
@@ -186,9 +184,7 @@ $this->load->view('leftmenu');
                                     </div>
                                     
                                 </div>
-                                
-                                <br /><br />
-    
+                               
                             </div>
                         </fieldset>
 					</form>

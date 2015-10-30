@@ -63,13 +63,9 @@ $('#manage_form').validate({
                           remote: {
                                 url:baseurl+"index.php/home/employee_mobile_check",
                                 type: "post",
-                              data: {
-                                  id: function() {
-                                            var element = $(this);
-                                            return  $('#employee_id').val();
-                                            }
-                                          }
-                                      }
+                              data: { id: $('#employee_id').val(),country_code: $('#county_code').val()},
+
+                               }
                         },
                         //country_id:{required:true},
                         //country_id:{required:true},

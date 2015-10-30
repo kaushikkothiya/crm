@@ -68,6 +68,7 @@ $('#manage_form').validate({
                           remote: {
                                 url:baseurl+"index.php/home/customer_mobile_check",
                                 type: "post",
+                              //  data: { id: $('#customer_id').val(),country_code: $('#county_code').val()},
                               data: {
                                   id: function() {
                                             var element = $(this);

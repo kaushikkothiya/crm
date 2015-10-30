@@ -831,7 +831,7 @@ $this->load->view('leftmenu');
 			</div>
 			
 			<div class="twofildmain">
-				<div class="fildleft">Covered Parning(s):</div>
+				<div class="fildleft">Covered Parking(s):</div>
 				<div class="fildright">
 					<?php
 							$cover_parking = array('0' =>'Please Select','1'=>'1','2' =>'2','3' =>'3','4' =>'4','5' =>'5');

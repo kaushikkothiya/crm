@@ -422,6 +422,7 @@ Class Inquiry_model extends CI_Model {
                 'created_date' => $today_date,
                 'updated_date' => $today_date,
                 'created_by' => $created_id,
+                'status'=>"4",
                 
             );
             $insert = $this->db->insert('inquiry', $new_user_insert_data);
@@ -436,6 +437,7 @@ Class Inquiry_model extends CI_Model {
                 'appoint_end_date' =>date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
                 'ended_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
                 'updated_date' => $today_date,
+                'status'=>"4",
             );
             $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_insert_data);
             return $recorde[0]->id;
@@ -748,10 +750,12 @@ Class Inquiry_model extends CI_Model {
     }
     function get_inquiry_recored($inquiryid) {
 
-       $q = $this->db->select("inquiry.*,inquiry_history.*,city_area.title")
+       $q = $this->db->select("customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,inquiry_history.*,city_area.title")
                 ->from('inquiry')
                 ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id','left')
                 ->join('city_area', 'city_area.id = inquiry_history.city_area','left')
+                ->join('customer', 'customer.id = inquiry.customer_id','left')
+                ->join('county_code', 'customer.coutry_code  = county_code.id','left')
                 ->where('inquiry.id',$inquiryid)
                 ->get();
         if ($q->num_rows() > 0) {
@@ -828,6 +832,11 @@ Class Inquiry_model extends CI_Model {
         }
         return array();
     }
+
+    function updateInquiryStatus($id,$data){
+        return $this->db->where('id',$id)->update('inquiry', $data);
+    }
+
 }
 
 ?>

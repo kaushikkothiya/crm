@@ -370,7 +370,7 @@ class Verification extends CI_Controller {
                 {
                     
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
                     
                     $this->session->set_flashdata('success', 'Client added successfull. check SMS');
                     redirect('/home/customer_manage', 'refresh');
@@ -378,7 +378,7 @@ class Verification extends CI_Controller {
                 elseif ($sendEmailFlag == "E-mail")
                 {
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                     
                     $this->session->set_flashdata('success', 'Client added successfull. check your E-mail');
                     redirect('/home/customer_manage', 'refresh');      

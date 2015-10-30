@@ -75,7 +75,7 @@ Class User extends CI_Model {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('email',$post['email'])
-                //->where('type',$type)
+                ->where('deleted !=','1')
                 ->where('id !=',$post['id'])
                 ->get();
         if ($q->num_rows() > 0) {
@@ -298,7 +298,7 @@ function getAllagent() {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('email',$post['email'])
-                //->where('type','2')
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -309,8 +309,8 @@ function getAllagent() {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('email',$post['email'])
-                //->where('type','2')
                 ->where('id !=',$post['id'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -325,7 +325,8 @@ function getAllagent() {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('mobile_no',$post['mobile_no'])
-                //->where('type','2')
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -336,7 +337,8 @@ function getAllagent() {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('mobile_no',$post['mobile_no'])
-                //->where('type','2')
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->where('id !=',$post['id'])
                 ->get();
         if ($q->num_rows() > 0) {
@@ -349,12 +351,7 @@ function getAllagent() {
 
     function customer_insert($num) {
         //$section_prefix = "customer_";
-        
-        if(isset($_POST['reference_from']) && !empty($_POST['reference_from'])){
-            $reference_from= $_POST['reference_from'];
-        }else{
-            $reference_from="";
-        }
+        //echo'<pre>';print_r($_POST);exit;
         $today_date = date('Y-m-d H:i:s');
         $new_user_insert_data = array(
             'customer_ref_id' =>$num,
@@ -371,7 +368,8 @@ function getAllagent() {
             'updated_date' => $today_date,
             'status' => $this->input->post('status'),
             'type' => '0',
-            'reference_from' => $reference_from,
+            'reference_from' => $this->input->post('reference_from'),
+            'aquired' =>$this->input->post('aquired'),
             //'aquired' => $this->input->post('aquired'),
         );
         $insert = $this->db->insert('customer', $new_user_insert_data);
@@ -383,7 +381,7 @@ function getAllagent() {
      function customer_update($id) {
         //$section_prefix = "customer_";
         $today_date = date('Y-m-d H:i:s');
-        
+      //  echo'<pre>';print_r($_POST);exit;
         if($this->input->post('password') != "")
         {
             $new_user_update_data = array(
@@ -399,7 +397,8 @@ function getAllagent() {
                 'city_id' => $this->input->post('city_id'),
                 'updated_date' => $today_date,
                 'status' => $this->input->post('status'),
-                //'aquired' => $this->input->post('aquired'),
+                'reference_from' => $this->input->post('reference_from'),
+                'aquired' => $this->input->post('aquired'),
                 );
         }
         else
@@ -415,7 +414,8 @@ function getAllagent() {
                 'city_id' => $this->input->post('city_id'),
                 'updated_date' => $today_date,
                 'status' => $this->input->post('status'),
-                //'aquired' => $this->input->post('aquired'),
+                'reference_from' => $this->input->post('reference_from'),
+                'aquired' => $this->input->post('aquired'),
                 );
         }
         $update = $this->db->where('id', $id)->update('customer', $new_user_update_data);
@@ -477,6 +477,7 @@ function getAllagent() {
             $q = $this->db->select("*")
                 ->from('customer')
                 ->where('email',$post['email'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -488,6 +489,7 @@ function getAllagent() {
                 ->from('customer')
                 ->where('email',$post['email'])
                 ->where('id !=',$post['id'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -540,7 +542,7 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('email',$post['email'])
-                //->where('type','3')
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -551,8 +553,8 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('email',$post['email'])
-                //->where('type','3')
                 ->where('id !=',$post['id'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -567,7 +569,8 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('mobile_no',$post['mobile_no'])
-                //->where('type','3')
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -578,7 +581,8 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('mobile_no',$post['mobile_no'])
-                //->where('type','3')
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->where('id !=',$post['id'])
                 ->get();
         if ($q->num_rows() > 0) {

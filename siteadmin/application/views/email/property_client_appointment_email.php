@@ -28,7 +28,7 @@
                                     <tr>
                                         <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px; width:600px;" >Dear <b><?php echo $customer_name;?></b>,</p>
-                                            <p>your request for appointment on <?php echo $start_date.' to '.$end_date ; ?> for the property <?php echo $property_ref_no; ?> will be confirmed by our agent <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> shortly</p>
+                                            <p>your request for appointment on <?php echo $start_date.' to '.$end_date ; ?> for the property with Reference No <?php echo $property_ref_no; ?> will be confirmed by our agent <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> shortly</p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             

@@ -11,7 +11,8 @@ if (isset($user[0])) {
 	$city_id = $user[0]->city_id;
 	$contry_id = $user[0]->contry_id;
 	$status_name = $user[0]->status;
-	//$aquired = trim($user[0]->aquired);
+	$aquired = trim($user[0]->aquired);
+	$reference_id = $user[0]->reference_from;
 	$county_code = $user[0]->coutry_code;
 
 } else {
@@ -25,7 +26,8 @@ if (isset($user[0])) {
 	$contry_id = $this->input->post('contry_id');
 	$status_name = $this->input->post('status');
 	$county_code = $this->input->post('county_code');
-    //$aquired = $this->input->post('aquired');
+    $aquired = $this->input->post('aquired');
+    $reference_id = $this->input->post('reference_from');
 }
 ?>
 <div class="container-fluid">
@@ -95,7 +97,24 @@ $this->load->view('leftmenu');
 <?php echo form_open_multipart('verification/create_customer', array('class' => 'form-horizontal')); ?>
 <fieldset>
 	<input type="hidden" id="customer_id" name="customer_id" value="<?php if(isset($id) && !empty($id)){ echo $id; } ?>">
-	
+
+<div class="control-group">
+<label class="control-label" for="textarea">Reference From
+</label>
+<div class="controls">
+<?php
+		$reference_from =array('1'=>'Phone inquiry','2'=>'Facebook inquiry','3'=>'Website inquiry');
+		$selected = $reference_id;
+		if($selected == "" || $selected == 0){
+				$selected = 1;
+		}
+		$device = 'id="reference_from" style="width: 255px"';
+		echo form_dropdown('reference_from', $reference_from, $selected,  $device);
+?>
+<div class="error"><?php //echo form_error('store_country'); ?></div>
+
+</div>
+</div>	
 <div class="control-group">
 <label class="control-label" for="textarea">First Name :
 </label>
@@ -244,6 +263,44 @@ echo form_input($contact);
 </div>
 </div>
 <div class="control-group">
+<label class="control-label" for="textarea">Property Status :
+</label>
+
+<div class="controls">
+<?php 
+$aquired_id = array('id' => 'aquired', 'name' => 'aquired');
+if($this->input->post('aquired')=="sale" || $aquired=="sale") {
+    $checked1 = 'checked="checked"';	
+    $checked2 = '';
+    $checked3 = '';
+} elseif ($this->input->post('aquired')=="rent" || $aquired=="rent") {
+    $checked1 = '';
+    $checked2 = 'checked="checked"';
+    $checked3 = '';
+} elseif ($this->input->post('aquired')=="both" || $aquired=="both"){
+    $checked1 = '';
+    $checked2 = '';
+    $checked3 = 'checked="checked"';
+}
+else{
+    $checked1 = 'checked="checked"';
+    $checked2 = '';
+    $checked3 = '';
+}
+?>
+<?php echo form_radio($aquired_id, 'sale',$checked1 , 'class="radio_buttons required"'); ?>
+ Sale &nbsp;
+<?php echo form_radio($aquired_id, 'rent', $checked2, 'class="radio_buttons required"'); ?>
+ Rent &nbsp;
+<?php echo form_radio($aquired_id, 'both', $checked3, 'class="radio_buttons required"'); ?>
+ Both
+
+<div class="error"><?php //echo form_error('status'); ?></div>
+
+</div>
+
+</div>
+<div class="control-group">
 <label class="control-label" for="textarea">Status :
 </label>
 
@@ -261,12 +318,11 @@ if($this->input->post('status')=="Inactive" || $status_name=="Inactive") {
     $checked2 = 'checked="checked"';
 }
 ?>
-<label class="radio">
+
 <?php echo form_radio($status, 'Active', $checked2, 'class="radio_buttons required"'); ?>
-Active</label>
-<label class="radio">
+ Active &nbsp;
 <?php echo form_radio($status, 'Inactive', $checked1, 'class="radio_buttons required"'); ?>
-Inactive</label>
+ Inactive
 
 <div class="error"><?php //echo form_error('status'); ?></div>
 

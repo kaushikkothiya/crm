@@ -2,7 +2,8 @@
 
 $this->load->view('header');
 //$Action = array('1' =>'Waiting','2'=>'Inprocess','3' =>'Pending','4' =>'Complete');
-$Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
+$Action = array('2' =>'Text-Send','3' =>'Follow-Up','4' =>'Appoinment','5' =>'Complete');
+$Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7','5' =>'99E2A3');
 ?>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -39,8 +40,8 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                         <li><?php echo anchor('inquiry/inquiry_manage', 'Inquiry Management', "title='Inquiry Management'"); ?>
                             <span class="divider">/
                             </span></li>
-                            <?if ($this->session->userdata('logged_in_super_user')) { ?>
-								<li style="float:left;"><a href='#popup1'><input type="button" value="Import Inquiry Details" /></a></li>
+                            <?php if ($this->session->userdata('logged_in_super_user')) { ?>
+                                <li style="float:left;"><a href='#popup1'><input type="button" value="Import Inquiry Details" /></a></li>
                             <?php } ?>
                     </ul>
                 </div>
@@ -59,10 +60,11 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                         <div class="utopia-widget-content">
                             <form action="inquiry_manage" name="mul_rec" id="mul_rec" method="post" enctype="multipart/form-data">
                             <div class="col-sm-2 pull-left">
-                <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Follow-Up<!-- Waiting -->
-                <!-- <span style="width:15px;height:15px;display:inline-block;background:#FFCCFF;"></span> Inprocess -->
-                <span style="width:15px;height:15px;display:inline-block;background:#D9EDF7;"></span> Txt-Send<!-- Pending -->
-                <span style="width:15px;height:15px;display:inline-block;background:#99E2A3;"></span> Complete<!-- Complete -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#FFFF00;"></span> Register<!-- Txt-Send -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Txt-Send<!-- Txt-Send -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#FFCCFF;"></span> Follow-Up<!-- Follow-Up -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#D9EDF7;"></span> Appointment<!-- Appointment -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#99E2A3;"></span> Complete<!-- Complete -->
                 
                 
             </div>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -101,9 +103,7 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                 </thead>
                                 <tbody>
                                     <?php
-                                    //echo'<pre>';print_r($user);exit;
-                                    for ($i = 0; $i < count($user); $i++) {
-
+                                    for ($i = 0; $i < count($user); $i++) {    
                                         echo "<tr>";
                                         echo "<td hidden>" . $user[$i]->id. "</td>";
                                         echo "<td>" . $user[$i]->property_ref_no. "</td>";
@@ -119,7 +119,7 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                             echo "<td> </td>";
                                         }
                                         
-                                        if(isset($user[$i]->agent_name) && !empty($user[$i]->agent_name)){
+                                        if(isset($user[$i]->agent_name[0]) && !empty($user[$i]->agent_name[0])){
                                         echo "<td>" . $user[$i]->agent_name[0]->fname.' '.$user[$i]->agent_name[0]->lname. "</td>";
                                         }else{
                                         echo "<td>" .'--Not assigned--'.  "</td>";
@@ -129,24 +129,33 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                          ?>
                                         <input type="hidden" id="<?php echo trim($user[$i]->id); ?>" value="<?php echo trim($user[$i]->id); ?>" name="<?php echo trim($user[$i]->id); ?>">
                                         <td data-th="Action">
-                                           <?php if($user[$i]->status == '1'){
-                                            echo '<span style="width:10px;height:10px;display:inline-block;background:#EBAF22;"></span>';
-                                         }elseif($user[$i]->status == '2'){ 
-                                        echo '<span style="width:10px;height:10px;display:inline-block;background:#FFCCFF;"></span>';
-                                         } elseif($user[$i]->status == '3'){ 
-                                        echo '<span style="width:10px;height:10px;display:inline-block;background:#D9EDF7;"></span>';
-                                         }else{ 
-                                        echo '<span style="width:10px;height:10px;display:inline-block;background:#99E2A3;"></span>';
-                                         } ?>
-                                            <select name="incid_<?php echo trim($user[$i]->id); ?>"  id="incid_<?php echo trim($user[$i]->id); ?>" style="width:80px">
-                                                <?php foreach($Action as $key => $value){ 
-                                                       if($key == $user[$i]->status){
+                                           <?php
+                                            if ($user[$i]->status == '1') {
+                                                echo '<span style="width:10px;height:10px;display:inline-block;background:#FFFF00;"></span>';
+                                            }else if ($user[$i]->status == '2') {
+                                                echo '<span style="width:10px;height:10px;display:inline-block;background:#EBAF22;"></span>';
+                                            } elseif ($user[$i]->status == '3') {
+                                                echo '<span style="width:10px;height:10px;display:inline-block;background:#FFCCFF;"></span>';
+                                            } elseif ($user[$i]->status == '4') {
+                                                echo '<span style="width:10px;height:10px;display:inline-block;background:#D9EDF7;"></span>';
+                                            } elseif ($user[$i]->status == '5') {
+                                                echo '<span style="width:10px;height:10px;display:inline-block;background:#99E2A3;"></span>';
+                                            }
                                             ?>
-                                            <option selected value="<?php echo $key;?>"><?php echo $value;?></option>
-                                            <?php }else{ ?>
-                                                <option  value="<?php echo $key;?>"><?php echo $value;?></option>
-                                                <?php } } ?>
-                                            </select>                                                                           
+                                            <?php if($user[$i]->status!=5 && $user[$i]->status!=1) { ?>
+                                                <select class="inquiry_status" data-ref="<?php echo trim($user[$i]->incquiry_ref_no); ?>" data-id="<?php echo trim($user[$i]->id); ?>" name="incid_<?php echo trim($user[$i]->id); ?>"  id="incid_<?php echo trim($user[$i]->id); ?>" style="width:80px">
+                                                    <?php foreach($Action as $key => $value){ 
+                                                           if($key == $user[$i]->status){ ?>
+                                                <option selected value="<?php echo $key;?>"><?php echo $value;?></option>
+                                                <?php }else{ ?>
+                                                    <option  value="<?php echo $key;?>"><?php echo $value;?></option>
+                                                    <?php } } ?>
+                                                </select>
+                                            <?php } else if($user[$i]->status==5){ ?>
+                                                Complete
+                                            <?php } else if($user[$i]->status==1){ ?>
+                                                Register
+                                            <?php } ?>
                                         </td>
                                         <?php
                                             echo "<td>";
@@ -159,44 +168,42 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
                                             }
                                             if ($this->session->userdata('logged_in_super_user')) {
                                                 echo anchor('inquiry/delete_inquiry/' . $user[$i]->id, '<i class="icon-trash"></i>', array('onclick' => "return confirm('Are you sure you want to delete?')",'title'=>'Delete Inquiry','class'=>'btn btn-default btn-small'));
-                                             } //else {
+                                            // } else {
                                             //     echo '<span class="btn btn-default btn-small" ><i class="icon-trash"></i></span>';
-                                            // }
+                                            }
                                             echo "</td>";
                                             echo "</tr>";
                                         }
                                         ?>
+                                        <?php /*
+                                        // echo "<td>";
+                                        if(empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date== "0000-00-00 00:00:00"))
+                                        {
+                                          //  echo "<span style='text-align:left;width: 57%;float: left;'><i class='icon-time'></i>&nbsp;" . anchor('inquiry/scheduleAppointment/'.$user[$i]->id, 'Schedule', "title='Schedule Appointment'"). "</span>";
+                                            //echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
+                                        }else{
+                                           // echo "<span style='text-align:left;width: 57%;float: left;'>Scheduled</span>";   
+                                           // echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
+                                        }
+                                        if ($this->session->userdata('logged_in_super_user')) {
+                                        //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . anchor('inquiry/delete_inquiry/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure you want to delete?')")). "</span></td>";
+                                        }else{$arrayName = array();
+                                        //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . 'Delete'. "</span></td>";
+                                          //echo "</td>";  
+                                        }
+                                      //echo "</tr>";
 
-                                          <?php
-                                    //     echo "<td>";
-                                    //     if(empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date== "0000-00-00 00:00:00"))
-                                    //     {
-                                    //         echo "<span style='text-align:left;width: 57%;float: left;'><i class='icon-time'></i>&nbsp;" . anchor('inquiry/scheduleAppointment/'.$user[$i]->id, 'Schedule', "title='Schedule Appointment'"). "</span>";
-                                    //        echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
-                                    //     }else{
-                                    //         echo "<span style='text-align:left;width: 57%;float: left;'>Scheduled</span>";   
-                                    //         echo "<span style='text-align:left;width: 57%;float: left;'><div class='box'><i class='icon-zoom-in'></i><a class='button' href='#popup2' onClick='setInquiryId(".$user[$i]->id.")'>View Inquiry</a></div>";
-                                    //     }
-                                    //     if ($this->session->userdata('logged_in_super_user')) {
-                                    //     echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . anchor('inquiry/delete_inquiry/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure you want to delete?')")). "</span></td>";
-                                    //     }else{$arrayName = array();
-                                    //     //echo "<span style='text-align:left;width: 50%;float:  none;'><i class='icon-trash'></i>&nbsp;" . 'Delete'. "</span></td>";
-                                    //     echo "</td>";  
-                                    //     }
-                                    //   echo "</tr>";
-
-                                    // }
-
-                                    ?>  
+                                    } */ ?>
                                 </tbody>
                             </table>
                         </div>
                             <div>
-                                <?php  if(count($user) !=0){ ?>
+                                <?php /*  if(count($user) !=0){ ?>
                                
                             <button type="Submit"  id="update_button" style="width:144px; float:right; margin:5px 107px 5px">Update Status</button>
                            
-                                <?php } ?>
+                                <?php } */ ?>
+                                
                              </div>
                       </form>
                         </div>   
@@ -253,6 +260,25 @@ $Action = array('1' =>'Follow-Up','2' =>'Text-Send','3' =>'Complete');
         </div>
     </div>
 </div>
+<div id="popup3" class="overlay">
+    <div class="popup">
+        <h2>Inquiry Reference No. : <b class="popup-ref">#Reference No</b></h2>
+        <a class="close" href="#">×</a>
+        <div class="content">
+            <div class="row-fluid">
+                <div class="" id="inquiry_status_change_popup">
+                    <input type="hidden" name="inquiry[id]" id="status_change_inquiry_id" value="" />
+                    <input type="hidden" name="inquiry[status]" id="status_change_inquiry_status" value="" />
+                    <label for="status_change_content" id="lbl_status_change_content" class="" style="font-weight:bold">Content :</label>
+                    <textarea id="status_change_comments" name="inquiry[content]" class="span12" rows="10" cols="50" ></textarea>
+                    <button class="btn btn-primary summit_inquiry_status_with_comment">Change Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <?php
 $this->load->view('footer');
 ?>
@@ -275,9 +301,71 @@ $(document).ready(function(){
         })
         //.on( 'page.dt',   function () { eventFired( 'Page' ); } )
         .DataTable();
-
     $('[data-toggle="popover"]').popover();   
+    
+    $(document).on('click','.summit_inquiry_status_with_comment',function(){
+        //console.log($(this).parents('.content').prev().html());
+        $(this).parents('.popup').find('a.close').trigger('click');
+        var href = window.location.href.split("#");
+        window.location = href[0]+"#";
+        changeInquiryStatus();
+    });
+    
+    $(document).on('change',".inquiry_status",function(){
+        $(".popup-ref").html($(this).data('ref'));
+        $("#status_change_inquiry_id").val($(this).data('id'));
+        $("#status_change_inquiry_status").val($(this).val());
+        var href = window.location.href.split("#");
+        
+        if($(this).val()==2){
+            $("#lbl_status_change_content").hide();
+            $("#status_change_comments").hide();
+            changeInquiryStatus();
+        }else if($(this).val()==4){
+            $("#lbl_status_change_content").hide();
+            $("#status_change_comments").hide();
+            changeInquiryStatus();
+        }else if($(this).val()==3){
+            $("#lbl_status_change_content").show();
+            $("#status_change_comments").show();
+            $("#lbl_status_change_content").html('Comments :');
+            window.location = href[0] + "#popup3";
+        }else if($(this).val()==5){
+            $("#lbl_status_change_content").show();
+            $("#status_change_comments").show();
+            $("#lbl_status_change_content").html('Feedback :');
+            window.location = href[0] + "#popup3";
+        }
+    }); 
 });
+var action_color = {'col_2' :'EBAF22','col_3' :'FFCCFF','col_4' :'D9EDF7','col_5' :'99E2A3'};
+function changeInquiryStatus(){
+    $.ajax({
+        url:'<?php echo base_url(); ?>index.php/inquiry/ajax_update_status',
+        type:'post',
+        data:{ 
+            id: $("#status_change_inquiry_id").val(),
+            status: $("#status_change_inquiry_status").val(),
+            comments: $("#status_change_comments").val(),
+        },
+        dataType:'json'
+    }).done(function(data){
+        $("#status_change_comments").val('');
+        if(data.status){
+            $("#incid_"+data.id).prev().css('background','#'+eval('action_color.col_'+data.inq_status));
+            if(data.inq_status==5){
+                $("#incid_"+data.id).before(document.createTextNode('Completed'));
+                $("#incid_"+data.id).remove();
+            }
+            alert('Inquiry status has been updated');
+        }else{
+            alert('Internal Error : Unable to save Inquiry status!');    
+        }
+    }).error(function(){
+        alert('Internal Error : Unable to save Inquiry status!');
+    });
+}
+
 function setInquiryId(inquiryId)
 {
 
@@ -286,7 +374,6 @@ function setInquiryId(inquiryId)
         url:baseurl+"index.php/inquiry/get_inquiry_recored",
         data: 'inquiry_id='+inquiryId,
         success: function(msg){
-
             $("#inquiry_datail_popup").html(msg);
         }
     });

@@ -64,11 +64,19 @@ $('#manage_form').validate({
                            remote: {
                                 url:baseurl+"index.php/home/agent_mobile_check",
                                 type: "post",
-                              data: {
-                                  id: function() {
-                                            var element = $(this);
-                                            return  $('#agent_id').val();
-                                            }
+                                data: { id: $('#agent_id').val(),country_code: $('#county_code').val()},
+
+                              // data: {
+                              //     id: function() {
+                              //               var element = $(this);
+                              //               return  $('#agent_id').val();
+                              //               },
+                              //     country_code: function() {
+                              //               var element = $(this);
+                              //               return  $('#county_code').val();
+                              //               }
+                              //             }
+                                  
                                           }
                                       }
                          
@@ -76,7 +84,7 @@ $('#manage_form').validate({
                         //country_id:{required:true},
                         //country_id:{required:true},
                        // email:{required:true},
-                        },
+                      // },
                 messages:{
                          fname:{required:"First name or last name must not be  empty"},
                          //lname:{required:"last name must not be  empty"},

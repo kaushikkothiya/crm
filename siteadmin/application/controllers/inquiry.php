@@ -180,7 +180,7 @@ class Inquiry extends CI_Controller {
                     //     $mobile_code = $mcode;
                     // }
                     $message = "Dear ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", your request for appointment on :".$_POST['start_date'].' - '.$_POST['end_date'];
-                    $message .= " for the property: ".$property_detail[0]->reference_no;
+                    $message .= " for the property with Reference No: ".$property_detail[0]->reference_no;
                     $message .= " will be confirmed by our agent: ".$agent_detail[0]->fname." ".$agent_detail[0]->lname.", +".$agent_detail[0]->coutry_code.$agent_detail[0]->mobile_no;
                     $message .= " shortly";
                     
@@ -223,7 +223,7 @@ class Inquiry extends CI_Controller {
                     // }
                     
                     $message_agent = "Dear ".$agent_detail[0]->fname." ".$agent_detail[0]->lname." you have an inquiry for an appointment on ".$_POST['start_date']." to ".$_POST['end_date'];
-                    $message_agent .= " for the property: ".$property_detail[0]->reference_no;
+                    $message_agent .= " for the property with Reference No: ".$property_detail[0]->reference_no;
                     $message_agent .= " Inquiry from: ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", +".$customer_detail[0]->coutry_code.$customer_detail[0]->mobile_no;
                     $message_agent .= " Please confirm on our system asap by clicking the following ";
                     $message_agent .= "link: ".$property_link[0];
@@ -888,18 +888,56 @@ class Inquiry extends CI_Controller {
         return $data[$id];
 
     }
-    function get_inquiry_recored()
-    {
+    
+    function get_inquiry_recored(){
         
         $data= $this->inquiry_model->get_inquiry_recored($_POST['inquiry_id']);
+        
         $data[0]->agent_id= $this->inquiry_model->get_agent_name_inq($data[0]->agent_id);
        // echo'<pre>';print_r($data);exit;
-        $inquiryDetailHtml = "<fieldset><hr>";
+        $inquiryDetailHtml = "";
+        
+        if($this->session->userdata('logged_in_employee')){
+            if($data[0]->status!=5){
+                $inquiryDetailHtml .= "<fieldset><legend>Customer Details</legend>";
+                if( (isset($data[0]->agent_id) && !empty($data[0]->c_fname) ) || (isset($data[0]->c_lname) && !empty($data[0]->c_lname) ) ){
+                    $inquiryDetailHtml .= '<lable><b>Customer Name</b></lable> :<lable>'.$data[0]->c_fname.' '.$data[0]->c_lname . '</lable> ';
+                    $inquiryDetailHtml .=  '<br><br>'; 
+                }
+                if( (isset($data[0]->email) && !empty($data[0]->email) ) ){
+                    $inquiryDetailHtml .= '<lable><b>Customer Email</b></lable> :<lable>'.$data[0]->email. '</lable> ';
+                    $inquiryDetailHtml .=  '<br><br>'; 
+                }
+
+                if( (isset($data[0]->mobile_no) && !empty($data[0]->mobile_no) ) ){
+                    $inquiryDetailHtml .= '<lable><b>Customer Phone</b></lable> :<lable>'. $data[0]->prefix_code .' '. $data[0]->mobile_no. '</lable> ';
+                    $inquiryDetailHtml .=  '<br><br>'; 
+                }
+                $inquiryDetailHtml .= "</fieldset>";
+            }
+        }else{
+            $inquiryDetailHtml .= "<fieldset><legend>Customer Details</legend>";
+            if( (isset($data[0]->agent_id) && !empty($data[0]->c_fname) ) || (isset($data[0]->c_lname) && !empty($data[0]->c_lname) ) ){
+                $inquiryDetailHtml .= '<lable><b>Customer Name</b></lable> :<lable>'.$data[0]->c_fname.' '.$data[0]->c_lname . '</lable> ';
+                $inquiryDetailHtml .=  '<br><br>'; 
+            }
+            if( (isset($data[0]->email) && !empty($data[0]->email) ) ){
+                $inquiryDetailHtml .= '<lable><b>Customer Email</b></lable> :<lable>'.$data[0]->email. '</lable> ';
+                $inquiryDetailHtml .=  '<br><br>'; 
+            }
+
+            if( (isset($data[0]->mobile_no) && !empty($data[0]->mobile_no) ) ){
+                $inquiryDetailHtml .= '<lable><b>Customer Phone</b></lable> :<lable>'. $data[0]->prefix_code .' '. $data[0]->mobile_no. '</lable> ';
+                $inquiryDetailHtml .=  '<br><br>'; 
+            }
+            $inquiryDetailHtml .= "</fieldset>";
+        }
+                
+        $inquiryDetailHtml .= "<fieldset><legend>Inquiry Details</legend>";
         if(isset($data[0]->agent_id) && !empty($data[0]->agent_id)){
             $inquiryDetailHtml .= '<lable><b>Agent Name</b></lable> :<lable>'.$data[0]->agent_id[0]->fname.' -'.$data[0]->agent_id[0]->lname . '</lable> ';
             $inquiryDetailHtml .=  '<br><br>'; 
         }
-        
         
         if(isset($data[0]->incquiry_ref_no) && !empty($data[0]->incquiry_ref_no)){
             $inquiryDetailHtml .= '<lable><b>Inquiry Reference No</b></lable> :<lable>'.$data[0]->incquiry_ref_no.'</lable> ';
@@ -945,10 +983,15 @@ class Inquiry extends CI_Controller {
             $inquiryDetailHtml .= '<lable><b>Maximum Price</b></lable> :<lable>'.$data[0]->maxprice.'</lable> ';
             $inquiryDetailHtml .=  '<br><br>';
         }
+        if(isset($data[0]->created_date) && !empty($data[0]->created_date)){
+            $inquiryDetailHtml .= '<lable><b>Date Created</b></lable> :<lable>'.date("d-M-Y", strtotime($data[0]->created_date)).'</lable> ';
+            $inquiryDetailHtml .=  '<br><br>';
+        }
         $inquiryDetailHtml .=  '</fieldset>';          
                     
         echo $inquiryDetailHtml;
     }
+
     function get_sms_email_text()
     {
        
@@ -956,6 +999,28 @@ class Inquiry extends CI_Controller {
         echo $data[0]->text;
        
     }
+    function ajax_update_status(){
+        
+        $id = $_POST['id'];
+        $status = $_POST['status'];
+        $comments = $_POST['comments'];
+        
+        $data = array();
+        $data['status'] = $status;
+        if($status==3){
+            $data['comments'] = $comments;
+        }else if($status==5){
+            $data['feedback'] = $comments;
+        }
+        
+        $response = array('status'=>false,'message'=>'','id'=>$id,'inq_status'=>$status);
+        if($this->inquiry_model->updateInquiryStatus($id,$data)){
+            $response['status'] = true;
+        }
+        echo json_encode($response);
+        exit;
+    }
+
 }
 
 ?>

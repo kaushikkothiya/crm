@@ -100,6 +100,7 @@ class Home extends CI_Controller {
         
     }
     function agent_mobile_check() {
+        echo'<pre>';print_r($_POST);exit;
         
         $user = $this->user->agent_mobile_check($_POST);
         
@@ -1137,7 +1138,7 @@ class Home extends CI_Controller {
                     // }
                     $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
                     $message .= " your request for appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
-                    $message .=" for the property".$inquiry_detail[0]->property_ref_no." has been CONFIRMED!";
+                    $message .=" for the property with Reference No:".$inquiry_detail[0]->property_ref_no." has been CONFIRMED!";
                     $message .= " For any further info for the specific property kindly contact";
                     $message .= " our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
                     

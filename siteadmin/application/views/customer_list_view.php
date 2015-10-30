@@ -62,12 +62,14 @@ $this->load->view('header');
                                         <th>Name/Surname</th>
                                         <th>Email</th>
                                         <th>Telephone</th>
-                     					<th>Status</th>
+                     					<th>Reference From</th>
+                                        <th>Property Status</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php
+                                    <?php 
                                     for ($i = 0; $i < count($user); $i++) {
                                         echo "<tr>";
                                         echo "<td hidden>" . $user[$i]->id. "</td>";
@@ -75,6 +77,25 @@ $this->load->view('header');
                                         echo "<td>" . $user[$i]->fname." ".$user[$i]->lname . "</td>";
                                         echo "<td>" . $user[$i]->email. "</td>";
                                         echo "<td>" . $user[$i]->mobile_no. "</td>";
+                                        if($user[$i]->reference_from =='1'){
+                                        echo "<td>Phone</td>";    
+                                        }elseif ($user[$i]->reference_from=='2') {
+                                        echo "<td>Facebook</td>";    
+                                        }elseif ($user[$i]->reference_from=='3') {
+                                        echo "<td>Website</td>";    
+                                        }else{
+                                        echo "<td></td>";    
+                                        }
+                                        if($user[$i]->aquired =="sale"){
+                                        echo "<td>Sale</td>";    
+                                        }elseif ($user[$i]->aquired=="rent") {
+                                        echo "<td>Rent</td>";    
+                                        }elseif ($user[$i]->aquired=="both") {
+                                        echo "<td>Sale/Rent</td>";    
+                                        }else{
+                                        echo "<td></td>";    
+                                        }
+                                        
      									echo "<td>" . $user[$i]->status. "</td>";
                                         echo "<td>";
                                             echo anchor('home/add_customer/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>'Edit Client','class'=>"btn btn-default btn-small"));
