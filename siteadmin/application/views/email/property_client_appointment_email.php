@@ -15,7 +15,7 @@
                         <tbody>
                         <tr>
                             <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
-                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="CRM" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
+                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
                             </td>
                         </tr>
                         <tr>
@@ -26,9 +26,10 @@
                         <tr>
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
+                                       
                                         <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px; width:600px;" >Dear <b><?php echo $customer_name;?></b>,</p>
-                                            <p>your request for appointment on <?php echo $start_date.' to '.$end_date ; ?> for the property with Reference No <?php echo $property_ref_no; ?> will be confirmed by our agent <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> shortly</p>
+                                            <p>Your request for appointment on <?php echo $start_date.' to '.$end_date ; ?> for the property with Reference No <?php echo $property_ref_no; ?> will be confirmed by our agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> shortly</p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             

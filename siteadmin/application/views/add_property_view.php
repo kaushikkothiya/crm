@@ -1,6 +1,4 @@
 <?php
-
-
                    
 $this->load->view('header');
 if (isset($user[0])) {
@@ -8,6 +6,7 @@ if (isset($user[0])) {
     $id = $user[0]->id;
     $type = $user[0]->type;
 	$address = $user[0]->address;
+	$country_id = $user[0]->country_id;
 	$city_id = $user[0]->city_id;
 	$city_area =$user[0]->city_area;
 	$property_type = $user[0]->property_type;
@@ -67,11 +66,12 @@ if (isset($user[0])) {
 	$from_sea = $user[0]->from_sea;
 	$from_cafeteria = $user[0]->from_cafeteria;
 	$from_restaurent = $user[0]->from_restaurent;
-
+	$map_address=$user[0]->map_adress;
 } else {
     $id = $this->input->post('id');
     $type = $this->input->post('type');
     $address = $this->input->post('address');
+    $country_id = $this->input->post('country_id');
 	$city_id = $this->input->post('city_id');
 	$city_area = $this->input->post('city_area_id');
 	$property_type = $this->input->post('property_category');
@@ -121,7 +121,7 @@ if (isset($user[0])) {
 	$from_sea = $this->input->post('from_sea');
 	$from_cafeteria = $this->input->post('from_cafeteria');
 	$from_restaurent = $this->input->post('from_restaurant');
-	
+	$map_address=$this->input->post('search_address');
 }
 ?>
 <div class="container-fluid">
@@ -195,8 +195,7 @@ $this->load->view('leftmenu');
 <?php echo form_open_multipart('verification/create_property', array('class' => 'form-horizontal')); ?>
 <fieldset>
 	<input type="hidden" id="property_id" name="property_id" value="<?php if(isset($id) && !empty($id)){ echo $id; } ?>">
-	<div class="propertymain">
-		<h1>Owner Detail</h1>
+	
 		<?php 
 		if(!empty($id))
 		{
@@ -207,19 +206,23 @@ $this->load->view('leftmenu');
 					$agent_loginid="";
 			}
 			
-			if(!$this->session->userdata('logged_in_super_user'))
+			if(!$this->session->userdata('logged_in_super_user') && !$this->session->userdata('logged_in_employee'))
 			{
 
-				if(!empty($agent_loginid) &&  ($agent_loginid == $added_id)){
+				if(!empty($agent_loginid) &&  ($agent_loginid == $agent_id)){
 					$flag = "0";
 					$disable='disabled';
 					$dis_flag="true";
 				}else{
-					$flag = "1";
+					$flag = "2";
 					$disable='disabled';
 					$dis_flag="true";
 				}
 			
+			}elseif ($this->session->userdata('logged_in_employee')) {
+				$flag = "2";
+				$disable="";
+				$dis_flag="";
 			}else{
 				$flag = "0";
 				$disable="";
@@ -231,8 +234,9 @@ $this->load->view('leftmenu');
 			$dis_flag="";
 		}
 		if($flag == "0")
-		{
-		?>
+		{ ?>
+		<div class="propertymain">
+		<h1>Owner Detail</h1>
 		<div class="propertypadd">
 			<div class="twofildmain">
 				<div class="fildleft">First Name :</div>
@@ -286,7 +290,7 @@ $this->load->view('leftmenu');
 				</div>
 				<div class="clear"></div>
 			</div>
-		<?php } ?>
+		
 			<div class="twofildmain">
 				<div class="fildleft">Email :</div>
 				<div class="fildright">
@@ -336,12 +340,11 @@ $this->load->view('leftmenu');
 				</div>
 				<div class="clear"></div>
 			</div>
-			
 		</div>
-		
 	</div>
+	<div class="line2"></div>
+<?php } ?>
 
-<div class="line2"></div>
 <div class="propertymain">
 		<h1></h1>
 		<div class="twofildmain">
@@ -539,7 +542,20 @@ $this->load->view('leftmenu');
 			<div class="propertypadd">
 				<div class="propertyleft">
 					<div class="fild">
+						<div class="fildleft">Country :</div>
 						<div class="data">
+							<?php
+								$countrydata =array(0 => 'Select country',1 => 'Cyprus');
+								
+								$selected = $country_id;
+								if($selected == "" || $selected == 0){
+										$selected = 0;
+								}
+								$device = 'id="country_id" class="inpselect1" style="width: 255px"';
+								echo form_dropdown('country_id', $countrydata, $selected, $device);
+							?>
+							</br></br></br>	
+							<div class="fildleft">City :</div>
 							<?php
 								$citydata =$this->user->getallcity();
 								$selected = $city_id;
@@ -550,6 +566,7 @@ $this->load->view('leftmenu');
 								echo form_dropdown('city_id', $citydata, $selected, $device);
 							?>
 							</br></br></br>	
+							<div class="fildleft">City area :</div>
 							<?php
 								$city_area_rec = array( '0'=>'Select city area');//$this->user->getallcity_area();
 						 		$selected = $city_area;
@@ -566,13 +583,14 @@ $this->load->view('leftmenu');
 				<div class="propertyright">
 					<div class="fild">
 						<div class="data">
-							<input type="text" name="search_address" id="search_address" value="1600 Amphitheatre Pky, Mountain View, CA" onblur="showAddress(this.value);">
+							<input type="text" name="search_address" id="search_address" value="<?php echo (empty($map_address)) ? 'limassol, cyprus' :$map_address ?>">
 							<!-- <textarea name="" cols="2" rows="1" class="textarea1"></textarea> -->
+							<input type="hidden" id="lat_lon" name="lat_lon">
 						</div>
 					</div>
 					
 					<div class="fild">
-						<div class="data" id="map_canvas" style="width: 500px; height: 400px">
+						<div class="data" id="map_canvas" style="width: 100%; height: 400px">
 							<!-- <img src="<?php echo base_url(); ?>img/Google-Maps.png" style="width:80%;" /> -->
 						</div>
 					</div>
@@ -593,7 +611,7 @@ $this->load->view('leftmenu');
 				<div class="fild">
 					<div class="data">
 							<?php
-								$property_category = array('0' =>'Select Property Category','1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
+								$property_category = array('0' =>' Select Property Category','1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
 								asort($property_category);
 								$selected = $property_type;
 								if($selected == "" || $selected == 0){
@@ -749,7 +767,7 @@ $this->load->view('leftmenu');
 		
 			 <div class="propertyleft">
 				<div class="fild">
-					<div class="data" id="ScrollCB" style="height:200px;width:400px;overflow-y:scroll;border:1px solid #ccc; padding:5px;">
+					<div class="data scroll1" id="ScrollCB">
 						<?php
 							$all_genral_facility = $this->inquiry_model->get_genral_facility();
 							//$facility_id= array_map($facility_id,"facility_id");
@@ -773,7 +791,7 @@ $this->load->view('leftmenu');
 			
 			<div class="propertyright">
 				<div class="fild">
-					<div class="data" id="ScrollCB" style="height:200px;width:400px;overflow-y:scroll;border:1px solid #ccc; padding:5px;">
+					<div class="data scroll2" id="ScrollCB">
 							
 							<?php $all_instrumental_facility = $this->inquiry_model->get_instrumental_facility();
 							foreach ($all_instrumental_facility as $key1 => $value1) {
@@ -1197,9 +1215,8 @@ if (isset($user[0])) {
 $this->load->view('footer');
 
 ?>
- <script src="http://maps.google.com/maps?file=api&amp;v=2&a
- y=ABQIAAAAjU0EJWnWPMv7oQ-jjS7dYxSPW5CJgpdgO_s4yyMovOaVh_KvvhSfpvagV18eOyDWu7VytS6Bi1CWxw"
-      type="text/javascript"></script>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/property.js"></script>
 <script>
 
@@ -1233,8 +1250,12 @@ function spance_remove(e){
             return false //disable key press
         
 }
-        $(document).ready(function () {
-         hide_agresive_div();
+       $(document).ready(function () {
+        	var map;
+        	var markers = [];
+			var addressField;
+			var geocoder;
+		 hide_agresive_div();
          		$("#link_url").cleditor({width:300});
         		$("#short_desc").cleditor({width:300}); 
         		
@@ -1244,43 +1265,211 @@ function spance_remove(e){
         		$('.multiselect').multipleSelect({
                                 filter: true,
                             });
-        		//$("#long_decs").cleditor({width:300});
-        		initialize();
-        		GUnload();
-        		var map = null;
-    			var geocoder = null;
+        		 	//var geocoder = new google.maps.Geocoder();
+					var address =$('#search_address').val();
+					var latitude="";
+					var longitude="";
+					$.ajax({
+					  url:"http://maps.googleapis.com/maps/api/geocode/json?address="+address+"&sensor=false",
+					  type: "POST",
+					  success:function(res){
+					     latitude=res.results[0].geometry.location.lat;
+					     longitude=res.results[0].geometry.location.lng;
+					     $('#lat_lon').val(latitude+','+longitude);
+					     var mapOptions = {
+					        center: new google.maps.LatLng(latitude, longitude),
+					        zoom: 13,
+					        mapTypeId: google.maps.MapTypeId.HYBRID,
+					        panControl: true,
+					        zoomControl: true,
+					        mapTypeControl: true,
+					        scaleControl: true,
+					        streetViewControl: true,
+					        overviewMapControl: true,
+					        mapTypeId: google.maps.MapTypeId.ROADMAP
+					    };
+ 						var myLatlng = new google.maps.LatLng(latitude,longitude);
+					    // Define map
+					    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+					   addMarker(myLatlng,address);
+					   //  var marker = new google.maps.Marker({
+				    //     position: myLatlng, 
+				    //     map: map,
+				    //     title:address
+				    // });
 
-		    });
-        function initialize() {
-		      if (GBrowserIsCompatible()) {
-		        map = new GMap2(document.getElementById("map_canvas"));
-		        map.setCenter(new GLatLng(37.4419, -122.1419), 1);
-		        map.setUIToDefault();
-		        geocoder = new GClientGeocoder();
-		      }
-		    }
-        function showAddress(search_address) {
-		      if (geocoder) {
-		        geocoder.getLatLng(
-		          search_address,
-		          function(point) {
-		            if (!point) {
-		              alert(search_address + " not found");
-		            } else {
-		              map.setCenter(point, 15);
-		                map.setZoom(5);
-		              var marker = new GMarker(point, {draggable: true});
-		              map.addOverlay(marker);
-		              GEvent.addListener(marker, "dragend", function() {
-		                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
-		              });
-		              GEvent.addListener(marker, "click", function() {
-		                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
-		              });
-			      GEvent.trigger(marker, "click");
-		            }
-		          }
-		        );
-		      }
-		    }
+					    // Define Gecoder
+					    geocoder = new google.maps.Geocoder();
+
+					    // Init searchbox
+					    initSearchBox();
+					  	}				
+					 });
+        	// Adds a marker to the map and push to the array.
+			function addMarker(location,address) {
+
+			  var marker = new google.maps.Marker({
+			    position: location,
+			    map: map,
+			    title:address
+			  });
+			  markers.push(marker);
+			}
+
+			// Sets the map on all markers in the array.
+			function setMapOnAll(map) {
+			  for (var i = 0; i < markers.length; i++) {
+			    markers[i].setMap(map);
+			  }
+			}
+
+			// Removes the markers from the map, but keeps them in the array.
+			function clearMarkers() {
+			  setMapOnAll(null);
+			}
+
+			// Shows any markers currently in the array.
+			function showMarkers() {
+			  setMapOnAll(map);
+			}
+
+			// Deletes all markers in the array by removing references to them.
+			function deleteMarkers() {
+			  clearMarkers();
+			  markers = [];
+			}	
+
+		   function initSearchBox() {
+			    // Add searchbox
+			    var searchControlDiv = document.createElement('div');
+			    var searchControl = new SearchControl(searchControlDiv, map);
+
+			    searchControlDiv.index = 1;
+			    map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchControlDiv);
+			}
+      
+
+		function SearchControl(controlDiv, map) {
+			   controlDiv.style.padding = '5px';
+
+			    var controlUI = document.createElement('div');
+			    controlUI.style.backgroundColor = 'white';
+			    controlUI.style.borderStyle = 'solid';
+			    controlUI.style.borderWidth = '2px';
+			    controlUI.style.cursor = 'pointer';
+			    controlUI.style.textAlign = 'center';
+			    controlUI.title = 'Sök ex: gatunamn, stad';
+			    controlDiv.appendChild(controlUI);
+
+			    // Create the search box
+			    var controlSearchBox = document.getElementById("search_address"); //document.createElement('input');
+			   
+			    // Initiat autocomplete
+			    $(function () {
+			        $(controlSearchBox).autocomplete({
+			            source: function (request, response) {
+
+			                if (geocoder == null) {
+			                    geocoder = new google.maps.Geocoder();
+			                }
+
+			                geocoder.geocode({
+			                    'address': request.term
+			                }, function (results, status) {
+			                    if (status == google.maps.GeocoderStatus.OK) {
+			                        var searchLoc = results[0].geometry.location;
+			                        var lat = results[0].geometry.location.lat();
+			                        var lng = results[0].geometry.location.lng();
+			                        var latlng = new google.maps.LatLng(lat, lng);
+			                        var bounds = results[0].geometry.bounds;
+			                         deleteMarkers();
+			                         
+			                         //marker.setMap(null);
+			         //                 var marker = new google.maps.Marker({
+								    //     position: latlng, 
+								    //     map: map,
+								    //     title:address
+								    // });
+			                        geocoder.geocode({
+			                            'latLng': latlng
+			                        }, function (results1, status1) {
+			                            if (status1 == google.maps.GeocoderStatus.OK) {
+			                                if (results1[1]) {
+			                                    response($.map(results1, function (loc) {
+			                                    	
+			                         				addMarker(latlng,loc.formatted_address);
+			                                        return {
+			                                            label: loc.formatted_address,
+			                                            value: loc.formatted_address,
+			                                            bounds: loc.geometry.bounds
+			                                        }
+			                                    }));
+			                                }
+			                            }
+			                        });
+			                    }
+			                });
+			            },
+			            select: function (event, ui) {
+			                var pos = ui.item.position;
+			                var lct = ui.item.locType;
+			                var bounds = ui.item.bounds;
+
+			                if (bounds) {
+			                    map.fitBounds(bounds);
+			                }
+			            }
+			        });
+			    });
+
+			    // Set CSS for the control interior.
+			    var controlText = document.createElement('div');
+			    controlText.style.fontFamily = 'Arial,sans-serif';
+			    controlText.style.fontSize = '12px';
+			    controlText.style.paddingLeft = '4px';
+			    controlText.style.paddingRight = '4px';
+			    controlText.appendChild(controlSearchBox);
+			    controlUI.appendChild(controlText);
+			}
+			$('#city_area_id').live('change',function(){
+
+				var city_area=$('#city_area_id option:selected').text();
+				var city=$('#city_id option:selected').text();
+				var country=$('#country_id option:selected').text();
+				if(country=='Select country'){
+					var address = city_area+' '+city;
+				}else{
+				var address = city_area+' '+city+' '+country;	
+				}
+				
+				$('#search_address').val(address);
+        	$.ajax({
+					  url:"http://maps.googleapis.com/maps/api/geocode/json?address="+address+"&sensor=false",
+					  type: "POST",
+					  success:function(res){
+					     latitude=res.results[0].geometry.location.lat;
+					     longitude=res.results[0].geometry.location.lng;
+					     
+					     $('#lat_lon').val(latitude+','+longitude);
+					     var myLatlng = new google.maps.LatLng(latitude,longitude);
+					      deleteMarkers();
+					      addMarker(myLatlng,address);
+					    //  setMapOnAll(null);
+  						 // marker = [];
+  						
+					    // var marker = new google.maps.Marker({
+         //    			position: myLatlng,
+         //   				map: map,
+           				
+        	// 			});
+        				 
+ 						 map.setCenter(new google.maps.LatLng(latitude, longitude));
+					  	}
+
+					 });
+
+			  			
+			});
+		});
+
 </script>

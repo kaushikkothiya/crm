@@ -35,6 +35,19 @@ $this->load->view('leftmenu');
 </div>
 
 <div class="span10 body-container">
+	<?php if ($this->session->flashdata('success')) { ?>
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <?php echo $this->session->flashdata('success'); ?>
+                </div>
+            <?php }else if($this->session->flashdata('error')){ ?>
+                <div class="alert alert-error" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    
+                    <?php echo $this->session->flashdata('error'); ?>
+                </div>
+            <?php } ?>
+
 <div class="row-fluid">
 <?php  if ($this->session->userdata('logged_in_super_user')) { ?>
 <a href="<?php echo base_url(); ?>home/agent_manage">

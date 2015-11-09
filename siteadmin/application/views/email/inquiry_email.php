@@ -15,7 +15,7 @@
                         <tbody>
                         <tr>
                             <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
-                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="CRM" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
+                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
                             </td>
                         </tr>
                         <tr>
@@ -35,7 +35,7 @@
                                             <p style="margin: 0px; width:600px;" >Dear  <b><?php echo $fname;?>&nbsp;<?php echo $lname;?></b>,</p>
                                             <p>Welcome and Thank you for choosing our company to find your ideal property.</p>
                                             <p>Your Customer ID: <?php echo $id;?>.</p> 
-                                            Any further info call: 8000 7000
+                                            Any further information please call: 8000 7000
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             

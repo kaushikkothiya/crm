@@ -100,8 +100,8 @@ class Home extends CI_Controller {
         
     }
     function agent_mobile_check() {
-        echo'<pre>';print_r($_POST);exit;
-        
+      
+
         $user = $this->user->agent_mobile_check($_POST);
         
         if(!empty($user)) {
@@ -291,6 +291,18 @@ class Home extends CI_Controller {
                 //$data['orderdetail'] = $this->user->getAllUserOrderDetail($usrid);
                 $this->load->view('add_property_view', $data);
             } else {
+                // $this->load->library('googlemaps');
+                // //$marker = array();
+                // //$marker['position'] = '37.429, -122.1419';
+                // //$this->googlemaps->add_marker($marker);
+                // $config['center'] = '37.4419, -122.1419';
+                // $config['zoom'] = 'auto';
+                // $config['places'] = TRUE;
+                // $config['placesAutocompleteInputID'] = 'myPlaceTextBox';
+                // $config['placesAutocompleteBoundsMap'] = TRUE; // set results biased towards the maps viewport
+                // $config['placesAutocompleteOnChange'] = 
+                // $this->googlemaps->initialize($config);
+                // $data['map'] = $this->googlemaps->create_map();
 
                 $this->load->view('add_property_view');
             }
@@ -324,13 +336,18 @@ class Home extends CI_Controller {
 
     function sms_email_history()
     {
+        error_reporting(0);
         $data['sms_email_history'] = $this->inquiry_model->get_sms_email_history();
+        //echo'<pre>';print_r($data['sms_email_history']);exit;
         
         foreach ($data['sms_email_history'] as $key => $value) {
         
-            $data['sms_email_history'] = $this->inquiry_model->get_sms_email_history_recievername($value->user_type);
+            $data['sms_email_history'][$key]->name= $this->inquiry_model->get_sms_email_history_recievername($value->user_type,$value->reciever_id);
+            $data['sms_email_history'][$key]->name=$data['sms_email_history'][$key]->name[0]->fname.' '.$data['sms_email_history'][$key]->name[0]->lname;
+            //$data['sms_email_history'][$key]
         }
-        //echo'<pre>';print_r($data);exit;
+        //echo "<pre>";print_r($data);exit;
+       // $data['sms_email_history'] =$data['sms_email_history'][0];
         $this->load->view('sms_email_history_view',$data);
     }
 
@@ -474,7 +491,7 @@ class Home extends CI_Controller {
         }
     }
     function unic_inquiry_num() {
-        $inquiry_num = 'inquiry'.rand(10000000,99999999);
+        $inquiry_num = rand(10000000,99999999);
         $unic_number = $this->inquiry_model->check_unic_inquiry_num($inquiry_num);
         if(!empty($unic_number))
         {
@@ -498,9 +515,20 @@ class Home extends CI_Controller {
         $property_buy_sale = $_POST['aquired'];
         $property_link = array();
         $property_title =array();
+        $property_link_url = array();
         $property_link_path = base_url()."index.php/home/view_property/"; 
+        $url= explode(',', $getSelectedPropertyDetails[0]->url_link);
+        if(!empty($url[0])){
+            $url_link=$url[0];
+        }elseif (!empty($url[1])) {
+          $url_link=$url[1];
+        }elseif (!empty($url[2])) {
+           $url_link=$url[2];
+        }else{
+            $url_link="";
+        }
         array_push($property_link, $property_link_path.$getSelectedPropertyDetails[0]->id);
-       
+        array_push($property_link_url,$url_link);
         if(!empty($getSelectedPropertyDetails[0]->bedroom)){
             $bedroom_detail=$getSelectedPropertyDetails[0]->bedroom;
         }else{
@@ -538,15 +566,57 @@ class Home extends CI_Controller {
         else{
             $type = "- ";
         }
-        array_push($property_title, $reference_no." ".$bedroom_detail." Bedrooms ".$property_category." ".$type);
+        array_push($property_title, $reference_no.", ".$bedroom_detail." Bedrooms ".$property_category." for ".$type);
         $inquiry_num = $this->unic_inquiry_num();
 
         $this->inquiry_model->saveClientInquiry($customerId, $PropertyId, $getSelectedPropertyDetails[0]->reference_no, $inquiry_num, $property_buy_sale);            
+        include APPPATH . 'third_party/Classes/Mailchimp.php';
+        $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+        $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+        $mc = new Mailchimp($apikey);
+        $list_id = 'd42363dd0e';
+        
+        $grps = $mc->lists->interestGroupings($list_id);
+        $rent_group = array();
+        $sale_group = array();
+        foreach($grps as $grp){
+            if($grp['id']=='16405'){
+                $rent_group = $grp;
+            }
+            if($grp['id']=='16409'){
+                $sale_group = $grp;
+            }
+        }
+        
+            $this->load->model('newsletter_model');
+            $mc_res = $this->newsletter_model->getMinMaxPriceByCustomerID($customerId,$sale_group,$rent_group);
+            $merge_vars = array();
+            $merge_vars['groupings'] = array(
+                array(
+                    'id' => '16389',
+                    'groups' => array('4')
+                ),
+                array(
+                    'id' => '16393',
+                    'groups' => array($mc_res['aquired'])
+                ),
+                array(
+                    'id' => '16405',
+                    'groups' => $mc_res['rent_grps']
+                ),
+                array(
+                    'id' => '16409',
+                    'groups' => $mc_res['sale_grps']
+                ),
+            );
             
+            @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);
+
             $data = array(
                             'customer_email'=>$get_exist_customer_Id[0]->email,
-                            'customer_name'=>$get_exist_customer_Id[0]->fname.''.$get_exist_customer_Id[0]->lname,
+                            'customer_name'=>$get_exist_customer_Id[0]->fname.' '.$get_exist_customer_Id[0]->lname,
                             'property_links'=>$property_link,
+                            'property_link_url'=>$property_link_url,
                             //'bedroom'=>$bedroom_detail,
                             //'property_category'=>$property_category,
                             //'property_type'=>$propety_type
@@ -587,29 +657,18 @@ class Home extends CI_Controller {
                 {    
                     $mcode = substr($country_code[0]->prefix_code, 1);
                     $mobile_code="00".$mcode;
-                    // $count_mcode = strlen($mcode);
-                    // if($count_mcode < 2 ){
-                    //     $mobile_code = '000'.$mcode;
-                    // }elseif($count_mcode < 3 ){
-                    //     $mobile_code = '00'.$mcode;
-                    // }
-                    // elseif($count_mcode < 4 ){
-                    //     $mobile_code = '0'.$mcode;
-                    // }else{
-                    //     $mobile_code = $mcode;
-                    // }
                    
                     $message = "Dear ".$get_exist_customer_Id[0]->fname." ".$get_exist_customer_Id[0]->lname.", ";
                     $message .="Following attached link for property as per your requirements: \n";
-                    $message .= $reference_no;
-                    $message .= " ".$bedroom_detail." Bedrooms ";
-                    $message .= $property_category .", ";
+                    $message .= "Reference No: ".$reference_no;
+                    $message .= ", ".$bedroom_detail." Bedrooms ";
+                    $message .= $property_category ." for ";
                      
                     if($propety_type =='1')
                     {
                         $message .= "Sale \n";
                     }
-                    else if($propety_type ==2)
+                    else if($propety_type =='2')
                     {
                         $message .= "Rent \n";
                     }
@@ -620,10 +679,16 @@ class Home extends CI_Controller {
                     else{
                         $message .= "- \n";
                     }
-                    $message .= $property_link[0];
-                    $message .= " For any further info call: 8000 7000";
+                    
+                    if(!empty($property_link_url[0]) && trim($property_link_url[0])!=""){
+                        $message .= $property_link_url[0];
+                    }else{
+                        $message .= $property_link[0];
+                    }
+                    $message .= " For any further information please call: 8000 7000";
                     $message .= " Thanks,";
                     $message .= " Monopolion Team";
+
                     $this->load->library('CMSMS');
                     $sms_res=CMSMS::sendMessage($mobile_code.$get_exist_customer_Id[0]->mobile_no, $message);
                     if(empty($sms_res)){
@@ -692,15 +757,26 @@ class Home extends CI_Controller {
                         $customerId  = $customer_Id;
                         $property_buy_sale = $_POST['aquired'];
                         $property_link = array();
+                        $property_title = array();
+                        $property_link_url = array();
                         $property_link_path = base_url()."index.php/home/view_property/";
                         foreach ($getSelectedPropertyDetails as $inqKey => $inqValue) {
-
+                           $url= explode(',', $inqValue->url_link);
+                           if(!empty($url[0])){
+                                $url_link=$url[0];
+                           }elseif (!empty($url[1])) {
+                              $url_link=$url[1];
+                           }elseif (!empty($url[2])) {
+                               $url_link=$url[2];
+                           }else{
+                               $url_link="";
+                           }
                             // Get Unique Inquiry Reference Number
                             $inquiry_num = $this->unic_inquiry_num();
                             if($this->inquiry_model->saveClientInquiry($customerId, $inqValue->id, $inqValue->reference_no, $inquiry_num, $property_buy_sale))
                             {
                                 array_push($property_link, $property_link_path.$inqValue->id);
-                                
+                                array_push($property_link_url,$url_link);
                             if(!empty($inqValue->property_type)){ 
                                 $property_category= $this->get_propertytypeby_id($inqValue->property_type);
                             }else{
@@ -722,12 +798,54 @@ class Home extends CI_Controller {
                                     $type = "-";
                                 }
 
-                            array_push($property_title, $inqValue->reference_no." ".$inqValue->bedroom." Bedrooms ".$property_category." ".$type);
+                            array_push($property_title, $inqValue->reference_no.", ".$inqValue->bedroom." Bedrooms ".$property_category." ".$type);
                         
                             }
                             
                         }
+                        include APPPATH . 'third_party/Classes/Mailchimp.php';
+                    $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+                    $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+                    $mc = new Mailchimp($apikey);
+                    $list_id = 'd42363dd0e';
+                    
+                    $grps = $mc->lists->interestGroupings($list_id);
+                    $rent_group = array();
+                    $sale_group = array();
+                    foreach($grps as $grp){
+                        if($grp['id']=='16405'){
+                            $rent_group = $grp;
+                        }
+                        if($grp['id']=='16409'){
+                            $sale_group = $grp;
+                        }
+                    }
                         
+                    $this->load->model('newsletter_model');
+                    $mc_res = $this->newsletter_model->getMinMaxPriceByCustomerID($customerId,$sale_group,$rent_group);
+                    
+                    $merge_vars = array();
+                    $merge_vars['groupings'] = array(
+                        array(
+                            'id' => '16389',
+                            'groups' => array('4')
+                        ),
+                        array(
+                            'id' => '16393',
+                            'groups' => array($mc_res['aquired'])
+                        ),
+                        array(
+                            'id' => '16405',
+                            'groups' => $mc_res['rent_grps']
+                        ),
+                        array(
+                            'id' => '16409',
+                            'groups' => $mc_res['sale_grps']
+                        ),
+                    );
+                    
+                    @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);
+ 
                         if(!empty($getSelectedPropertyDetails[0]->bedroom)){
                             $bedroom_detail=$getSelectedPropertyDetails[0]->bedroom;
                         }else{
@@ -755,22 +873,12 @@ class Home extends CI_Controller {
                             {    
                                 $mcode = substr($country_code[0]->prefix_code, 1);
                                 $mobile_code="00".$mcode;
-                                // $count_mcode = strlen($mcode);
-                                // if($count_mcode < 2 ){
-                                //     $mobile_code = '000'.$mcode;
-                                // }elseif($count_mcode < 3 ){
-                                //     $mobile_code = '00'.$mcode;
-                                // }
-                                // elseif($count_mcode < 4 ){
-                                //     $mobile_code = '0'.$mcode;
-                                // }else{
-                                //     $mobile_code = $mcode;
-                                // }
+                                
                                 $message = "Dear ".$_POST['fname']." ".$_POST['lname'].", ";
                                 $message .="Following attached link for property as per your requirements: \n";
-                                $message .= $reference_no;
-                                $message .= " ".$bedroom_detail." Bedrooms ";
-                                $message .= $property_category.", ";
+                                $message .= " Reference No: ".$reference_no;
+                                $message .= ", ".$bedroom_detail." Bedrooms ";
+                                $message .= $property_category." for ";
                                 if($property_type ==1)
                                 {
                                     $message .= "Sale \n";
@@ -786,8 +894,12 @@ class Home extends CI_Controller {
                                 else{
                                     $message .= "- \n";
                                 }
-                                $message .= $property_link[0];
-                                $message .= " For any further info call: 8000 7000";
+                                if(!empty($property_link_url[0]) && trim($property_link_url[0])!=""){
+                                    $message .= $property_link_url[0];
+                                }else{
+                                    $message .= $property_link[0];
+                                }
+                                $message .= " For any further information please call: 8000 7000";
                                 $message .= " Thanks,";
                                 $message .= " Monopolion Team";
                                 $this->load->library('CMSMS');
@@ -820,7 +932,8 @@ class Home extends CI_Controller {
                                         'customer_email'=>$_POST['email'],
                                         'customer_name'=>$_POST['fname'].''.$_POST['lname'],
                                         'property_links'=>$property_link,
-                                        'property_title'=>$property_title
+                                        'property_title'=>$property_title,
+                                        'property_link_url'=>$property_link_url
                                         //'bedroom'=>$bedroom_detail,
                                         //'property_category'=>$property_category,
                                         //'property_type'=>$propety_type
@@ -1082,150 +1195,494 @@ class Home extends CI_Controller {
         redirect('home', 'refresh');
     }
     function appointment_conform(){
-      
-            $inquiry_id = $this->uri->segment(3);
-            $agent_id = $this->uri->segment(4);
-           
+            
+            if($this->uri->segment(3) && $this->uri->segment(4))
+            {
+                $inquiry_id = $this->uri->segment(3);
+                $agent_id = $this->uri->segment(4);
+                $data['inquiry']=$inquiry_id;
+                $data['agent']=$agent_id;
+            }else{
+                $data['inquiry']='';
+                $data['agent']='';
+            }
+            $this->load->view('appointment_conform',$data);
+    }
+    function final_appointment_conform()
+    {
+
+
+        if(!empty($_POST)){
+            $inquiry_id = $_POST['inquiry'];
+            $agent_id = $_POST['agent'];
+            
             $aget_record = $this->inquiry_model->get_aget_record($agent_id);
+            $employee_record = $this->inquiry_model->get_employee_record($inquiry_id);
             $aget_data = $this->inquiry_model->check_agent_appointment($agent_id,$inquiry_id);
+            //echo'<pre>';print_r($employee_record);exit;
             if(!empty($aget_data))
             {
-            if($aget_data[0]->id == $inquiry_id)
-            {
-                $inquiry_data = $this->inquiry_model->update_agent_appointment($agent_id,$inquiry_id);
-                if($inquiry_data ==1)
+               if($aget_data[0]->id == $inquiry_id)
                 {
-                $inquiry_detail = $this->inquiry_model->get_inquiry_data($inquiry_id);
-                
-                $agentcountry_code = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
-                $sendSMSFlag = "";
-                $sendEmailFlag = "";
-                
-                if(!empty($agentcountry_code))
-                {    
-                    $agentmcode = substr($agentcountry_code[0]->prefix_code, 1);
-                    $agentmobile_code="00".$agentmcode;
-                //     $agentcount_mcode = strlen($agentmcode);
-                //     if($agentcount_mcode < 2 ){
-                //         $agentmobile_code = '000'.$agentmcode;
-                //     }elseif($agentcount_mcode < 3 ){
-                //         $agentmobile_code = '00'.$agentmcode;
-                //     }
-                //     elseif($agentcount_mcode < 4 ){
-                //         $agentmobile_code = '0'.$agentmcode;
-                //     }else{
-                //         $agentmobile_code = $agentmcode;
-                //     }
-                }else{
-                    $agentmobile_code = "0000";
-                }
-
-                $country_code = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
-                if(!empty($country_code))
-                {    
-                    $mcode = substr($country_code[0]->prefix_code, 1);
-                    $mobile_code="00".$mcode;
-                    // $count_mcode = strlen($mcode);
-                    // if($count_mcode < 2 ){
-                    //     $mobile_code = '000'.$mcode;
-                    // }elseif($count_mcode < 3 ){
-                    //     $mobile_code = '00'.$mcode;
-                    // }
-                    // elseif($count_mcode < 4 ){
-                    //     $mobile_code = '0'.$mcode;
-                    // }else{
-                    //     $mobile_code = $mcode;
-                    // }
-                    $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
-                    $message .= " your request for appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
-                    $message .=" for the property with Reference No:".$inquiry_detail[0]->property_ref_no." has been CONFIRMED!";
-                    $message .= " For any further info for the specific property kindly contact";
-                    $message .= " our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                    $inquiry_data = $this->inquiry_model->update_agent_appointment($agent_id,$inquiry_id,$_POST);
                     
-                    $this->load->library('CMSMS');
-                    $sms_res=CMSMS::sendMessage($mobile_code.$inquiry_detail[0]->mobile_no, $message);
-                     if(empty($sms_res)){
-                            $sendSMSFlag = "SMS";
-                        }
-
-                    $history_text_sms       = $message;
-                    $history_subject_sms    = "Agent Confirm Your Appointment";
-                    $history_type_sms       = "SMS";
-                    $history_reciever_sms   = $mobile_code.$inquiry_detail[0]->mobile_no;
-                    $history_reciever_id_sms    = $inquiry_detail[0]->id;
-                    $history_reciever_usertype="1";
-
-                    //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
-                }
-                if(!empty($inquiry_detail[0]->email))
-                {
-
-                    $data = array(
-                                  'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
-                                  'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
-                                  'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
-                                  'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
-                                  'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
-                                  'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
-                                 );
-                       
-                        if(!empty($customer_detail[0]->email))
-                        {
-                            $this->load->library('email');
-                            $this->email->from('info@monopolion.com', 'monopolion');
-                            $this->email->to($inquiry_detail[0]->email);
-                            $this->email->cc('info@monopolion.com');
-                            $this->email->bcc('info@monopolion.com');
-                            $this->email->subject('Agent Confirm Your Appointment');
-                            $email_layout = $this->load->view('email/appointment_confirm', $data,TRUE);
-                            $this->email->message($email_layout);
-                            if($this->email->send())
-                            {
-                                $sendEmailFlag = "E-mail";   
+                    if($inquiry_data ==1)
+                    {
+                        $inquiry_detail = $this->inquiry_model->get_inquiry_data($inquiry_id);
+                        
+                        $sendSMSFlag = "";
+                        $sendEmailFlag = "";
+                        $sendSMSFlag1 = "";
+                        $sendEmailFlag1 = "";
+                        $sendSMSFlag2 = "";
+                        $sendEmailFlag2 = "";
+                        /*agent details  start */    
+                        $agentcountry_code = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
+                        if(!empty($agentcountry_code))
+                        {    
+                            $agentmcode = substr($agentcountry_code[0]->prefix_code, 1);
+                            $agentmobile_code="00".$agentmcode;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
+                                $message_agent .= " You  that your  appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
+                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
+                                $message_agent .= " Your appointment has been cancel";
+                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
+                          
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
+                                $message_agent .= " Your appointment has been Reschedule";
+                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
+                          
                             }
+                            $this->load->library('CMSMS');
+                            $sms_res=CMSMS::sendMessage($agentmobile_code.$aget_record[0]->mobile_no, $message_agent);
+                             if(empty($sms_res)){
+                                    $sendSMSFlag1 = "SMS";
+                                }
 
-                            // save Customer history
-                            $history_text       = $email_layout;
-                            $history_subject    = "Agent Confirm Your Appointment";
-                            $history_type       = "E-mail";
-                            $history_reciever   = $inquiry_detail[0]->email;
-                            $history_reciever_id    = $inquiry_detail[0]->id;
-                            $history_reciever_usertype="1";
-                            //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                            $history_text_sms_agent       = $message_agent;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $history_subject_sms_agent    = "Agent Confirm Appointment";
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $history_subject_sms_agent    = "Agent cancle Appointment";
+                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $history_subject_sms_agent    = "Agent reschedule Appointment";
+                            }
+                            $history_type_sms_agent       = "SMS";
+                            $history_reciever_sms_agent   = $agentmobile_code.$aget_record[0]->mobile_no;
+                            $history_reciever_id_sms_agent    = $aget_record[0]->id;
+                            $history_reciever_usertype_agent="2";
+
                         }
-                }
-                if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
-                {
-                    $history_type_sms   = "SMS/E-mail";
-                    $history_type       = "SMS/E-mail";
+                        if(!empty($aget_record[0]->email))
+                        {
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $data['confirm_agent'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $data['cancle_agent'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $data['reschedule_agent'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }
+                                    $this->load->library('email');
+                                    $this->email->from('info@monopolion.com', 'monopolion');
+                                    $this->email->to($aget_record[0]->email);
+                                    $this->email->cc('info@monopolion.com');
+                                    $this->email->bcc('info@monopolion.com');
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $this->email->subject('Agent Confirm  Appointment');
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $this->email->subject('Agent cancle Appointment');
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $this->email->subject('Agent reschedule Appointment');
+                                    }
+                                    $email_layout_agent = $this->load->view('email/appointment_confirm_agent', $data,TRUE);
+                                    $this->email->message($email_layout_agent);
+                                    if($this->email->send())
+                                    {
+                                        $sendEmailFlag1 = "E-mail";   
+                                    }
 
-                    // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
-                    
-                    // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
-                    
-                }
-                elseif ($sendSMSFlag == "SMS")
-                {
-                    // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
-                    
-                }
-                elseif ($sendEmailFlag == "E-mail")
-                {
-                    // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                                    // save Customer history
+                                    $history_text_agent       = $email_layout_agent;
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $history_subject_agent    = "Agent Confirm Appointment";
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $history_subject_agent    = "Agent cancle Appointment";
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $history_subject_agent    = "Agent reschedule Appointment";
+                                    }
+                                    $history_type_agent       = "E-mail";
+                                    $history_reciever_agent   = $aget_record[0]->email;
+                                    $history_reciever_id_agent    = $aget_record[0]->id;
+                                    $history_reciever_usertype_agent="2";
+                        }
+                        /*agent details  end */
+
+                        /*employee details  start*/
+                        if(!empty($employee_record)){
+                        $employeecountry_code = $this->user->get_contry_code($employee_record[0]->coutry_code);               
+                        if(!empty($employeecountry_code))
+                        {    
+                            $employeemcode = substr($employeecountry_code[0]->prefix_code, 1);
+                            $employeemobile_code="00".$employeemcode;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
+                                $message_employee .= " You  that your  appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
+                                $message_employee .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
+                                $message_employee .= " Your appointment has been cancel";
+                                $message_employee .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                          
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
+                                $message_employee .= " Your appointment has been Reschedule";
+                                $message_employee .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
+                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
+                          
+                            }
+                            $this->load->library('CMSMS');
+                            $sms_res=CMSMS::sendMessage($employeemobile_code.$employee_record[0]->mobile_no, $message_employee);
+                             if(empty($sms_res)){
+                                    $sendSMSFlag2 = "SMS";
+                                }
+
+                            $history_text_sms_employee       = $message_employee;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $history_subject_sms_employee    = "Agent Confirm Appointment";
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $history_subject_sms_employee    = "Agent cancle Appointment";
+                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $history_subject_sms_employee    = "Agent reschedule Appointment";
+                            }
+                            $history_type_sms_employee       = "SMS";
+                            $history_reciever_sms_employee   = $employeemobile_code.$employee_record[0]->mobile_no;
+                            $history_reciever_id_sms_employee    = $employee_record[0]->id;
+                            $history_reciever_usertype_employee="3";
+
+                        }
+                        if(!empty($employee_record[0]->email))
+                        {
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $data['confirm_employee'] = array(
+                                          'employee_name'=>$employee_record[0]->fname.' '.$employee_record[0]->lname,
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $data['cancle_employee'] = array(
+                                          'employee_name'=>$employee_record[0]->fname.' '.$employee_record[0]->lname,  
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $data['reschedule_employee'] = array(
+                                          'employee_name'=>$employee_record[0]->fname.' '.$employee_record[0]->lname,  
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }
+                                    $this->load->library('email');
+                                    $this->email->from('info@monopolion.com', 'monopolion');
+                                    $this->email->to($employee_record[0]->email);
+                                    $this->email->cc('info@monopolion.com');
+                                    $this->email->bcc('info@monopolion.com');
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $this->email->subject('Agent Confirm  Appointment');
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $this->email->subject('Agent cancle Appointment');
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $this->email->subject('Agent reschedule Appointment');
+                                    }
+                                    $email_layout_employee = $this->load->view('email/appointment_confirm_employee', $data,TRUE);
+                                   
+                                    $this->email->message($email_layout_employee);
+                                    if($this->email->send())
+                                    {
+                                        $sendEmailFlag2 = "E-mail";   
+                                    }
+
+                                    // save Customer history
+                                    $history_text_employee       = $email_layout_employee;
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $history_subject_employee    = "Agent Confirm Appointment";
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $history_subject_employee    = "Agent cancle Appointment";
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $history_subject_employee    = "Agent reschedule Appointment";
+                                    }
+                                    $history_type_employee       = "E-mail";
+                                    $history_reciever_employee   = $employee_record[0]->email;
+                                    $history_reciever_id_employee    = $employee_record[0]->id;
+                                    $history_reciever_usertype_employee="3";
+                            }
+                        }
+                        /*employee details  end */
+
+                        /*customer details  start*/
+                        $country_code = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
+                        if(!empty($country_code))
+                        {    
+                            $mcode = substr($country_code[0]->prefix_code, 1);
+                            $mobile_code="00".$mcode;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
+                                $message .= " Your request for appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
+                                $message .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no." has been CONFIRMED!";
+                                $message .= " For any further information please kindly contact";
+                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', Mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
+                                $message .= " Your appointment has been cancel";
+                                $message .= " For any further information please kindly contact";
+                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', Mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                           
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
+                                $message .= " Your appointment has been reschedule";
+                                $message .= " For any further information please kindly contact";
+                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                           
+                            }
+                            
+                            $this->load->library('CMSMS');
+                            $sms_res=CMSMS::sendMessage($mobile_code.$inquiry_detail[0]->mobile_no, $message);
+                             if(empty($sms_res)){
+                                    $sendSMSFlag = "SMS";
+                                }
+
+                            $history_text_sms       = $message;
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                                $history_subject_sms    = "Agent Confirm Your Appointment";
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $history_subject_sms    = "Agent cancle Your Appointment";
+                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $history_subject_sms    = "Agent reschedule Your Appointment";
+                            }
+                            $history_type_sms       = "SMS";
+                            $history_reciever_sms   = $mobile_code.$inquiry_detail[0]->mobile_no;
+                            $history_reciever_id_sms    = $inquiry_detail[0]->id;
+                            $history_reciever_usertype="1";
+
+                            //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
+                        }
+                        if(!empty($inquiry_detail[0]->email))
+                        {
+                            if(trim($_POST['submit'])=="Confirm Appointment"){
+                            $data['confirm'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Submit") {
+                                $data['cancle'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                $data['reschedule'] = array(
+                                          'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
+                                          'appointment_start'=>$inquiry_detail[0]->appoint_start_date,
+                                          'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
+                                          'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
+                                          'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                         );
+                            }
+                               
+                                if(!empty($inquiry_detail[0]->email))
+                                {
+                                    $this->load->library('email');
+                                    $this->email->from('info@monopolion.com', 'monopolion');
+                                    $this->email->to($inquiry_detail[0]->email);
+                                    $this->email->cc('info@monopolion.com');
+                                    $this->email->bcc('info@monopolion.com');
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $this->email->subject('Agent Confirm Your Appointment');
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $this->email->subject('Agent cancle Your Appointment');
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $this->email->subject('Agent reschedule Your Appointment');
+                                    }
+                                    $email_layout = $this->load->view('email/appointment_confirm', $data,TRUE);
+                                    $this->email->message($email_layout);
+                                    if($this->email->send())
+                                    {
+                                        $sendEmailFlag = "E-mail";   
+                                    }
+
+                                    // save Customer history
+                                    $history_text       = $email_layout;
+                                    if(trim($_POST['submit'])=="Confirm Appointment"){
+                                        $history_subject    = "Agent Confirm Your Appointment";
+                                    }elseif (trim($_POST['submit'])=="Submit") {
+                                        $history_subject    = "Agent cancle Your Appointment";
+                                    }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                                        $history_subject    = "Agent reschedule Your Appointment";
+                                    }
+                                    $history_type       = "E-mail";
+                                    $history_reciever   = $inquiry_detail[0]->email;
+                                    $history_reciever_id    = $inquiry_detail[0]->id;
+                                    $history_reciever_usertype="1";
+                                    //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                                }
+                        }
+                        /*customer details  end*/
+                        if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
+                        {
+                            $history_type_sms   = "SMS/E-mail";
+                            $history_type_agent = "SMS/E-mail";
+
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
+                            
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent, $history_reciever_id_agent,$history_reciever_usertype_agent);
+                            
+                        }
+                        elseif ($sendSMSFlag == "SMS")
+                        {
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype);
+                            
+                        }
+                        elseif ($sendEmailFlag == "E-mail")
+                        {
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_agent, $history_subject_agent, $history_type_agent, $history_reciever_agent, $history_reciever_id_agent,$history_reciever_usertype_agent);
+                        }
+
+                        /* agent histry */
+                        if($sendSMSFlag1 == "SMS" && $sendEmailFlag1 == "E-mail")
+                        {
+
+
+                            $history_type_sms_agent   = "SMS/E-mail";
+                            $history_type       = "SMS/E-mail";
+
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_sms_agent, $history_reciever_id_sms_agent,$history_reciever_usertype_agent);
+                            
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                            
+                        }
+                        elseif ($sendSMSFlag1 == "SMS")
+                        {
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms_agent, $history_subject_sms_agent, $history_type_sms_agent, $history_reciever_sms_agent, $history_reciever_id_sms_agent,$history_reciever_usertype_agent);
+                            
+                        }
+                        elseif ($sendEmailFlag1 == "E-mail")
+                        {
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                        }
+                        /* employee*/
+                        if($sendSMSFlag2 == "SMS" && $sendEmailFlag2 == "E-mail")
+                        {
+                            $history_type_sms   = "SMS/E-mail";
+                            $history_type       = "SMS/E-mail";
+
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms_employee, $history_subject_sms_employee, $history_type_sms_employee, $history_reciever_sms_employee, $history_reciever_id_sms_employee,$history_reciever_usertype_employee);
+                            
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_employee, $history_subject_employee, $history_type_employee, $history_reciever_employee, $history_reciever_id_employee,$history_reciever_usertype_employee);
+                            
+                        }
+                        elseif ($sendSMSFlag2 == "SMS")
+                        {
+                            // SMS
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_sms_employee, $history_subject_sms_employee, $history_type_sms_employee, $history_reciever_sms_employee, $history_reciever_id_sms_employee,$history_reciever_usertype_employee);
+                            
+                        }
+                        elseif ($sendEmailFlag2 == "E-mail")
+                        {
+                            // Email
+                            $this->inquiry_model->saveSmsEmailHistory($history_text_employee, $history_subject_employee, $history_type_employee, $history_reciever_employee, $history_reciever_id_employee,$history_reciever_usertype_employee);
+                        }
+                            $url = "/home/appointment_conform/".$inquiry_id."/".$agent_id;
+                        if(trim($_POST['submit'])=="Confirm Appointment"){
+                            //echo "Your Appointment has been Confirm.....";
+                             $this->session->set_flashdata('success', 'Your Appointment has been Confirm.');
+                            
+                            redirect($url, 'refresh');
+                        }elseif (trim($_POST['submit'])=="Submit") {
+                           // echo "Your Appointment has been cancle.....";
+                             $this->session->set_flashdata('success', 'Your Appointment has been cancel.');
+                            redirect($url, 'refresh');
+                        }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
+                            //echo "Your Appointment has been Reschedule.....";
+                             $this->session->set_flashdata('success', 'Your Appointment has been Reschedule.');
+                             redirect($url, 'refresh');
+                        }
+                    }
                 }
 
-                    echo "Your Appointment Confirm....."; 
-                }else{
-                    echo "Your are Not Authorize to Confirm Appointment.....";
-                }
             }else{
-                echo "Your are Not Authorize to Confirm Appointment.....";
-                } 
-            }    
+               // echo "Your are not Authorize.....";
+                $url = "/home/appointment_conform/".$inquiry_id."/".$agent_id;        
+                $this->session->set_flashdata('error', 'Your are not Authorize.');
+                redirect($url, 'refresh');
+                
+            }
+        }else
+        {
+            //echo "Your are not Authorize.....";
+
+            $url = "/home/appointment_conform/";        
+            $this->session->set_flashdata('error', 'Your are not Authorize.');
+            redirect($url, 'refresh');
+        }
     }
 }
 

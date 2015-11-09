@@ -39,12 +39,13 @@ $('#manage_form').validate({
                            remote: {
                                 url:baseurl+"index.php/home/user_mobile_check",
                                 type: "post",
-                              data: {
-                                  id: function() {
-                                            var element = $(this);
-                                            return  $('#user_id').val();
-                                            }
-                                          }
+                                data: { id: $('#user_id').val(),country_code: $('#county_code').val()},
+                              // data: {
+                              //     id: function() {
+                              //               var element = $(this);
+                              //               return  $('#user_id').val();
+                              //               }
+                              //             }
                                       }
                          
                         },

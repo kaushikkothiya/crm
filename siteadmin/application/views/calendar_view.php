@@ -25,6 +25,7 @@ $this->load->view('leftmenu');
 ?>
 </div>
 </div>
+ <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
 <link href="<?php echo base_url(); ?>css/fullcalendar.css" rel="stylesheet">
         <!-- <link href="<?php echo base_url(); ?>css/fullcalendar.print.css" rel="stylesheet">-->
         <link href="<?php echo base_url(); ?>css/jquery-ui.min.css" rel="stylesheet"> 
@@ -82,13 +83,96 @@ $this->load->view('leftmenu');
 </div>
 </div>
 </div>
+<div id="popup3" class="overlay">
+    <div class="popup">
+        <h2>Appointment Note:</h2>
+        <hr>
+        <a class="close" href="#">×</a>
+        <div class="content">
+            <div class="row-fluid">
+                <form name="appoint_form">
+                    <label style="font-weight:bold">Note:</label>
+                    <textarea id="status_change_comments" name="inquiry[content]" class="span6" rows="2" cols="20" ></textarea>
+                    <label style="font-weight:bold">Start date:</label>
+                    <input type="text" id="start_date" name="start_date" value="" class="txt_date">
+                    <label style="font-weight:bold">Is repetitive:</label>
+                    <input type="checkbox" id="is_repetive" name="is_repetive" class="repitive" value="0">
+                    <div id="frequency_id" hidden>
+                    <label style="font-weight:bold">Frequency:</label>
+                      <input type="radio" name="frequency" id="frequency" value="month" checked>Month
+                      <input type="radio" name="frequency" id="frequency" value="week" >Week
+                      <input type="radio" name="frequency" id="frequency" value="day" >Day
+                    
+                      <label style="font-weight:bold">repetitive date:</label>
+                      <input type="text" id="end_date" name="end_date" value="" class="txt_date">
+                    </div>
+                    <label>
+                      <input type="button" class="summit_inquiry_status_with_comment" style="width:50px;" value="Go">
+                     
+                    
+                    </label>
+                  </form>
+                    
+               </div>
+        </div>
+    </div>
+</div>
 <?php
 $this->load->view('footer');
 ?>
 <script type="text/javascript">
-$(document).ready(function() { 
-     //$.getScript('http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js',function(){
-    
+    $(document).ready(function() { 
+         //$.getScript('http://arshaw.com/js/fullcalendar-1.6.4/fullcalendar/fullcalendar.min.js',function(){
+        $( ".txt_date" ).datepicker();
+         $("#is_repetive").change(function() {
+        if(this.checked) {
+           $('#frequency_id').show();
+           $('#is_repetive').val(1);
+        }else{
+          $('#frequency_id').hide();
+           $('#end_date').val();
+           $('#frequency').val();
+           $('#is_repetive').val(0);
+        }
+    });
+
+     $(document).on('click','.summit_inquiry_status_with_comment',function(){
+        //console.log($(this).parents('.content').prev().html());
+        $(this).parents('.popup').find('a.close').trigger('click');
+        var href = window.location.href.split("#");
+        window.location = href[0]+"#";
+        changeInquiryStatus();
+    });
+
+     function changeInquiryStatus(){
+    $.ajax({
+        url:'<?php echo base_url(); ?>index.php/inquiry/appointment_note_add',
+        type:'post',
+        data:{ 
+            note: $("#status_change_comments").val(),
+            start_date: $("#start_date").val(),
+            is_repetive: $("#is_repetive").val(),
+            frequency: $("#frequency").val(),
+            end_date: $("#end_date").val(),
+        },
+        dataType:'json'
+    }).done(function(data){
+        $("#status_change_comments").val('');
+        if(data.status){
+            $("#incid_"+data.id).prev().css('background','#'+eval('action_color.col_'+data.inq_status));
+            if(data.inq_status==5){
+                $("#incid_"+data.id).before(document.createTextNode('Completed'));
+                $("#incid_"+data.id).remove();
+            }
+            alert('Inquiry status has been updated');
+        }else{
+            alert('Internal Error : Unable to save Inquiry status!');    
+        }
+    }).error(function(){
+        alert('Internal Error : Unable to save Inquiry status!');
+    });
+}
+
      $("#calendar").fullCalendar({
       
         header: {
@@ -99,8 +183,14 @@ $(document).ready(function() {
         //defaultView: 'basicWeek',
         //defaultDate: '2015-02-12',
         editable: false,
-        eventLimit: 1, // allow "more" link when too many events
+       // eventLimit: 1, // allow "more" link when too many events
         events:baseurl+"index.php/inquiry/get_agent_calandar_detail",
+        eventClick: function(calEvent, jsEvent, view) {
+
+        window.location ="#popup3";
+       
+
+    }
       });
 
 });

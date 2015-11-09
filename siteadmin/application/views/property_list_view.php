@@ -127,7 +127,7 @@
                                         
                                             //echo "<span style='text-align:left;width: 50%;float: left;'><div class='box'><a class='button' href='#popup1' onclick='setPropertyId(".$user[$i]->id.")'>Send Inquiry</a></div><br>";
                                         echo '<a class="btn btn-default btn-small" href="#popup1" title="Send Inquiry" onclick="setPropertyId('.$user[$i]->id.')"><i class="icon-fast-forward"></i></a>';
-                                        echo anchor('home/add_property/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>"Edit agent",'class'=>"btn btn-default btn-small")). "";
+                                        echo anchor('home/add_property/'.$user[$i]->id, '<i class="icon-pencil"></i>', array('title'=>"Edit property",'class'=>"btn btn-default btn-small")). "";
                                         echo anchor('home/view_property/'.$user[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
                                         if ($this->session->userdata('logged_in_super_user')) {
                                             echo anchor('home/delete_property/'.$user[$i]->id, '<i class="icon-trash"></i>', array('class'=>'btn btn-default btn-small','title'=>'Delete Property','onclick' => "return confirm('Are you sure want to delete this record?')"));

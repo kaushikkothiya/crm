@@ -186,26 +186,28 @@ Class Inquiry_model extends CI_Model {
         if(!empty($post['reference_no']))
             $this->db->where('property.reference_no', $post['reference_no']);
 
-        if(!empty($post['property_type'])=="1"){
+        if(!empty($post['property_type']) && $post['property_type']=="1"){
             if(!empty($post['min_price']))
                 $this->db->where('property.sale_price >=', $post['min_price']);
             if(!empty($post['max_price']))
                 $this->db->where('property.sale_price <=', $post['max_price']);
 
-        }elseif (!empty($post['property_type'])=="2") {
+        }elseif (!empty($post['property_type']) && $post['property_type']=="2") {
             if(!empty($post['min_price']))
                 $this->db->where('property.rent_price >=', $post['min_price']);
             if(!empty($post['max_price']))
                 $this->db->where('property.rent_price <=', $post['max_price']);
         
-        }elseif (!empty($post['property_type'])=="3"){
+        }elseif (!empty($post['property_type'])&& $post['property_type']=="3"){
             if(!empty($post['min_price']))
             {
+                //$this->db->where('( property.sale_price >= '.$post['min_price'].' OR property.rent_price >= '.$post['min_price'].' )');
                 $this->db->where('property.sale_price >=', $post['min_price']);
                 $this->db->or_where('property.rent_price >=', $post['min_price']);
             }
             if(!empty($post['max_price']))
             {
+               //$this->db->where('( property.sale_price >= '.$post['max_price'].' OR property.rent_price >= '.$post['max_price'].' )');
                 $this->db->where('property.sale_price <=', $post['max_price']);
                 $this->db->or_where('property.rent_price <=', $post['max_price']);
             }
@@ -246,14 +248,8 @@ Class Inquiry_model extends CI_Model {
     }
     function agent_schedule() {
         
-       /* $q = $this->db->select('id, appoint_start_date, appoint_end_date')
-                ->from('inquiry')
-                ->get();
-        if ($q->num_rows() > 0) {
-            return $q->result();
-        }
-        return array();*/
-
+      //$TotalDays = date("t", mktime(0,0,0,,1,2015));
+//echo $TotalDays;exit;
         $this->db->select('inquiry.*,user.*');
         $this->db->from('inquiry');
         if($this->session->userdata('logged_in_super_user')){
@@ -267,6 +263,34 @@ Class Inquiry_model extends CI_Model {
         $this->db->where('inquiry.agent_id !=','0');
         $this->db->where('inquiry.appoint_start_date !=','');
         $this->db->where('inquiry.appoint_end_date !=','');
+        $this->db->order_by('inquiry.appoint_start_date', 'ASC');
+
+        $query = $this->db->get();
+        return $query->result();
+    }
+    function agent_schedule_month_vice($post) {
+        
+        $TotalDays = date("t", mktime(0,0,0,$post['month'],1,$post['year']));
+        $start_date = $post['year'].'-'.$post['month'].'-01';
+        $appointment_start_date =date("Y-m-d H:i:s", strtotime($start_date));
+        $end_date = $post['year'].'-'.$post['month'].'-'.$TotalDays;
+        $appointment_end_date =date("Y-m-d H:i:s", strtotime($end_date));
+
+        $this->db->select('inquiry.*,user.fname,user.lname,user.email,user.mobile_no,user.coutry_code,user.type');
+        $this->db->from('inquiry');
+        if($this->session->userdata('logged_in_super_user')){
+            $this->db->join('user','user.id =inquiry.agent_id','left');
+        }elseif($this->session->userdata('logged_in_agent')){
+            $sessionData = $this->session->userdata('logged_in_agent');
+            $id = $sessionData['id'];
+            $this->db->join('user','user.id = inquiry.agent_id');
+            $this->db->where('inquiry.agent_id',$id);
+        }
+        $this->db->where('inquiry.agent_id !=','0');
+        $this->db->where('inquiry.appoint_start_date >=', $appointment_start_date);
+        $this->db->where('inquiry.appoint_start_date <=', $appointment_end_date);
+        //$this->db->group_by('MONTH(inquiry.appoint_start_date)');
+        $this->db->order_by('inquiry.appoint_start_date', 'ASC');
         $query = $this->db->get();
         return $query->result();
     }
@@ -471,20 +495,28 @@ Class Inquiry_model extends CI_Model {
         $query = $this->db->get();
         return $query->result();
     }
-    function get_sms_email_history_recievername($user_type)
+    function get_sms_email_history_recievername($user_type,$reciever_id)
     {
-        if($user_type =="1"){
-            $this->db->select('sms_email_history.*,customer.fname,customer.lname,customer.type as customerType');
-            $this->db->join('customer','customer.id =sms_email_history.reciever_id');
-            $this->db->from('sms_email_history');
-        }elseif ($user_type =="2") {
-            $this->db->select('sms_email_history.*,user.fname,user.lname,user.type as userType');
-            $this->db->join('user','user.id =sms_email_history.reciever_id');
-            $this->db->from('sms_email_history');
+        if ($user_type =="1") {
+            $this->db->select('*');
+            //$this->db->join('customer','customer.id =sms_email_history.reciever_id');
+            $this->db->from('customer');
+            $this->db->where('id',$reciever_id);
+            $query = $this->db->get();
+            return $query->result();
         }
-        $query = $this->db->get();
-        return $query->result();
+        if ($user_type =="2") {
+            $this->db->select('*');
+            //$this->db->join('user','user.id =sms_email_history.reciever_id');
+            $this->db->from('user');
+            $this->db->where('id',$reciever_id);
+            $query = $this->db->get();
+            return $query->result();
+        }
+        //$this->db->where("sms_email_history.reciever_id",$reciever_id);
+        
     }
+   
 
     function getPropertyExtraImages($propertyId)
     {
@@ -596,6 +628,32 @@ Class Inquiry_model extends CI_Model {
         }
     }
 
+function add_appointment_note($post) {
+       echo'<pre>';print_r($post);exit;
+       if($post['is_repetive'] =="1"){
+
+        $today_date = date('Y-m-d H:i:s');
+        $new_user_insert_data = array(
+            'agent_id' => $inquiry_id,
+            'employee_id' => $post['city_area_id'],
+            'start_date' => $post['bathroom_no'],
+            'badroom' => $post['bedroom_no'],
+            'end_date' => $post['reference_number'],
+            'created_date' => $post['property_status'],
+            'update_date' => $post['property_category_id'],
+            'is_repetitive' => $post['min'],
+            'repetitive_type' =>$post['max'], 
+            'created_date' => $today_date,
+            'updated_date' => $today_date,
+            
+        );
+        $insert = $this->db->insert('appointment_note', $new_user_insert_data);
+        return $insert;
+       }else{
+
+       }
+        
+    }
     function saveClientInquiry_history($post, $inquiry_id) {
        
         $today_date = date('Y-m-d H:i:s');
@@ -786,16 +844,37 @@ Class Inquiry_model extends CI_Model {
         }
         return array();
     }
-    function update_agent_appointment($agent_id,$inquiry_id)
+    function update_agent_appointment($agent_id,$inquiry_id,$post)
     {
-                $today_date = date('Y-m-d H:i:s');
-                $new_inquiry_update_data = array(
-                'status' => '4',
-                'updated_date' => $today_date,
-            
-        );
-        $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
-        return $update;
+                if(trim($post['submit'])=="Submit"){
+                  $today_date = date('Y-m-d H:i:s');
+                  $new_inquiry_update_data = array(
+                            'agent_status' => '3',
+                            'updated_date' => $today_date,
+                            'comments' => $post['comment']
+                    );
+                    $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+                    return $update;
+                }elseif (trim($post['submit'])=="Confirm Appointment") {
+                    $today_date = date('Y-m-d H:i:s');
+                  $new_inquiry_update_data = array(
+                            'agent_status' => '1',
+                            'updated_date' => $today_date,
+                        
+                    );
+                    $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+                    return $update;
+                }elseif (trim($post['submit'])=="Reschedule Appointment") {
+                   $today_date = date('Y-m-d H:i:s');
+                  $new_inquiry_update_data = array(
+                            'agent_status' => '2',
+                            'updated_date' => $today_date,
+                        
+                    );
+                    $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+                    return $update;
+                }
+                
    }
 
    function get_inquiry_data($id)
@@ -821,6 +900,19 @@ Class Inquiry_model extends CI_Model {
         }
         return array();
     }
+    function get_employee_record($id)
+    {
+        $q = $this->db->select("inquiry.created_by,user.*")
+                ->from('inquiry')
+                ->join('user','user.id =inquiry.created_by')
+                ->where('inquiry.id',$id)
+                ->where('user.type',"3")
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
     function get_sms_email_text($id)
     {
         $q = $this->db->select("text,type")
@@ -836,6 +928,73 @@ Class Inquiry_model extends CI_Model {
     function updateInquiryStatus($id,$data){
         return $this->db->where('id',$id)->update('inquiry', $data);
     }
+    
+
+     function getNewInquiries($id){
+        
+        $q = $this->db->select('customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname')
+                ->from('inquiry')
+                ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id','left')
+                ->join('city_area', 'city_area.id = inquiry_history.city_area','left')
+                ->join('customer','customer.id =inquiry.customer_id','left')
+                ->join('county_code', 'customer.coutry_code  = county_code.id','left')
+                ->join('user','user.id =inquiry.created_by','left')
+                ->join('user as agent','agent.id =inquiry.agent_id','left')
+                ->where('inquiry.agent_id',$id)
+                ->where('inquiry.agent_status',0)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+
+
+    function changeAgentStatus($id,$data){
+        return $this->db->where('id',$id)->update('inquiry', $data);
+    }
+
+    function getRescheduleInquiries($id){
+        $q = $this->db->select('customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname')
+                ->from('inquiry')
+                ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id','left')
+                ->join('city_area', 'city_area.id = inquiry_history.city_area','left')
+                ->join('customer','customer.id =inquiry.customer_id','left')
+                ->join('county_code', 'customer.coutry_code  = county_code.id','left')
+                ->join('user','user.id =inquiry.created_by','left')
+                ->join('user as agent','agent.id =inquiry.agent_id','left')
+                ->where('inquiry.created_by',$id)
+                ->where('inquiry.agent_status',2)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+
+    function getCanceledInquiries($id){
+        $q = $this->db->select('customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname')
+                ->from('inquiry')
+                ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id','left')
+                ->join('city_area', 'city_area.id = inquiry_history.city_area','left')
+                ->join('customer','customer.id =inquiry.customer_id','left')
+                ->join('county_code', 'customer.coutry_code  = county_code.id','left')
+                ->join('user','user.id =inquiry.created_by','left')
+                ->join('user as agent','agent.id =inquiry.agent_id','left')
+                ->where('inquiry.created_by',$id)
+                ->where('inquiry.agent_status',3)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+
+    function rescheduleInquiry($id,$data){
+        return $this->db->where('id',$id)->update('inquiry', $data);
+    }
+
+
 
 }
 

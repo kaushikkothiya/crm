@@ -116,6 +116,13 @@ $this->load->view('leftmenu');
     </div>
 </div>
 </fieldset>
+<?php if(isset($inquiry_id)){ ?>
+<input type="hidden" value="<?php echo $inquiry_id; ?>" name="inquiry_id" id="reschedule_inquiry_id" />
+<?php } ?>
+<?php if(isset($property_id)){ ?>
+<input type="hidden" value="<?php echo $property_id; ?>" name="property_id" id="reschedule_property_id" />
+<?php } ?>
+
 </form>
 </div>
 </div>

@@ -97,7 +97,8 @@ function user_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('user')
                 ->where('mobile_no',$post['mobile_no'])
-                //->where('type',$type)
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->where('id !=',$post['id'])
                 ->get();
         if ($q->num_rows() > 0) {
@@ -503,6 +504,8 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('customer')
                 ->where('mobile_no',$post['mobile_no'])
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -513,6 +516,8 @@ function customer_mobile_check($post) {
             $q = $this->db->select("*")
                 ->from('customer')
                 ->where('mobile_no',$post['mobile_no'])
+                ->where('coutry_code',$post['country_code'])
+                ->where('deleted !=',"1")
                 ->where('id !=',$post['id'])
                 ->get();
         if ($q->num_rows() > 0) {
@@ -765,6 +770,7 @@ function getregisted_properties() {
         $new_category_insert_data = array(
             'type' => $this->input->post('type'),
             'address' => $this->input->post('address'),
+            'country_id' => $this->input->post('country_id'),
             'city_id' => $this->input->post('city_id'),
             'city_area' => $this->input->post('city_area_id'),
             'property_type' => $this->input->post('property_category'),
@@ -814,6 +820,8 @@ function getregisted_properties() {
             'from_sea' => $this->input->post('from_sea'),
             'from_cafeteria' => $this->input->post('from_cafeteria'),
             'from_restaurent' => $this->input->post('from_restaurant'),
+            'map_adress' => $this->input->post('search_address'),
+            'lat_long' => $this->input->post('lat_lon'),
         );
         $insert = $this->db->insert('property', $new_category_insert_data);
         $insert = $this->db->insert_id();
@@ -873,6 +881,7 @@ function getregisted_properties() {
         $new_category_insert_data = array(
             'type' => $this->input->post('type'),
             'address' => $this->input->post('address'),
+            'country_id' => $this->input->post('country_id'),
             'city_id' => $this->input->post('city_id'),
             'city_area' => $this->input->post('city_area_id'),
             'property_type' => $this->input->post('property_category'),
@@ -919,6 +928,8 @@ function getregisted_properties() {
             'from_sea' => $this->input->post('from_sea'),
             'from_cafeteria' => $this->input->post('from_cafeteria'),
             'from_restaurent' => $this->input->post('from_restaurant'),
+            'map_adress' => $this->input->post('search_address'),
+            'lat_long' => $this->input->post('lat_lon'),
 
             //'added_by' => $added_by,
             //'added_id' => $added_id
@@ -1137,6 +1148,21 @@ function getregisted_properties() {
         }
         return array();
     }
+
+    function get_property_title($inquiryid)
+    {
+            $q = $this->db->select('inquiry.id,property.*')
+                ->from('inquiry')
+                ->join('property','property.id =inquiry.property_id')
+                ->where('inquiry.id',$inquiryid)
+                ->get();
+                                
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+    
 }
 
 ?>

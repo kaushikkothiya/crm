@@ -31,6 +31,7 @@ body{
 .formmain{
 	border:solid 1px #cccccc;
 	border-radius:6px;
+	margin-bottom: 40px;
 }
 .frmpadd{
 	padding:20px;
@@ -43,7 +44,7 @@ body{
 }
 .fldimg img{
 	border:solid 1px #f6f6f6;
-	width:200px;
+	width:100% !important;
 }
 .fldimg-txt{
 	float:left;
@@ -230,15 +231,25 @@ button, input, optgroup, select, textarea {
 	width:98%;
 }
 .cktxt{
-	font-size:13px;
+	font-size:17px;
 	padding:6px 5px;
+}
+.cktxt input[type="checkbox"]{
+	
+
+	
+	width: 30px; /*Desired width*/
+   	height: 30px; /*Desired height*/
+  	cursor: pointer;
+  	/*-webkit-appearance: none;*/
+  	appearance: none;
 }
 /*.cktxt:checked{
 	padding:0px 10px 0px 0px;
 }*/
 
 .smfildleft{
-	width:110px;
+	width:111px;
 	float:left;
 	font-size:14px;
 }
@@ -282,4 +293,144 @@ button, input, optgroup, select, textarea {
 	border-radius:20px;	
 	border:solid 1px #cccccc;
 	padding:5px 10px;
+}
+/*---Calender---*/
+.cldmain{
+	margin:0px;
+	/*padding-bottom:25px;*/
+	padding:12px 12px 25px 12px;
+}
+.cldcolm-main{
+	margin:0px;
+	padding:10px 10px 10px 0px;
+	border-bottom:solid 2px #ccc;
+	font-size:18px;
+	font-weight:bold;
+	color:#3a1703;
+
+	border-top:solid 1px #ccc;
+}
+.cldcolm-main-left{
+	margin:0px;
+	float:left;
+}
+.cldcolm-main-right{
+	margin:0px;
+	float:right;
+}
+
+.cldcolm{
+	margin:0px;
+	padding:10px 10px 10px 0px;
+	border-bottom:solid 1px #f3f3f3;
+	font-size:13px;
+	font-weight:normal;
+	color:#3a1703;
+}
+.cldcolm h1{
+	margin:0px;
+	padding:0px;
+	
+	font-size:20px;
+	font-weight:bold;
+	text-decoration:none;
+}
+.cldcolm span{
+	color:#646b87;
+}
+.darkblue{
+	color:#1d2452;
+}
+.lightblue{
+	color:#2c4983;
+}
+.cldcolm01{
+	float:left;
+	width:6%;
+	padding:5px 15px 0px 0px;
+	font-size:11px;
+	text-align:center;
+}
+
+.cldcolm02{
+	float:left;
+	width:84%;
+}
+.cldcolm03{
+	float:right;
+	width:6%;
+	text-align:right;
+}
+.center{
+	text-align: center;
+}
+.gobtn{
+	width: auto;
+	margin-top:-8px;
+}
+/*---property icon main---*/
+.property-icon-main{
+	margin:0px;
+	padding:20px 0px 20px 0px;
+	
+}
+.property-icon-main h1{
+	margin:0px;
+	padding:0px 0px 10px 0px;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:15px;
+}
+.property-icon{
+	padding:0px 0px 20px 0px;
+	float:left; 
+	width: 33.333%;
+}
+.property-icon-img{
+	margin:0px;
+	padding:0px 3px 0px 0px;
+	float:left;
+	width: 10%;
+}
+.property-icon-txt{
+	margin:0px;
+	padding:0px 15px 0px 0px;
+	float:left;
+	width: 82%;	
+}
+.txtbdrmain{
+ padding:0px 0px 20px 0px;
+}
+.txtbdr{
+ border:solid 1px #ccc;
+ border-bottom:solid 3px #ccc;
+ border-radius:4px;
+ padding:8px 5px;
+ width:28%;
+ text-align:center;
+ margin:0px 15px 15px 0px;
+ float:left;
+}
+
+.mapmain{
+	width: 100%;
+}
+
+.scroll1{
+	width: 80%;
+	overflow-y:scroll!important;
+	border:1px solid #ccc!important; 
+	padding:5px!important;
+
+	height:200px!important;
+	overflow-y:scroll!important;
+}
+.scroll2{
+	width: 58%!important;
+	overflow-y:scroll!important;
+	border:1px solid #ccc!important; 
+	padding:5px!important;
+
+	height:200px!important;
+	overflow-y:scroll!important;
 }

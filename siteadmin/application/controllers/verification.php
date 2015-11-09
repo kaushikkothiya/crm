@@ -102,7 +102,28 @@ class Verification extends CI_Controller {
                 $inquiry_num =$this->unic_inquiry_num();
                 $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
                 $insert_customer_inquiry = $this->inquiry_model->new_customer_inquiry_insert($query,$inquiry_num,$property_buy_sale);
-                
+                if($insert_customer_inquiry){
+                    include APPPATH . 'third_party/Classes/Mailchimp.php';
+                    $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+                    $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+                    $mc = new Mailchimp($apikey);
+                    $list_id = 'd42363dd0e';
+                    $merge_vars = array();
+                    $merge_vars['FNAME'] = $fname;
+                    $merge_vars['LNAME'] = $lname;
+                    $merge_vars['groupings'] = array(
+                        array(
+                            'id' => '16389',
+                            'groups' => array('4')
+                        ),
+                        array(
+                            'id' => '16393',
+                            'groups' => array($property_buy_sale)
+                        ),
+                    );
+                    @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
+                }
+
                 $sendSMSFlag = "";
                 $sendEmailFlag = "";
                 $history_type_sms="";
@@ -129,7 +150,7 @@ class Verification extends CI_Controller {
                         $message = "Dear ".$fname." ".$lname.",";
                         $message .= " Welcome and Thank you for choosing our company to find your ideal property.";
                         $message .= " Your Customer ID:".$unic;
-                        $message .= " For any further info call: 8000 7000";
+                        $message .= " For any further information please call: 8000 7000";
                         
                         $this->load->library('CMSMS');
                         $sms_res=CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
@@ -241,6 +262,30 @@ class Verification extends CI_Controller {
             if($id=="") {
                 
                 if ($query = $this->user->agent_insert()) {
+                    $fname = $this->input->post('fname');
+                    $lname = $this->input->post('lname');
+                    $email = $this->input->post('email');
+                    $type = $this->input->post('type');
+                    
+                    include APPPATH . 'third_party/Classes/Mailchimp.php';
+                    $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+                    $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+                    $mc = new Mailchimp($apikey);
+                    $list_id = 'd42363dd0e';
+                    $merge_vars = array();
+                    $merge_vars['FNAME'] = $fname;
+                    $merge_vars['LNAME'] = $lname;
+                    $merge_vars['groupings'] = array(
+                        array(
+                            'id' => '16389',
+                            'groups' => array($type)
+                        ),
+                        array(
+                            'id' => '16393',
+                            'groups' => array('none')
+                        ),
+                    );
+                    @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
 
                     $this->session->set_flashdata('success', 'Agent added successfully.');
                     redirect('/home/agent_manage', 'refresh');
@@ -273,7 +318,27 @@ class Verification extends CI_Controller {
                 $email  = $this->input->post('email');
                 $fname  = $this->input->post('fname');  
                 $lname  = $this->input->post('lname');    
-
+                $aquired = $this->input->post('aquired');
+                
+                include APPPATH . 'third_party/Classes/Mailchimp.php';
+                $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+                $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+                $mc = new Mailchimp($apikey);
+                $list_id = 'd42363dd0e';
+                $merge_vars = array();
+                $merge_vars['FNAME'] = $fname;
+                $merge_vars['LNAME'] = $lname;
+                $merge_vars['groupings'] = array(
+                    array(
+                        'id' => '16389',
+                        'groups' => array('4')
+                    ),
+                    array(
+                        'id' => '16393',
+                        'groups' => array($aquired)
+                    ),
+                );
+                @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
                 $sendSMSFlag = "";
                 $sendEmailFlag = "";
                 /* sms send start */
@@ -298,7 +363,7 @@ class Verification extends CI_Controller {
                         $message = "Dear ".$fname." ".$lname.",";
                         $message .= " Welcome and Thank you for choosing our company to find your ideal property.";
                         $message .= " Your Customer ID:".$unic;
-                        $message .= " For any further info call: 8000 7000\n";
+                        $message .= " For any further information please call: 8000 7000\n";
                         
                         $this->load->library('CMSMS');
                         $sms_res=CMSMS::sendMessage($mobile_code.$_POST['mobile_no'], $message);
@@ -407,7 +472,30 @@ class Verification extends CI_Controller {
             if($id=="") {
                 
                 if ($query = $this->user->agent_insert()) {
-
+                    $fname = $this->input->post('fname');
+                    $lname = $this->input->post('lname');
+                    $email = $this->input->post('email');
+                    $type = $this->input->post('type');
+                    
+                    include APPPATH . 'third_party/Classes/Mailchimp.php';
+                    $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
+                    $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
+                    $mc = new Mailchimp($apikey);
+                    $list_id = 'd42363dd0e';
+                    $merge_vars = array();
+                    $merge_vars['FNAME'] = $fname;
+                    $merge_vars['LNAME'] = $lname;
+                    $merge_vars['groupings'] = array(
+                        array(
+                            'id' => '16389',
+                            'groups' => array($type)
+                        ),
+                        array(
+                            'id' => '16393',
+                            'groups' => array('none')
+                        ),
+                    );
+                    @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
                     $this->session->set_flashdata('success', 'Employee added successfull.');
                     redirect('/home/employee_manage', 'refresh');
                 } else {
@@ -506,7 +594,7 @@ class Verification extends CI_Controller {
     // }
      function create_property() {
        
-       // echo'<pre>';print_r($_FILES);exit;
+       //echo'<pre>';print_r($_POST);exit;
         $this->load->helper('form');
         $this->load->library('form_validation');
         

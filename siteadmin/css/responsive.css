@@ -9,7 +9,7 @@ img{
 @media screen and (max-width: 980px){}
 @media screen and (max-width: 800px){
 .wrapper{
-	width:98%;
+	width:98% !important;
 }
 }
 @media screen and (max-width: 768px){
@@ -39,6 +39,7 @@ img{
 }
 .inpselect1{
 	width:98.5%;
+	width:96%!important;
 	padding:4px;	
 }
 .textarea1{
@@ -70,10 +71,10 @@ img{
 	width:95%;
 }
 .fldimg{
-	float:none;
-	text-align:center;
-	width:100%;
-	padding:0px 0px 10px 0px;
+	float:none !important;
+	text-align:center !important;
+	width:100% !important;
+	padding:0px 0px 10px 0px !important;
 }
 .fldimg-txt{
 	float:none;
@@ -87,6 +88,7 @@ img{
 }
 .propertypadd{
 	padding:10px;
+	padding:0px;
 }
 .fildleft, .fildright, .lable{
 	width:100%;
@@ -123,7 +125,65 @@ img{
 .scroll-1 {
     width: 95%;
 }
+/*---property icon main---*/
+.property-icon-main{
+	width:100%;
+}
+.property-icon{
+	width:100%;
+	float:none;
+	clear:both;
+}
+.property-icon img, .property-icon span{
+	padding-bottom:10px;
+}
+.txtbdr{
+float:none !important;
+width:96% !important;
+padding:8px 5px !important;
+margin:0px 0px 10px 0px !important;
+ 
+}
+
+.cldcolm01{
+	width:8%;
+	padding:5px 20px 0px 0px;
+	font-size:11px;
+}
+.cldcolm02{
+	width:80%;
+}
+.cldcolm h1{
+	font-size:1.3em;
+}
+.cldcolm {
+    padding: 10px 0px;
+}
+
+/*--Scroll Facility--*/
+.scroll1, .scroll2{
+	width: 96%!important;
+	overflow-y:scroll!important;
+	border:1px solid #ccc!important; 
+	padding:5px!important;
+
+	height:200px!important;
+	overflow-y:scroll!important;
+}
+
 
 }
-@media screen and (max-width: 360px){}
+
+@media screen and (max-width: 360px){
+	/*--Calender--*/
+.cldcolm01{
+	width:15%;
+	padding:5px 10px 0px 0px;
+	font-size:11px;
+}
+.cldcolm02 {
+    font-size: 11px;
+    width: 72%;
+}
+}
 @media screen and (max-width: 320px){}

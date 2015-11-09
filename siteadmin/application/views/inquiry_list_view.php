@@ -2,7 +2,7 @@
 
 $this->load->view('header');
 //$Action = array('1' =>'Waiting','2'=>'Inprocess','3' =>'Pending','4' =>'Complete');
-$Action = array('2' =>'Text-Send','3' =>'Follow-Up','4' =>'Appoinment','5' =>'Complete');
+$Action = array('2' =>'Text-Send','3' =>'Follow-Up','4' =>'Appointment','5' =>'Complete');
 $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7','5' =>'99E2A3');
 ?>
 <div class="container-fluid">
@@ -41,8 +41,9 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                             <span class="divider">/
                             </span></li>
                             <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-                                <li style="float:left;"><a href='#popup1'><input type="button" value="Import Inquiry Details" /></a></li>
+                                <li style="float:left;"><a href='#popup1'><input type="button" value="Import Database" /></a></li>
                             <?php } ?>
+                            
                     </ul>
                 </div>
             </div>
@@ -50,6 +51,12 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
+                </div>
+            <?php }else if($this->session->flashdata('error')){ ?>
+                <div class="alert alert-error" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    
+                    <?php echo $this->session->flashdata('error'); ?>
                 </div>
             <?php } ?>
             <div class="row-fluid">
@@ -61,7 +68,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                             <form action="inquiry_manage" name="mul_rec" id="mul_rec" method="post" enctype="multipart/form-data">
                             <div class="col-sm-2 pull-left">
                                 <span style="width:15px;height:15px;display:inline-block;background:#FFFF00;"></span> Register<!-- Txt-Send -->
-                                <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Txt-Send<!-- Txt-Send -->
+                                <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Text-Send<!-- Txt-Send -->
                                 <span style="width:15px;height:15px;display:inline-block;background:#FFCCFF;"></span> Follow-Up<!-- Follow-Up -->
                                 <span style="width:15px;height:15px;display:inline-block;background:#D9EDF7;"></span> Appointment<!-- Appointment -->
                                 <span style="width:15px;height:15px;display:inline-block;background:#99E2A3;"></span> Complete<!-- Complete -->
@@ -91,6 +98,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                 <thead>
                                     <tr>
                                         <th hidden>Id</th>
+                                         <th hidden>Property Id</th>
                                         <th>Reference No</th>
                                         <th>Inquiry No</th>
                                         <th>Property Status</th>
@@ -106,6 +114,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                     for ($i = 0; $i < count($user); $i++) {    
                                         echo "<tr>";
                                         echo "<td hidden>" . $user[$i]->id. "</td>";
+                                        echo "<td hidden>" . $user[$i]->property_id. "</td>";
                                         echo "<td>" . $user[$i]->property_ref_no. "</td>";
                                         echo "<td>" . $user[$i]->incquiry_ref_no. "</td>";
                                         if($user[$i]->aquired =='sale'){
@@ -143,7 +152,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                             }
                                             ?>
                                             <?php if($user[$i]->status!=5 && $user[$i]->status!=1) { ?>
-                                                <select class="inquiry_status" data-ref="<?php echo trim($user[$i]->incquiry_ref_no); ?>" data-id="<?php echo trim($user[$i]->id); ?>" name="incid_<?php echo trim($user[$i]->id); ?>"  id="incid_<?php echo trim($user[$i]->id); ?>" style="width:80px">
+                                                <select class="inquiry_status" data-propId="<?php echo trim($user[$i]->property_id); ?>" data-ref="<?php echo trim($user[$i]->incquiry_ref_no); ?>" data-id="<?php echo trim($user[$i]->id); ?>" name="incid_<?php echo trim($user[$i]->id); ?>"  id="incid_<?php echo trim($user[$i]->id); ?>" style="width:80px">
                                                     <?php foreach($Action as $key => $value){ 
                                                            if($key == $user[$i]->status){ ?>
                                                 <option selected value="<?php echo $key;?>"><?php echo $value;?></option>
@@ -161,7 +170,9 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                             echo "<td>";
                                             if (empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date == "0000-00-00 00:00:00")) {
                                                 echo anchor('inquiry/scheduleAppointment/' . $user[$i]->id, '<i class="icon-time"></i>', array('title'=>'Schedule Appointment','class'=>'btn btn-default btn-small'));
+                                                if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_employee')) {   
                                                 echo '<a class="btn btn-default btn-small" href="#popup2" title="View Inquiry" onclick="setInquiryId(' . $user[$i]->id . ')"><i class="icon-zoom-in"></i></a>';
+                                                }
                                             } else {
                                                 echo '<span class="btn btn-default btn-small" title="Scheduled"><i class="icon-time"></i></span>';
                                                 echo '<a class="btn btn-default btn-small" href="#popup2" onclick="setInquiryId(' . $user[$i]->id . ') "><i class="icon-zoom-in"></i></a> ';
@@ -215,13 +226,13 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
 </div>
 <div id="popup1" class="overlay">
     <div class="popup">
-        <h2>Import Inquiry Details</h2>
+        <h2>Import Database</h2>
         <a class="close" href="#">×</a>
         <div class="content">
             <div class="row-fluid">
               <div class="">
                 <div class="">
-                <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>/index.php/Excelread/inquire_export" enctype="multipart/form-data">
+                <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>index.php/Excelread/inquire_export" enctype="multipart/form-data">
                 <fieldset>
                     <hr>
                     <input type="file" name="inquire_xls_files" id="inquire_xls_files"><br>
@@ -268,10 +279,11 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
             <div class="row-fluid">
                 <div class="" id="inquiry_status_change_popup">
                     <input type="hidden" name="inquiry[id]" id="status_change_inquiry_id" value="" />
+                    <input type="hidden" name="property[id]" id="status_change_property_id" value="" />
                     <input type="hidden" name="inquiry[status]" id="status_change_inquiry_status" value="" />
                     <label for="status_change_content" id="lbl_status_change_content" class="" style="font-weight:bold">Content :</label>
                     <textarea id="status_change_comments" name="inquiry[content]" class="span12" rows="10" cols="50" ></textarea>
-                    <button class="btn btn-primary summit_inquiry_status_with_comment">Change Status</button>
+                    <button class="btn btn-primary summit_inquiry_status_with_comment" id="lbl_status_change_button">Change Status</button>
                 </div>
             </div>
         </div>
@@ -314,6 +326,7 @@ $(document).ready(function(){
     $(document).on('change',".inquiry_status",function(){
         $(".popup-ref").html($(this).data('ref'));
         $("#status_change_inquiry_id").val($(this).data('id'));
+        $("#status_change_property_id").val($(this).data('propId'));
         $("#status_change_inquiry_status").val($(this).val());
         var href = window.location.href.split("#");
         
@@ -329,11 +342,15 @@ $(document).ready(function(){
             $("#lbl_status_change_content").show();
             $("#status_change_comments").show();
             $("#lbl_status_change_content").html('Comments :');
+            $("#lbl_status_change_button").html('Submit Follow –Up Feedback');
+            
+
             window.location = href[0] + "#popup3";
         }else if($(this).val()==5){
             $("#lbl_status_change_content").show();
             $("#status_change_comments").show();
             $("#lbl_status_change_content").html('Feedback :');
+            $("#lbl_status_change_button").html('Complete');            
             window.location = href[0] + "#popup3";
         }
     }); 

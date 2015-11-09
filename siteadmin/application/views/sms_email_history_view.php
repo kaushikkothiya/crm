@@ -78,7 +78,7 @@ $this->load->view('header');
                                                 <td><?php echo $value->subject; ?>
                                                 <td><?php echo $value->type; ?>
                                                 <td><?php echo $value->reciever; ?>
-                                                <td><?php echo $value->fname." ".$value->lname; ?>
+                                                <td><?php echo $value->name; ?>
                                                 <td><?php echo date("d-M-Y", strtotime($value->created_date)); ?>
                                                 <td><a class="btn btn-default btn-small" href="#popup2" title="View" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'><i class="icon-zoom-in"></i></a></td>
                                                 <!--<td>

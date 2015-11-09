@@ -15,7 +15,7 @@
                         <tbody>
                         <tr>
                             <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
-                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="CRM" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
+                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
                             </td>
                         </tr>
                         <tr>
@@ -33,7 +33,7 @@
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px; width:600px;" >Dear <b><?php echo $agent_name;?></b>,</p>
-                                            <p>You have an inquiry for an appointment on <?php echo $start_date.' to '.$end_date; ?> for the property with Reference No <?php echo $property_ref_no; ?> Inquiry from : <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
+                                            <p>You have an inquiry for an appointment on <?php echo $start_date.' to '.$end_date; ?> for the property with Reference No :<?php echo $property_ref_no; ?> Inquiry from : <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
                                             <p>Please confirm on our system asap by clicking the following link:</p>
                                             <a href="<?php echo $agent_property_link_path; ?>"><?php echo $agent_property_link_path; ?></a>
                                             <p>Thanks & Regards</p>

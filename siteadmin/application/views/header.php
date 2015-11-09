@@ -5,17 +5,27 @@
     <head>
 
         <title>Monopolion Management</title> -->
-<!DOCTYPE html>
+<!doctype html>
+<html lang=''>
+<head>
+   <meta charset='utf-8'>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>monopolion</title>
+</head>
+<body>
+<!-- <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>monopolion</title>
-
+ -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
 <link rel="shortcut icon" href="<?php echo base_url(); ?>img/favicon.ico"/>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/style.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/responsive.css" />
          <link href="<?php echo base_url(); ?>css/bootstrap.min_new.css" rel="stylesheet">
-         <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/responsive.css" />
+         
         <link class="theme-css" href="<?php echo base_url(); ?>css/utopia-white3a1a.css?v99" rel="stylesheet">
 <!-- validation css start-->
     <!-- validation css end-->
@@ -97,7 +107,7 @@
 
         <script type="text/javascript" language="javascript" class="init">
 
-
+       
 
             $.fn.dataTable.ext.type.order['salary-grade-pre'] = function ( d ) {
 
@@ -118,12 +128,12 @@
 
 
             $(document).ready(function() {
-$('#example,#example1').dataTable({"order": [[ 0, "desc" ]],});
+$('#example,#example1').dataTable({"order": [[ 0, "desc" ]],'lengthMenu': [30, 60, 90, 150, 300],});
                     $('#example2').dataTable( {
-
+                        
 "footerCallback": function ( row, data, start, end, display ) {
             var api = this.api(), data;
- 
+    
             // Remove the formatting to get integer data for summation
             var intVal = function ( i ) {
                 return typeof i === 'string' ?
@@ -169,3 +179,5 @@ $('#example,#example1').dataTable({"order": [[ 0, "desc" ]],});
 
         <body>
         <div class="modal"></div>
+         <link rel="stylesheet" href="<?php echo base_url(); ?>css/menu/menustyles.css">
+  

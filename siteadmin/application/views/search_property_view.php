@@ -118,9 +118,12 @@ $this->load->view('leftmenu');
                                                     $selected = "checked";      
                                                 }else{
                                                     $selected = ""; 
+                                                }
+                                                if(empty($post_property_data['property_category'])){
+                                                    $selected = "checked";
                                                 }   
                                                  ?>
-                                                <input type="checkbox" style="margin-right:5px;" <?php echo $selected; ?> value="<?php echo $key;?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
+                                                <input type="checkbox" class="checkboxall" style="margin-right:5px;" <?php echo $selected; ?> value="<?php echo $key;?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
                                                 <?php }?>
                                             </div>
                                                             
@@ -128,7 +131,7 @@ $this->load->view('leftmenu');
                                         
                                         <div class="col-2">
                                             <div class="bold">Property Details :</div>
-                                            <div class="fild">
+                                            <div class="fild" style="background:#dddddd;">
                                                 <div class="smfildleft"><strong>Bedroom(s):</strong></div>
                                                 <div class="smfildright">
                                                     <input  type="text" name="bedroom"  id="bedroom" value="<?php echo (!empty($post_property_data['bedroom'])) ? $post_property_data['bedroom'] : '';  ?>" class="sminpselect" />
@@ -149,7 +152,7 @@ $this->load->view('leftmenu');
                                                 <div class="clear"></div>
                                             </div>
                                             
-                                            <div class="fild">
+                                            <div class="fild" style="background:#dddddd;">
                                                 <div class="smfildleft"><strong>Furnished Type:</strong></div>
                                                 <div class="smfildright">
                                                     <select name="furnished_type"  id="furnished_type" class="sminpselect1">
@@ -163,20 +166,21 @@ $this->load->view('leftmenu');
                                             </div>
                                             
                                             <div class="fild">
-                                                <div class="smfildleft">Price ($):</div>
+                                                <div class="smfildleft"><strong>Price (€):</strong></div>
                                                 <div class="clear"></div>
                                                 
                                                 <div class="smfild"><input type="text" class="sminpselect" name="min_price" id="min_price" value="<?php echo (!empty($post_property_data['min_price'])) ? $post_property_data['min_price'] : '';  ?>" placeholder="Minimum"></div>
                                                 <div class="smfild"><input type="text" class="sminpselect" name="max_price" id="max_price" value="<?php echo (!empty($post_property_data['max_price'])) ? $post_property_data['max_price'] : '';  ?>" placeholder="Maximum"></div>
                                                 <div class="clear"></div>
-                                                
-                                                <div class="cktxt fleft"><label><input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"> Inquiry</label></div>
-                                                <div class="cktxt fleft"><label><input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> Appointment</label></div>
-                                                
                                             </div>
                                             <div class="clear"></div>
-                                            
-
+                                            <div class="fild" style="background:#dddddd; padding:9px 0;">
+                                                
+                                                <input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"><B> Inquiry</B>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> <B>Appointment</B>
+                                              
+                                            </div> 
                                             <!-- <button class="button" >Find Property</button> -->
                                              <input class="button" type="submit" name="btnSearch" id="btnSearch" value="Find Property" />                 
                                         </div>
@@ -263,7 +267,7 @@ $this->load->view('leftmenu');
                                           <?php  if($search_detail[$i]->type =='1'){
                                             echo "<td>" .'Sale'. "</td>";
                                             if (!empty($search_detail[$i]->sale_price)) {
-                                                echo "<td>" .'€'.$search_detail[$i]->sale_price. "</td>";
+                                                echo "<td>" .'€'. number_format($search_detail[$i]->sale_price, 0, ".", ","). "</td>";
                                             }else{
                                                 echo "<td> </td>";    
                                             }
@@ -271,7 +275,7 @@ $this->load->view('leftmenu');
                                            echo "<td>" .'Rent'. "</td>";
                                            
                                            if (!empty($search_detail[$i]->rent_price)) {
-                                                echo "<td>" .'€'.$search_detail[$i]->rent_price. "</td>";    
+                                                echo "<td>" .'€'.number_format($search_detail[$i]->rent_price, 0, ".", ","). "</td>";    
                                            }else{
                                             echo "<td> </td>";
                                            }
@@ -279,7 +283,7 @@ $this->load->view('leftmenu');
                                         }elseif ($search_detail[$i]->type =='3') {
                                            echo "<td>" .'Both(Sale/Rent)'. "</td>";
                                            if (!empty($search_detail[$i]->sale_price) || !empty($search_detail[$i]->rent_price)) {
-                                                echo "<td> SP. €". $search_detail[$i]->sale_price." / RP. €".$search_detail[$i]->rent_price. "</td>";
+                                                echo "<td> SP. €".number_format($search_detail[$i]->sale_price, 0, ".", ",")." / RP. €".number_format($search_detail[$i]->rent_price, 0, ".", ","). "</td>";
                                             }else{
                                                 echo "<td> </td>";    
                                             }                                      
@@ -293,13 +297,15 @@ $this->load->view('leftmenu');
                                                 <img src="<?php echo base_url().'upload/property/'.$search_detail[$i]->image; ?>" width="75" height="75">
                                             </td>
                                             <?php }else{ 
-                                                 echo "<td></td>";                                                   
+                                                echo "<td>";
+                                                echo '<img src="'.base_url().'upload/property/100x100/noimage.jpg" width="75" height="75">';
+                                                echo "</td>";                                                  
                                              } ?>
                                             <td>
                                                 <?php
                                                 if($inquiry_flag == "1")
                                                 {?>
-                                                    <input type="checkbox" id="" name="" class="propertyIdArr"  value="<?php echo trim($search_detail[$i]->id); ?>" >
+                                                    <input type="checkbox" id="" name="pro_checkbox" class="propertyIdArr"  value="<?php echo trim($search_detail[$i]->id); ?>" >
                                                 <?php
                                                  $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
                                                 echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
@@ -386,7 +392,25 @@ $this->load->view('footer');
 <script type="text/javascript" src="<?php echo base_url(); ?>js/selectmulcheck/jquery.multiple.select.js"></script>
  <script>
                         $(document).ready(function () {
-                             
+                            // 
+                            $(".checkboxall").change(function() {
+                       
+                           if($(this).val() =='0'){
+                            if(this.checked){
+                            $('input:checkbox').attr('checked','checked');
+                            }else{
+                                $('input:checkbox').removeAttr('checked');
+                            }
+                        }
+                    });
+                          
+                            $('.propertyIdArr').live('click',function(){
+                                var totle_count= $('input[name=pro_checkbox]:checked').length;
+                                if(totle_count >'3'){
+                                    alert('You can not select more then three property.');
+                                    $(this).removeAttr('checked');
+                                }
+                            });
                              $('#example')
                                 //.on( 'order.dt',  function () { eventFired( 'Order' ); } )
                                 .on( 'search.dt', function () {
@@ -440,15 +464,23 @@ function get_city_area() {
                 
                 for(var i=0;i<msg.length;i++){
                     var selected = '';
+
                     if($.inArray(msg[i].id,selected_city_area)!=-1){
                         selected = 'selected="selected"';
+                    }
+                    if(selected_city_area.length < 1)
+                    {
+                        selected = 'selected="selected"';   
                     }
                     $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
                 }
                 
                 $('#city_area.multiselect').multipleSelect({
                     filter: true,
+
                 });
+                
+
             }
         });
     }

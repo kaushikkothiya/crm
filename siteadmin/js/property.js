@@ -1,5 +1,8 @@
 $(document).ready(function(){
  get_city_area();
+ $.validator.addMethod('check_country', function (value,element) { 
+     return this.optional(element) || value != 0;   
+    }, "Please select country");
  $.validator.addMethod('check_city', function (value,element) { 
      return this.optional(element) || value != 0;   
     }, "Please select city");
@@ -53,6 +56,9 @@ $('#manage_form').validate({
                           //required:true,
                           maxlength: 500
                         },
+                        country_id:{
+                          check_country:true
+                           },
                         city_id:{
                               check_city:true
                               },
