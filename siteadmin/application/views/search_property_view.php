@@ -1,314 +1,307 @@
 <?php
-
-$this->load->view('header');
-
-//$fDate = $this->input->post('txtFrom');
-//$tDate = $this->input->post('txtTo');
-//$drpUser = $this->input->post('drpUser');
-?>
-<div class="container-fluid">
-<div class="row-fluid">
-<div class="span12">
-<?php $this->load->view('admin_top_nav'); ?>
-</div>
-</div>
-<div class="row-fluid">
-<div class="span2 sidebar-container">
-<div class="sidebar">
-<div class="navbar sidebar-toggle">
-<div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-<span class="icon-bar">
-</span>
-<span class="icon-bar">
-</span>
-<span class="icon-bar">
-</span></a>
-</div>
-</div>
+$this->load->view('header');?>
+<link href="<?php echo base_url(); ?>css/selectmulcheck/multiple-select.css" rel="stylesheet">
 <?php
 $this->load->view('leftmenu');
 ?>
-</div>
-</div>
-<style>
-.rent_sale{
-    cursor: pointer;
-}
-</style>
-<div class="span10 body-container">
-<div class="row-fluid">
-<div class="span12">
-<ul class="breadcrumb">
-<li><?php echo anchor('home', 'Home', "title='Home'"); ?>
-<span class="divider">/ 
-</span></li>
-<li><?php echo anchor('inquiry/property', ' Property Search ', "title='Property Search '"); ?>
-<span class="divider">
-</span></li>
-</ul>
-</div>
-</div>
-            <?php if ($this->session->flashdata('success')) { ?>
+
+ <div class="container-fluid">
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
-            <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section class="utopia-widget">
-                    <div class="utopia-widget-title">
-                        <span>Property Search </span>
-                    </div>
-                        
-                        <div class="utopia-widget-content">
-							<h3>&nbsp;</h3></br>
-							
-                            <?php echo form_open_multipart('inquiry/property', array('class' => 'form-horizontal')); ?>
-							<fieldset>
-                               <div class="wrapper">
-    
-                                <div class="propertymain">
-                                    <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='2') ? '-select' : empty($post_property_data['property_type']) ? '-select' : ''; ?> rent_sale" id="2">RENT</div>
-                                    <div class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='1') ? '-select' : ''; ?> rent_sale" id="1">BUY</div>
+        <?php } ?>
+        <h1 class="page-header">Property Search</h1>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Property Search 
+             <div class="text-center"><?php echo $this->session->userdata('customer_name_property'); ?></div>
+              </div>
+
+              <div class="panel-body">
+                <?php echo form_open_multipart('inquiry/property', array('class' => 'form-horizontal search-property-form')); ?>
+                <ul class="nav nav-tabs">
+                    <li class="active buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='2') ? '-select' : empty($post_property_data['property_type']) ? '-select' : ''; ?> rent_sale" id="2" ><a data-toggle="tab" aria-controls="rent" href="#rent" aria-expanded="true">RENT</a></li>
+                    <li><a data-toggle="tab" class="buybtn<?php echo (!empty($post_property_data['property_type']) && $post_property_data['property_type']=='1') ? '-select' : ''; ?> rent_sale" id="1"  aria-controls="buy" href="#buy" aria-expanded="false">BUY</a></li>
+                </ul>
+                <?php
+                        if(empty($post_property_data['property_type']))
+                        {
+                            $defId = "2";
+                        }
+                        else{
+                            $defId = $post_property_data['property_type'];
+                        }
+                    ?>
+                <input type="hidden" name="property_type" id="property_type" value="<?php echo $defId; ?>">
+                <div class="large-input"><input type="text" class="form-control" placeholder="Enter reference number here" name="reference_no" id="reference_no" value="<?php echo !empty($post_property_data['reference_no']) ? $post_property_data['reference_no'] : '';  ?>"></div>
+                
+                <div class="tab-content">
+                    <div class="sep"></div>
+                    <div class="row">
+                    <div class="col-md-4">
+                      <p class="title-text">Property Location :</p>
+                      
+                      <div class="form-group">
+                        <div class="col-md-12">
+                          <label class="col-md-4  control-label">Country:</label>
+                            <div class="col-md-8">
+                             <?php
+                              $countrydata =array(0 => 'Select country',1 => 'Cyprus');
+                              $device = 'id="country_id" class="form-control"';
+                              echo form_dropdown('country_id', $countrydata, '', $device);
+                            ?>
+                              </select>
+                          </div>
+                        </div>
+                     </div>
+
+                      <div class="form-group">
+                        <div class="col-md-12">
+                          <label class="col-md-4  control-label">City:</label>
+                            <div class="col-md-8">
+                              <select class="form-control" name="city"  id="city" onchange="get_city_area();">
+                                  <?php foreach($city as $key => $value){ ?>
+                                          <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['city']) && $post_property_data['city']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
+                                   <?php }?>
+                              </select>
+                          </div>
+                        </div>
+                     </div>
+                      <div class="form-group">
+                        <div class="col-md-12">
+                          <label class="col-md-4  control-label">City area:</label>
+                          <div class="col-md-8">
+                            <input type="hidden" id="city_area_selected_ids" value="<?php echo !empty($post_property_data['selectItemcity_area']) ? implode(",", $post_property_data['selectItemcity_area']) : "0"; ?>" >
+                            <select name="city_area[]"  id="city_area" class="form-control multiselect" multiple>
+                            </select>
+                          </div>
+                        </div>  
+                      </div>
+                      
+                     </div>
+
+                     <div class="col-md-4">
+                        <p class="title-text">Property Type :</p>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                              <div class="fild">
+                                <div class="scroll-box">
                                     <?php
-                                        if(empty($post_property_data['property_type']))
-                                        {
-                                            $defId = "2";
-                                        }
-                                        else{
-                                            $defId = $post_property_data['property_type'];
-                                        }
+                                    asort($category);
+                                   //echo'<pre>';print_r($post_property_data);exit;
+                                    if(!isset($post_property_data['property_category'])){
+                                        $post_property_data['property_category']=array();
+                                    }
+                                     $count=0;
+                                    foreach($category as $key => $value){
+                                     if(in_array($key, $post_property_data['property_category'])){
+                                        $selected = "checked";      
+                                    }else{
+                                        $selected = ""; 
+                                    }
+                                    if(empty($post_property_data['property_category'])){
+                                        $selected = "checked";
+                                    }   
+                                    if ( $count % 2 == 0) {
+                                      $style="style=background:#dddddd";
+                                     } else {
+                                      $style="style=background:";
+                                    }
                                     ?>
-                                    <input type="hidden" name="property_type" id="property_type" value="<?php echo $defId; ?>">
-                                    <div class="largefd"><input class="largefd-type" type="text" name="reference_no" id="reference_no" value="<?php echo !empty($post_property_data['reference_no']) ? $post_property_data['reference_no'] : '';  ?>" placeholder="Enter reference number Here" /></div>
-                                    
-                                    <div class="clear"></div>
-                                    
-                                    <div class="propertypadd border">
-                                        <div class="col-1">
-                                            <div class="bold">Property Location :</div>
-                                            <div class="fild">
-                                                <div class="data">
-                                                    <select class="inpselect-full" name="city"  id="city" onchange="get_city_area();">
-                                                        <?php foreach($city as $key => $value){ ?>
-                                                                <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['city']) && $post_property_data['city']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
-                                                         <?php }?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            
-                                            
-                                            <input type="hidden" id="city_area_selected_ids" value="<?php echo !empty($post_property_data['selectItemcity_area']) ? implode(",", $post_property_data['selectItemcity_area']) : "0"; ?>" >
-                                               <select name="city_area[]"  id="city_area" class="inpselect-full multiselect" multiple>
-                                               </select>
-                                                            
-                                        </div>
-                                        
-                                        <div class="col-2">
-                                            <div class="bold">Property Type :</div>
-                                            <div class="scroll-1 height cktxt">
-                                                <?php
-                                                asort($category);
-                                               //echo'<pre>';print_r($post_property_data);exit;
-                                                if(!isset($post_property_data['property_category'])){
-                                                    $post_property_data['property_category']=array();
-                                                }
-                                                foreach($category as $key => $value){
-                                                 if(in_array($key, $post_property_data['property_category'])){
-                                                    $selected = "checked";      
-                                                }else{
-                                                    $selected = ""; 
-                                                }
-                                                if(empty($post_property_data['property_category'])){
-                                                    $selected = "checked";
-                                                }   
-                                                 ?>
-                                                <input type="checkbox" class="checkboxall" style="margin-right:5px;" <?php echo $selected; ?> value="<?php echo $key;?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
-                                                <?php }?>
-                                            </div>
-                                                            
-                                        </div>
-                                        
-                                        <div class="col-2">
-                                            <div class="bold">Property Details :</div>
-                                            <div class="fild" style="background:#dddddd;">
-                                                <div class="smfildleft"><strong>Bedroom(s):</strong></div>
-                                                <div class="smfildright">
-                                                    <input  type="text" name="bedroom"  id="bedroom" value="<?php echo (!empty($post_property_data['bedroom'])) ? $post_property_data['bedroom'] : '';  ?>" class="sminpselect" />
-                                                </div>
-                                                <div class="clear"></div>
-                                            </div>
-                                            
-                                            <div class="fild">
-                                                <div class="smfildleft"><strong>Bathroom(s):</strong></div>
-                                                <div class="smfildright">
-                                                    <select name="bathroom"  id="bathroom" class="sminpselect1">
-                                                       <option value="">Please select</option>
-                                                        <?php foreach($bathroom as $key => $value){?>
-                                                            <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['bathroom']) && $post_property_data['bathroom']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
-                                                        <?php }?>
-                                                    </select>
-                                                </div>
-                                                <div class="clear"></div>
-                                            </div>
-                                            
-                                            <div class="fild" style="background:#dddddd;">
-                                                <div class="smfildleft"><strong>Furnished Type:</strong></div>
-                                                <div class="smfildright">
-                                                    <select name="furnished_type"  id="furnished_type" class="sminpselect1">
-                                                        <option value="">Please select</option>
-                                                        <option value="1" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 1) ? 'selected' : '';  ?>>Furnished</option>
-                                                        <option value="2" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 2) ? 'selected' : '';  ?>>Semi-Furnished</option>
-                                                        <option value="3" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 3) ? 'selected' : '';  ?>>Un-Furnished</option>
-                                                    </select>
-                                                </div>
-                                                <div class="clear"></div>
-                                            </div>
-                                            
-                                            <div class="fild">
-                                                <div class="smfildleft"><strong>Price (€):</strong></div>
-                                                <div class="clear"></div>
-                                                
-                                                <div class="smfild"><input type="text" class="sminpselect" name="min_price" id="min_price" value="<?php echo (!empty($post_property_data['min_price'])) ? $post_property_data['min_price'] : '';  ?>" placeholder="Minimum"></div>
-                                                <div class="smfild"><input type="text" class="sminpselect" name="max_price" id="max_price" value="<?php echo (!empty($post_property_data['max_price'])) ? $post_property_data['max_price'] : '';  ?>" placeholder="Maximum"></div>
-                                                <div class="clear"></div>
-                                            </div>
-                                            <div class="clear"></div>
-                                            <div class="fild" style="background:#dddddd; padding:9px 0;">
-                                                
-                                                <input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"><B> Inquiry</B>
-                                                &nbsp;&nbsp;&nbsp;
-                                                <input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> <B>Appointment</B>
-                                              
-                                            </div> 
-                                            <!-- <button class="button" >Find Property</button> -->
-                                             <input class="button" type="submit" name="btnSearch" id="btnSearch" value="Find Property" />                 
-                                        </div>
-                                        <div class="clear"></div>
+                                     <div class="checkbox" <?php echo $style; ?>>
+                                      <label>
+                                    <input type="checkbox" class="checkboxall"  <?php echo $selected; ?> value="<?php echo $key;?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
+                                     </label>
                                     </div>
-                                    
+                                    <?php $count++; }?>
                                 </div>
-                               
+                              </div>
+                          </div>
+
+                        </div>
+                     </div>
+                    
+                    <div class="col-md-4">
+                        <p class="title-text">Property Details :</p>
+                      <div class="form-group">
+                        <label class="col-md-4  control-label">Bedroom(s):</label>
+                        <div class="col-md-8">
+                        <input  type="text" name="bedroom"  id="bedroom" value="<?php echo (!empty($post_property_data['bedroom'])) ? $post_property_data['bedroom'] : '';  ?>" class="form-control" />
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-md-4  control-label">Bathroom(s):</label>
+                        <div class="col-md-8">
+                            <select name="bathroom"  id="bathroom" class="form-control">
+                               <option value="">Please select</option>
+                                <?php foreach($bathroom as $key => $value){?>
+                                    <option value="<?php echo $key;?>" <?php echo (!empty($post_property_data['bathroom']) && $post_property_data['bathroom']== $key) ? 'selected' : '';  ?>><?php echo $value;?></option>
+                                <?php }?>
+                            </select>
+                          
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-md-4  control-label">Furnished Type:</label>
+                        <div class="col-md-8">
+                        <select name="furnished_type"  id="furnished_type" class="form-control">
+                            <option value="">Please select</option>
+                            <option value="1" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 1) ? 'selected' : '';  ?>>Furnished</option>
+                            <option value="2" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 2) ? 'selected' : '';  ?>>Semi-Furnished</option>
+                            <option value="3" <?php echo (!empty($post_property_data['furnished_type']) && $post_property_data['furnished_type']== 3) ? 'selected' : '';  ?>>Un-Furnished</option>
+                        </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-md-4  control-label">Price (€):</label>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6">
+                                <input type="text" class="form-control" name="min_price" id="min_price" value="<?php echo (!empty($post_property_data['min_price'])) ? $post_property_data['min_price'] : '';  ?>" placeholder="Minimum">
+                                </div>
+                                <div class="visible-xs visible-sm sep"></div>
+                                <div class="col-md-6">
+                                      <input type="text" class="form-control" name="max_price" id="max_price" value="<?php echo (!empty($post_property_data['max_price'])) ? $post_property_data['max_price'] : '';  ?>" placeholder="Maximum">
+                        
+                                </div>
                             </div>
-                        </fieldset>
-					</form>
-
-                            <!-- Search Results parts here -->
-                            <?php
-                            
-                            if(!empty($search_detail))
-                            {
-                            ?> 
-                             <div id="property_search_result">
-                                <div class="table-responsive">
-                            <table class="table table-bordered" id="ani_bas_info">
+                        </div>
+                        
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-md-4  control-label">Reason:</label>
+                        <div class="col-md-8">
+                          <label class="radio-inline">
+                            <input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"> Inquiry
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> Appointment
+                          </label>
+                        </div>
+                      </div>
+                     </div>
+                 </div>
+                  <hr>
+                  <div class="form-group">
+                    <div class="col-md-12 text-center">
+                    <input class="btn btn-md btn-primary" type="submit" name="btnSearch" id="btnSearch" value="Find Property" />
+                   <!--  <button class="btn btn-md btn-default"  type="button" onClick="window.history.back();">Cancel</button> -->
+                    </div>
+                  </div>
+                </div>
+                </form>
+                <hr>
+                <?php
+                if(!empty($search_detail)){
+                ?> 
+                 <div id="property_search_result">
+                <div class="row">   
+                    <div class="col-sm-12">
+                        <div>
+                        <?php 
+                        if($inquiry_flag == "1")
+                            echo form_open_multipart('inquiry/sendMultipleInquiry', array('class' => 'form-horizontal'));
+                        else
+                            echo form_open_multipart('inquiry/agent_calendar', array('name'=>'agentCalendar','class' => 'form-horizontal'));
+                        ?>
+                            <table id="example">
                                 <thead>
-                                        <th class="dashboard_main_heading" colspan="2"><h3>Appointment / Inquiry</h3></th>
+                                    <tr>
+                                        <th>Property Description</th>
+                                        <th>Reference No</th>
+                                        <th>Property Area</th>
+                                        <th>Address</th>
+                                        <th>Property Status</th>
+                                        <th>Price(€)</th>
+                                        <th>image</th>
+                                        <th>Action</th>
+                                    </tr>
                                 </thead>
-                                <tbody>
-                                <div class="row-fluid">
-                                    <div class="utopia-widget-content">
-                           <!-- <form name="selected_property_frm" id="selected_property_frm" method="post" action="agent_calendar"> -->
-                            
-                                    <?php 
-
-                                    if($inquiry_flag == "1")
-                                        echo form_open_multipart('inquiry/sendMultipleInquiry', array('class' => 'form-horizontal'));
-                                    else
-                                        echo form_open_multipart('inquiry/agent_calendar', array('name'=>'agentCalendar','class' => 'form-horizontal'));
-                                    ?>
-                            
-                                    <table id="example" class="display" cellspacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Property Description</th>
-                                            <th>Reference No</th>
-                                            <th>Property Area</th>
-                                            <th>Address</th>
-                                            <th>Property Status</th>
-                                            <th>Price(€)</th>
-                                            <th>image</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    
-                                    
-                                    <?php
-                                   
-                                    for ($i = 0; $i < count($search_detail); $i++) {
-
+                                    <tbody>
+                                    <?php for ($i = 0; $i < count($search_detail); $i++) {
                                         //$short_decs   = substr($search_detail[$i]->short_decs, 0, 20);
                                     ?>
                                         <tr>
                                             <?php if(isset($search_detail[$i]->short_decs) && !empty($search_detail[$i]->short_decs)){ ?>
-                                            <td><?php echo substr($search_detail[$i]->short_decs, 0, 20) ?></td>
+                                            <td data-th='Property Description'><div><?php echo substr($search_detail[$i]->short_decs, 0, 20) ?></div></td>
                                             <?php }else{
-                                            echo "<td> </td>";  
+                                            echo "<td data-th='Property Description'><div></div> </td>";  
                                             } ?>
                                             
                                             <?php if(isset($search_detail[$i]->reference_no) && !empty($search_detail[$i]->reference_no)){ ?>
-                                            <td><?php echo $search_detail[$i]->reference_no ?></td>
+                                            <td data-th='Reference No'><div><?php echo $search_detail[$i]->reference_no ?></div></td>
                                             <?php }else{
-                                            echo "<td> </td>";  
+                                            echo "<td data-th='Reference No'><div></div> </td>";  
                                             } ?>
                                             
                                             <?php if(isset($search_detail[$i]->title) && !empty($search_detail[$i]->title)){ ?>
-                                            <td><?php echo $search_detail[$i]->title ?></td>
+                                            <td data-th='Property Area'><div><?php echo $search_detail[$i]->title ?></div></td>
                                             <?php }else{
-                                            echo "<td> </td>";  
+                                            echo "<td data-th='Property Area'><div></div> </td>";  
                                             } ?>
                                             
                                             <?php if(isset($search_detail[$i]->address) && !empty($search_detail[$i]->address)){ ?>
-                                            <td><?php echo $search_detail[$i]->address ?></td>
+                                            <td data-th='Address'><div><?php echo $search_detail[$i]->address ?></div></td>
                                             <?php }else{
-                                            echo "<td> </td>";  
+                                            echo "<td data-th='Address'><div></div> </td>";  
                                             } ?>
                                           
                                           <?php  if($search_detail[$i]->type =='1'){
-                                            echo "<td>" .'Sale'. "</td>";
+                                            echo "<td data-th='Property Status'><div>" .'Sale'. "</div></td>";
                                             if (!empty($search_detail[$i]->sale_price)) {
-                                                echo "<td>" .'€'. number_format($search_detail[$i]->sale_price, 0, ".", ","). "</td>";
+                                                echo "<td data-th='Price(€)'><div>" .'€'. number_format($search_detail[$i]->sale_price, 0, ".", ","). "</div></td>";
                                             }else{
-                                                echo "<td> </td>";    
+                                                echo "<td data-th='Price(€)'><div></div> </td>";    
                                             }
                                         }elseif ($search_detail[$i]->type =='2') {
-                                           echo "<td>" .'Rent'. "</td>";
+                                           echo "<td data-th='Property Status'><div>" .'Rent'. "</div></td>";
                                            
                                            if (!empty($search_detail[$i]->rent_price)) {
-                                                echo "<td>" .'€'.number_format($search_detail[$i]->rent_price, 0, ".", ","). "</td>";    
+                                                echo "<td data-th='Price(€)'><div>" .'€'.number_format($search_detail[$i]->rent_price, 0, ".", ","). "</div></td>";    
                                            }else{
-                                            echo "<td> </td>";
+                                            echo "<td data-th='Price(€)'><div></div> </td>";
                                            }
                                            
                                         }elseif ($search_detail[$i]->type =='3') {
-                                           echo "<td>" .'Both(Sale/Rent)'. "</td>";
+                                           echo "<td data-th='Property Status'><div>" .'Both(Sale/Rent)'. "</div></td>";
                                            if (!empty($search_detail[$i]->sale_price) || !empty($search_detail[$i]->rent_price)) {
-                                                echo "<td> SP. €".number_format($search_detail[$i]->sale_price, 0, ".", ",")." / RP. €".number_format($search_detail[$i]->rent_price, 0, ".", ","). "</td>";
+                                                echo "<td data-th='Price(€)'><div> SP. €".number_format($search_detail[$i]->sale_price, 0, ".", ",")." / RP. €".number_format($search_detail[$i]->rent_price, 0, ".", ","). "</div></td>";
                                             }else{
-                                                echo "<td> </td>";    
+                                                echo "<td data-th='Price(€)'><div></div> </td>";    
                                             }                                      
                                         }else{
-                                            echo "<td> </td>";
-                                            echo "<td> </td>";
+                                            echo "<td data-th='Property Status'><div></div> </td>";
+                                            echo "<td data-th='Price(€)'><div></div></td>";
                                         }?>
                                             <!-- <td>€<?php echo $search_detail[$i]->rent_price ?></td> -->
                                          <?php if(isset($search_detail[$i]->image) && !empty($search_detail[$i]->image)){ ?>   
-                                            <td>
-                                                <img src="<?php echo base_url().'upload/property/'.$search_detail[$i]->image; ?>" width="75" height="75">
+                                            <td data-th='image'>
+                                                <div>
+                                                    <img src="<?php echo base_url().'upload/property/'.$search_detail[$i]->image; ?>" width="75" height="75">
+                                                </div>
                                             </td>
                                             <?php }else{ 
-                                                echo "<td>";
+                                                echo "<td data-th='image'><div>";
                                                 echo '<img src="'.base_url().'upload/property/100x100/noimage.jpg" width="75" height="75">';
-                                                echo "</td>";                                                  
+                                                echo "</div></td>";                                                  
                                              } ?>
-                                            <td>
+                                            <td data-th='Action'><div>
                                                 <?php
                                                 if($inquiry_flag == "1")
                                                 {?>
                                                     <input type="checkbox" id="" name="pro_checkbox" class="propertyIdArr"  value="<?php echo trim($search_detail[$i]->id); ?>" >
+                                                    <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-success btn-xs">View</a>
                                                 <?php
-                                                 $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
-                                                echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
+                                                 //$arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
+                                                //echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
                                                    
                                                 }else{?>
                                                     <input type="radio" id="property_id" name="property_id" checked value="<?php echo trim($search_detail[$i]->id); ?>" />
@@ -316,22 +309,14 @@ $this->load->view('leftmenu');
                                                    // $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
                                                     // echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
                                                      echo anchor('home/view_property/'.$search_detail[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
-                                       
-                                                        
                                                 }
                                                 ?>
-                                                
-                                            </td>
+                                            </div></td>
                                         </tr>
-                                    
-                                    <?php
-                                    }
-
-                                    ?>
-                                    
-                                    </table>
-                                
-                                    <ul  class="sendBox">
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                                 <ul  class="sendBox">
                                         <center>
                                         <input type="hidden" id="reference_number" name="reference_number">
                                         <input type="hidden" id="property_status" name="property_status">
@@ -347,64 +332,73 @@ $this->load->view('leftmenu');
                                         <input type="hidden" id="property_name" name="property_name">
                                         <input type="hidden" id="allPropertyIds" name="allPropertyIds">
                                         <input type="hidden" id="allPropertyIds" name="propertyAcquired" value="<?php echo $this->session->userdata('customer_property_buy_sale');?>">
+                                        <hr>
                                         <?php
                                             if($inquiry_flag == "1")
                                             {
                                                 ?>
-                                                <label>Send Via</label>
-                                                <select name="sendInquiryBy">
+                                                <div class="form-group">
+                                                <label class="col-md-3 col-sm-4 control-label">Send Via :</label>
+                                                <div class="col-md-6">
+                                                  <select name="sendInquiryBy" class="form-control">
                                                     <option value="sendEmail">Email</option>
                                                     <option value="sendSms">SMS</option>
                                                     <option value="sendBoth">Both</option>
-                                                </select>
-                                                <br><input type="submit" id="Proceed" name="Proceed" value="Proceed" style="width:87px" onclick="getAllPropertyIds();">
-                                                <?php
+                                                  </select>
+                                                </div>
+                                                </div>
+                                                 <div class="form-group">
+                                                  <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
+                                                  <div class="col-sm-6">
+                                                  <br><input type="submit" class="btn btn-sm btn-primary" id="Proceed" name="Proceed" value="Proceed" onclick="getAllPropertyIds();">
+                                                  </div>
+                                                  </div>     
+                                            <?php
                                             }else{
                                                 ?>
-                                                <input type="submit" id="next" name="next" value="Next" style="width:87px" onclick="handleChange2();">
-                                                <?php        
+                                                <div class="form-group">
+                                                <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
+                                                <div class="col-sm-6">
+                                                 <input type="submit" id="next" name="next" class="btn btn-sm btn-primary" value="Next" onclick="handleChange2();">
+                                                </div>
+                                                </div>
+                                            <?php        
                                             }
-                                        ?>       
+                                            ?>       
                                         </center>
                                     </ul>
-                                    </div>
-                                    </form>
-                                    </div>   
-                                </div>
-                                </tbody>
-                                
-                            </table>
-                             <?php } ?>
-                         </div>
-                      </div>   
-
-                    </section>
+                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <?php } ?>
                 </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
+  </div>
 <?php
 $this->load->view('footer');
 ?>
-<link href="<?php echo base_url(); ?>css/selectmulcheck/multiple-select.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo base_url(); ?>js/selectmulcheck/jquery.multiple.select.js"></script>
  <script>
                         $(document).ready(function () {
                             // 
                             $(".checkboxall").change(function() {
-                       
+                            
                            if($(this).val() =='0'){
                             if(this.checked){
-                            $('input:checkbox').attr('checked','checked');
+                            $('input:checkbox').prop('checked','checked');
                             }else{
                                 $('input:checkbox').removeAttr('checked');
                             }
                         }
                     });
                           
-                            $('.propertyIdArr').live('click',function(){
+                            $('.propertyIdArr').on('click',function(){
                                 var totle_count= $('input[name=pro_checkbox]:checked').length;
                                 if(totle_count >'3'){
                                     alert('You can not select more then three property.');

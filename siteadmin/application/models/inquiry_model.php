@@ -162,6 +162,8 @@ Class Inquiry_model extends CI_Model {
         // }
         // if(!empty($post['location']))
         //     $this->db->like('property.address', $post['location']);
+        if(!empty($post['country_id']) && $post['country_id'] !='0')
+            $this->db->where('property.country_id', $post['country_id']);
 
         if(!empty($post['city']) && $post['city'] !='0')
             $this->db->where('property.city_id', $post['city']);
@@ -395,6 +397,17 @@ Class Inquiry_model extends CI_Model {
             
         );
         $insert = $this->db->insert('inquiry', $new_user_insert_data);
+        if($insert){
+            $inquiry_status = array(
+                'inquiry_id'=> $this->db->insert_id(),
+                'agent_id'=>0,
+                'inquiry_status'=>1,
+                'inquiry_agent_status'=>0,
+                'comments'=>'',
+            );
+            $this->db->insert('inquiry_status_history',$inquiry_status);
+        }
+
         return $insert;
    }
 
@@ -451,6 +464,17 @@ Class Inquiry_model extends CI_Model {
             );
             $insert = $this->db->insert('inquiry', $new_user_insert_data);
             $insert = $this->db->insert_id();
+            if($insert){
+                $inquiry = $this->db->select('*')->from('inquiry')->where('id',$insert)->get()->result();
+                $inquiry_status = array(
+                    'inquiry_id'=> $inquiry[0]->id,
+                    'agent_id'=>$inquiry[0]->agent_id,
+                    'inquiry_status'=>$inquiry[0]->status,
+                    'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                    'comments'=>(isset($_POST['comments']))?$_POST['comments']:'',
+                );
+                $this->db->insert('inquiry_status_history',$inquiry_status);
+            }
             return $insert;
         }else{
             //echo'<pre>';print_r($recorde);exit;
@@ -464,6 +488,18 @@ Class Inquiry_model extends CI_Model {
                 'status'=>"4",
             );
             $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_insert_data);
+            if($insert){
+                $inquiry = $this->db->select('*')->from('inquiry')->where('id',$recorde[0]->id)->get()->result();
+                $inquiry_status = array(
+                    'inquiry_id'=> $inquiry[0]->id,
+                    'agent_id'=>$inquiry[0]->agent_id,
+                    'inquiry_status'=>$inquiry[0]->status,
+                    'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                    'comments'=>(isset($_POST['comments']))?$_POST['comments']:'',
+                );
+                $this->db->insert('inquiry_status_history',$inquiry_status);
+            }
+
             return $recorde[0]->id;
         }
     }
@@ -611,6 +647,18 @@ Class Inquiry_model extends CI_Model {
             );
             $insert = $this->db->insert('inquiry', $new_user_insert_data);
             $insert = $this->db->insert_id();
+            if($insert){
+                $inquiry = $this->db->select('*')->from('inquiry')->where('id',$insert)->get()->result();
+                $inquiry_status = array(
+                    'inquiry_id'=> $inquiry[0]->id,
+                    'agent_id'=>$inquiry[0]->agent_id,
+                    'inquiry_status'=>$inquiry[0]->status,
+                    'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                    'comments'=>(isset($_POST['comments']))?$_POST['comments']:'',
+                );
+                $this->db->insert('inquiry_status_history',$inquiry_status);
+            }
+
             return $insert;
 
         }else{
@@ -620,6 +668,17 @@ Class Inquiry_model extends CI_Model {
                 'updated_date' => $today_date,
             );
             $insert = $this->db->where('id',$recorde[0]->id)->update('inquiry', $new_user_insert_data);
+            if($insert){
+                $inquiry = $this->db->select('*')->from('inquiry')->where('id',$recorde[0]->id)->get()->result();
+                $inquiry_status = array(
+                    'inquiry_id'=> $inquiry[0]->id,
+                    'agent_id'=>$inquiry[0]->agent_id,
+                    'inquiry_status'=>$inquiry[0]->status,
+                    'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                    'comments'=>(isset($_POST['comments']))?$_POST['comments']:'',
+                );
+            }
+
             return $recorde[0]->id;
             //$insert = $this->db->insert('inquiry', $new_user_insert_data);
             //$insert = $this->db->insert_id();
@@ -846,6 +905,7 @@ function add_appointment_note($post) {
     }
     function update_agent_appointment($agent_id,$inquiry_id,$post)
     {
+        $update = false;
                 if(trim($post['submit'])=="Submit"){
                   $today_date = date('Y-m-d H:i:s');
                   $new_inquiry_update_data = array(
@@ -854,7 +914,6 @@ function add_appointment_note($post) {
                             'comments' => $post['comment']
                     );
                     $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
-                    return $update;
                 }elseif (trim($post['submit'])=="Confirm Appointment") {
                     $today_date = date('Y-m-d H:i:s');
                   $new_inquiry_update_data = array(
@@ -863,7 +922,6 @@ function add_appointment_note($post) {
                         
                     );
                     $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
-                    return $update;
                 }elseif (trim($post['submit'])=="Reschedule Appointment") {
                    $today_date = date('Y-m-d H:i:s');
                   $new_inquiry_update_data = array(
@@ -872,10 +930,54 @@ function add_appointment_note($post) {
                         
                     );
                     $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
-                    return $update;
                 }
+                if($update){
+                    $inquiry = $this->db->select('*')->from('inquiry')->where('id',$insert)->get()->result();
+                    $inquiry_status = array(
+                        'inquiry_id'=> $inquiry[0]->id,
+                        'agent_id'=>$inquiry[0]->agent_id,
+                        'inquiry_status'=>$inquiry[0]->status,
+                        'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                        'comments'=>(isset($_POST['comments']))?$_POST['comments']:'',
+                    );
+                    $this->db->insert('inquiry_status_history',$inquiry_status);
+                }
+                return $update;
                 
    }
+
+   //  function update_agent_appointment($agent_id,$inquiry_id,$post)
+   //  {
+   //              if(trim($post['submit'])=="Submit"){
+   //                $today_date = date('Y-m-d H:i:s');
+   //                $new_inquiry_update_data = array(
+   //                          'agent_status' => '3',
+   //                          'updated_date' => $today_date,
+   //                          'comments' => $post['comment']
+   //                  );
+   //                  $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+   //                  return $update;
+   //              }elseif (trim($post['submit'])=="Confirm Appointment") {
+   //                  $today_date = date('Y-m-d H:i:s');
+   //                $new_inquiry_update_data = array(
+   //                          'agent_status' => '1',
+   //                          'updated_date' => $today_date,
+                        
+   //                  );
+   //                  $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+   //                  return $update;
+   //              }elseif (trim($post['submit'])=="Reschedule Appointment") {
+   //                 $today_date = date('Y-m-d H:i:s');
+   //                $new_inquiry_update_data = array(
+   //                          'agent_status' => '2',
+   //                          'updated_date' => $today_date,
+                        
+   //                  );
+   //                  $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
+   //                  return $update;
+   //              }
+                
+   // }
 
    function get_inquiry_data($id)
     {
@@ -926,8 +1028,20 @@ function add_appointment_note($post) {
     }
 
     function updateInquiryStatus($id,$data){
-        return $this->db->where('id',$id)->update('inquiry', $data);
+        $update = $this->db->where('id',$id)->update('inquiry', $data);
+        if($update){
+            $inquiry = $this->db->select('*')->from('inquiry')->where('id',$id)->get()->result();
+            $inquiry_status = array(
+                'inquiry_id'=> $inquiry[0]->id,
+                'agent_id'=>$inquiry[0]->agent_id,
+                'inquiry_status'=>$inquiry[0]->status,
+                'comments'=>$_POST['comments'],
+            );
+            $this->db->insert('inquiry_status_history',$inquiry_status);
+        }
+        return $update;
     }
+
     
 
      function getNewInquiries($id){
@@ -949,10 +1063,24 @@ function add_appointment_note($post) {
         return array();
     }
 
-
     function changeAgentStatus($id,$data){
-        return $this->db->where('id',$id)->update('inquiry', $data);
+        $update = $this->db->where('id',$id)->update('inquiry', $data);
+        if($update){
+            $inquiry = $this->db->select('*')->from('inquiry')->where('id',$id)->get()->result();
+            $inquiry_status = array(
+                'inquiry_id'=> $inquiry[0]->id,
+                'agent_id'=>$inquiry[0]->agent_id,
+                'inquiry_status'=>$inquiry[0]->status,
+                'inquiry_agent_status'=>$inquiry[0]->agent_status,
+            );
+            if(isset($data['cancel_message']) && !empty($data['cancel_message'])){
+                $inquiry_status['comments'] = $data['cancel_message'];
+            }
+            $this->db->insert('inquiry_status_history',$inquiry_status);
+        }
+        return $update;
     }
+
 
     function getRescheduleInquiries($id){
         $q = $this->db->select('customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname')
@@ -990,9 +1118,23 @@ function add_appointment_note($post) {
         return array();
     }
 
-    function rescheduleInquiry($id,$data){
-        return $this->db->where('id',$id)->update('inquiry', $data);
+     function rescheduleInquiry($id,$data){
+        $update = $this->db->where('id',$id)->update('inquiry', $data);
+        
+        if($update){
+            $inquiry = $this->db->select('*')->from('inquiry')->where('id',$id)->get()->result();
+            $inquiry_status = array(
+                'inquiry_id'=> $inquiry[0]->id,
+                'agent_id'=>$inquiry[0]->agent_id,
+                'inquiry_status'=>$inquiry[0]->status,
+                'inquiry_agent_status'=>$inquiry[0]->agent_status,
+                'comments'=>'',
+            );
+            $this->db->insert('inquiry_status_history',$inquiry_status);
+        }
+        return $update;
     }
+
 
 
 

@@ -195,7 +195,7 @@ class Verification extends CI_Controller {
                     // Save to sms_email history table
                     $history_text       = $email_layout;
                     $history_subject    = "Welcome to Monopolion System";
-                    $history_type       = "Email";
+                    $history_type       = "E-mail";
                     $history_reciever   = $email;
                     $history_reciever_id    = $query;
                     $history_reciever_usertype ="1";
@@ -383,10 +383,6 @@ class Verification extends CI_Controller {
                         //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }   
-
-
-
-
                 
                  $data = array(
                             'id' =>$id,

@@ -287,7 +287,10 @@ class Home extends CI_Controller {
                 $id = $this->uri->segment(3);
                 $data['user'] = $this->user->get_property($id);
                 $data['facility_id'] = $this->user->get_property_related_facility($id);
-                 //echo'<pre>';print_r($data['facility_id'][0]->facility_id);exit;
+
+                 $data['prop_img'] = $this->user->get_property_image($id);
+
+                 //echo'<pre>';print_r($data);exit;
                 //$data['orderdetail'] = $this->user->getAllUserOrderDetail($usrid);
                 $this->load->view('add_property_view', $data);
             } else {
@@ -1025,7 +1028,7 @@ class Home extends CI_Controller {
             }
     }
     function edit_profile() {
-
+      
         if(!empty($_POST['type'])){
 
         $deta['user']=$this->user->update_user_profile($_POST['id']);
@@ -1208,6 +1211,123 @@ class Home extends CI_Controller {
             }
             $this->load->view('appointment_conform',$data);
     }
+    function delete_propimg()
+    {
+        $targetfile = "img_prop/".$_POST['imagename'];
+        unlink($targetfile);
+
+         $delete_img = $this->user->delete_propimg($_POST['imageid']);
+         exit;
+    }
+    function update_propimg()
+    {
+        $allowedExts = array("gif", "jpeg", "jpg", "png");
+       if(!empty($_FILES) && $_POST['action'] == "multiple_fileupload"){
+            $targetDir = "img_prop/";
+            foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+                
+                $fileName = $filevalue;
+                $fnm = explode('.', $filevalue);
+
+                if(in_array(max($fnm), $allowedExts)){
+                    $fileName =rand('1111','9999').'.'.max($fnm);
+                    $max_order = $this->user->select_maxid();
+                   // $query = mysqli_query($con,"SELECT * FROM `images` ORDER BY `order` ASC") or die(mysql_error());
+                    //while($row = mysqli_fetch_assoc($query))
+                    //{
+                     //   $rows[$row['order']] = $row;
+                    //}
+                    //$max_order = max(array_keys($rows));
+                    if ($max_order < 1) {
+                        $max_order = 1;
+                    }else{
+                        $max_order = $max_order+1;
+                    }
+
+                    $targetFile = $targetDir.$fileName;
+
+                    if(move_uploaded_file($_FILES['userImage']['tmp_name'][$filekey],$targetFile)){
+                        //$sql ="INSERT INTO `images`(`image`, `order`,`prop_id`)VALUES('".$fileName."',".$max_order.",".$_POST['prop_id'].")";
+                        //$result = mysqli_query($con,$sql);
+                        
+                        $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
+                        $insertid = $this->user->insert_propimg($propimag);
+                       //echo "";print_r($propimag);exit;
+
+                        $img_detail[$filekey]['id'] = $insertid;
+                        $img_detail[$filekey]['img_name'] = base_url()."img_prop/".$fileName;
+                    }
+                }
+                else
+                 {
+                    $img_detail[$filekey]['id'] = '-1';
+                    $img_detail[$filekey]['img_name'] = "error_file";
+                 }
+            }
+
+            echo json_encode($img_detail);
+        }
+    }
+    function insert_image()
+    {
+        $allowedExts = array("gif", "jpeg", "jpg", "png");
+        $fileName = $_FILES['afile']['name'];
+         $targetDir = "img_prop/";
+        $fnm = explode('.', $fileName);
+        /*$temp = explode(".", $_FILES["file"]['name']);
+        $extension = end($temp);
+        */
+
+         if(in_array(max($fnm), $allowedExts)){
+             $fileName =rand('1111','9999').'.'.max($fnm);
+             
+              $max_order = $this->user->select_maxid();
+                   // $query = mysqli_query($con,"SELECT * FROM `images` ORDER BY `order` ASC") or die(mysql_error());
+                    //while($row = mysqli_fetch_assoc($query))
+                    //{
+                     //   $rows[$row['order']] = $row;
+                    //}
+                    //$max_order = max(array_keys($rows));
+                    if ($max_order < 1) {
+                        $max_order = 1;
+                    }else{
+                        $max_order = $max_order+1;
+                    }
+
+                $targetFile = $targetDir.$fileName;
+
+            if(move_uploaded_file($_FILES['afile']['tmp_name'],$targetFile)){
+                
+                $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
+               
+
+               $insertid = $this->user->insert_propimg($propimag);
+
+                $img_detail[0]['id'] = $insertid;
+                $img_detail[0]['img_name'] = base_url()."img_prop/".$fileName;
+            }
+         }
+         else
+         {
+            $img_detail[0]['id'] = '-1';
+            $img_detail[0]['img_name'] = "error_file";
+         }
+    echo json_encode($img_detail);
+    }
+    function order_update()
+    {
+        $idArray = explode(",",$_POST['ids']);
+
+        $count = 1;
+        foreach ($idArray as $propkey => $propvalue){
+
+             $propimag  = array('order'=> $count , 'id'=>$propvalue);
+             $insertid = $this->user->update_propimg($propimag);
+
+            $count ++;  
+        }
+        return true;
+    }
     function final_appointment_conform()
     {
 
@@ -1240,24 +1360,33 @@ class Home extends CI_Controller {
                         $agentcountry_code = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
                         if(!empty($agentcountry_code))
                         {    
+                            $country_code_coustomer = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
+                            if(!empty($country_code_coustomer))
+                            {    
+                                $mcode_coustomer = substr($country_code_coustomer[0]->prefix_code, 1);
+                                $mobile_code_coustomer="00".$mcode_coustomer;
+                            }{
+                              $mobile_code_coustomer="";  
+                            }
                             $agentmcode = substr($agentcountry_code[0]->prefix_code, 1);
                             $agentmobile_code="00".$agentmcode;
                             if(trim($_POST['submit'])=="Confirm Appointment"){
                                 $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
-                                $message_agent .= " You  that your  appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
-                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
-                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                                $message_agent .=" Your appointment for the property with Reference No:".$inquiry_detail[0]->property_ref_no.",";
+                                $message_agent .= " has been confirmed on:".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.", mobile Number: +".$mobile_code_coustomer.$inquiry_detail[0]->mobile_no;
                             }elseif (trim($_POST['submit'])=="Submit") {
                                 $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
-                                $message_agent .= " Your appointment has been cancel";
-                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
-                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
+                                $message_agent .= " Your appointment on ".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
+                                $message_agent .=" For the property with Reference No: ".$inquiry_detail[0]->property_ref_no.",";
+                                $message_agent .= " has been cancelled";
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.", mobile Number: +".$mobile_code_coustomer.$inquiry_detail[0]->mobile_no;
                           
                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
                                 $message_agent = "Dear ".$aget_record[0]->fname." ".$aget_record[0]->lname.",";
-                                $message_agent .= " Your appointment has been Reschedule";
-                                $message_agent .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
-                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
+                                $message_agent .=" Your appointment for the property with Reference No:".$inquiry_detail[0]->property_ref_no.",";
+                                $message_agent .= " has been rescheduled on:".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
+                                $message_agent .= " Inquiry from, ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.", mobile Number: +".$mobile_code_coustomer.$inquiry_detail[0]->mobile_no;
                           
                             }
                             $this->load->library('CMSMS');
@@ -1282,6 +1411,14 @@ class Home extends CI_Controller {
                         }
                         if(!empty($aget_record[0]->email))
                         {
+                            $country_code_coustomer = $this->user->get_contry_code($inquiry_detail[0]->coutry_code);               
+                            if(!empty($country_code_coustomer))
+                            {    
+                                $mcode_coustomer = substr($country_code_coustomer[0]->prefix_code, 1);
+                                $mobile_code_coustomer="00".$mcode_coustomer;
+                            }{
+                              $mobile_code_coustomer="";  
+                            }
                             if(trim($_POST['submit'])=="Confirm Appointment"){
                                 $data['confirm_agent'] = array(
                                           'customer_name'=>$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname,
@@ -1289,7 +1426,8 @@ class Home extends CI_Controller {
                                           'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
                                           'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
                                           'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
-                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no,
+                                          'customer_mobile'=>$mobile_code_coustomer.$inquiry_detail[0]->mobile_no
                                          );
                             }elseif (trim($_POST['submit'])=="Submit") {
                                 $data['cancle_agent'] = array(
@@ -1298,7 +1436,8 @@ class Home extends CI_Controller {
                                           'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
                                           'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
                                           'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
-                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no,
+                                          'customer_mobile'=>$mobile_code_coustomer.$inquiry_detail[0]->mobile_no
                                          );
                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
                                 $data['reschedule_agent'] = array(
@@ -1307,7 +1446,8 @@ class Home extends CI_Controller {
                                           'appointment_end'=>$inquiry_detail[0]->appoint_end_date,
                                           'property_ref_no'=>$inquiry_detail[0]->property_ref_no,
                                           'agent_name'=>$aget_record[0]->fname.' '.$aget_record[0]->lname,
-                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no
+                                          'agent_mobile'=>$agentmobile_code.$aget_record[0]->mobile_no,
+                                          'customer_mobile'=>$mobile_code_coustomer.$inquiry_detail[0]->mobile_no
                                          );
                             }
                                     $this->load->library('email');
@@ -1354,14 +1494,14 @@ class Home extends CI_Controller {
                             $employeemobile_code="00".$employeemcode;
                             if(trim($_POST['submit'])=="Confirm Appointment"){
                                 $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
-                                $message_employee .= " You  that your  appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
+                                $message_employee .= " You  that your  appointment on.".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date;
                                 $message_employee .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
-                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
                             }elseif (trim($_POST['submit'])=="Submit") {
                                 $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
                                 $message_employee .= " Your appointment has been cancel";
                                 $message_employee .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no;
-                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname.' Please be on time! ';
+                                $message_employee .= " Inquiry from, ".$inquiry_detail[0]->fname.' '.$inquiry_detail[0]->lname;
                           
                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
                                 $message_employee = "Dear ".$employee_record[0]->fname." ".$employee_record[0]->lname.",";
@@ -1468,21 +1608,23 @@ class Home extends CI_Controller {
                             $mobile_code="00".$mcode;
                             if(trim($_POST['submit'])=="Confirm Appointment"){
                                 $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
-                                $message .= " Your request for appointment on.".$inquiry_detail[0]->appoint_start_date.' to '.$inquiry_detail[0]->appoint_end_date;
-                                $message .=" For the property with Reference No:".$inquiry_detail[0]->property_ref_no." has been CONFIRMED!";
+                                $message .=" Your appointment for the property with Reference No: ".$inquiry_detail[0]->property_ref_no.", ";
+                                $message .= " has been confirmed on:".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
                                 $message .= " For any further information please kindly contact";
-                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', Mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                                $message .= " our Agent, ".$aget_record[0]->fname." ".$aget_record[0]->lname.", Mobile Number: +".$agentmobile_code.$aget_record[0]->mobile_no." or  8000 7000 ";
                             }elseif (trim($_POST['submit'])=="Submit") {
                                 $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
-                                $message .= " Your appointment has been cancel";
+                                $message .= " Your appointment on: ".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
+                                $message .=" for the property with Reference No: ".$inquiry_detail[0]->property_ref_no.", has been cancelled";
                                 $message .= " For any further information please kindly contact";
-                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', Mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                                $message .= " our Agent, ".$aget_record[0]->fname." ".$aget_record[0]->lname.", mobile Number: +".$agentmobile_code.$aget_record[0]->mobile_no." or  8000 7000 ";
                            
                             }elseif (trim($_POST['submit'])=="Reschedule Appointment") {
                                 $message = "Dear ".$inquiry_detail[0]->fname." ".$inquiry_detail[0]->lname.",";
-                                $message .= " Your appointment has been reschedule";
+                                $message .=" Your appointment for the property with Reference No: ".$inquiry_detail[0]->property_ref_no.", ";
+                                $message .= " has been rescheduled on:".$inquiry_detail[0]->appoint_start_date." to ".$inquiry_detail[0]->appoint_end_date.".";
                                 $message .= " For any further information please kindly contact";
-                                $message .= " Our Agent, ".$aget_record[0]->fname.' '.$aget_record[0]->lname.', mobile Number: +'.$agentmobile_code.$aget_record[0]->mobile_no.' or  8000 7000 ';
+                                $message .= " our Agent, ".$aget_record[0]->fname." ".$aget_record[0]->lname.", mobile Number: +".$agentmobile_code.$aget_record[0]->mobile_no." or  8000 7000 ";
                            
                             }
                             

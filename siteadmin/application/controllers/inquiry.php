@@ -224,8 +224,8 @@ class Inquiry extends CI_Controller {
                 {
                     $mcode = substr($country_code[0]->prefix_code, 1);
                     $mobile_code="00".$mcode;
-                    $message = "Dear ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", your request for appointment on :".$_POST['start_date'].' - '.$_POST['end_date'];
-                    $message .= " for the property with Reference No: ".$property_detail[0]->reference_no;
+                    $message = "Dear ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", your request for appointment on :".$_POST['start_date'].' to '.$_POST['end_date'];
+                    $message .= " for the property with Reference No: ".$property_detail[0]->reference_no.",";
                     $message .= " will be confirmed by our agent: ".$agent_detail[0]->fname." ".$agent_detail[0]->lname.", Mobile Number: +".$agent_detail[0]->coutry_code.$agent_detail[0]->mobile_no;
                     $message .= " shortly";
                     
@@ -255,11 +255,11 @@ class Inquiry extends CI_Controller {
                 {           
                     $mcode_agent = substr($country_code_agent[0]->prefix_code, 1);
                     $mobile_code_agent="00".$mcode_agent;
-                    $message_agent = "Dear ".$agent_detail[0]->fname." ".$agent_detail[0]->lname." you have an inquiry for an appointment on ".$_POST['start_date']." to ".$_POST['end_date'];
-                    $message_agent .= " for the property with Reference No: ".$property_detail[0]->reference_no;
-                    $message_agent .= " Inquiry from: ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", Mobile Number: +".$customer_detail[0]->coutry_code.$customer_detail[0]->mobile_no;
-                    $message_agent .= " Please confirm on our system asap by clicking the following ";
-                    $message_agent .= "link: ".$property_link[0];
+                    $message_agent = "Dear ".$agent_detail[0]->fname." ".$agent_detail[0]->lname.", new request for appointment on ".$_POST['start_date']." to ".$_POST['end_date'];
+                    $message_agent .= " for the property with Reference No: ".$property_detail[0]->reference_no.",";
+                    $message_agent .= " Inquiry from: ".$customer_detail[0]->fname." ".$customer_detail[0]->lname.", Mobile Number: +".$customer_detail[0]->coutry_code.$customer_detail[0]->mobile_no.",";
+                    //$message_agent .= " Please confirm on our system asap by clicking the following ";
+                    $message_agent .= " Confirmation link: ".$property_link[0];
                                  
                     $this->load->library('CMSMS');
                     $sms_res1=CMSMS::sendMessage($mobile_code_agent.$agent_detail[0]->mobile_no, $message_agent);
@@ -405,10 +405,10 @@ class Inquiry extends CI_Controller {
     function check_customer_exist() {
 
         $customer_datail = $this->inquiry_model->check_customer_exist($_POST);
-        //echo "<pre>";print_r($customer_datail[0]->id);exit;
-
+       
         if(!empty($customer_datail)){
         $this->session->set_userdata('customer_property_id', $customer_datail[0]->id);
+        $this->session->set_userdata('customer_name_property', $customer_datail[0]->fname." ".$customer_datail[0]->lname);
         echo "true";exit;    
     }else{
         echo "false";exit;
@@ -525,6 +525,7 @@ class Inquiry extends CI_Controller {
                         }
                         
                     }
+                    if(!empty($customer_detail[0]->email)){
                     include APPPATH . 'third_party/Classes/Mailchimp.php';
                     $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
                     $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
@@ -567,7 +568,7 @@ class Inquiry extends CI_Controller {
                     );
                     
                     @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);
-
+                    }
 
                     // Send Email for New client Inquiry
                     

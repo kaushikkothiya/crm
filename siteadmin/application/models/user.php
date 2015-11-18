@@ -999,6 +999,7 @@ function getregisted_properties() {
      function getPropertyTotal() {
         $q = $this->db->select('count(*) AS totProperty')
                 ->from('property')
+                ->where('status', "Active")
                 ->order_by('id', 'desc')
                 ->get();
                                 
@@ -1010,6 +1011,8 @@ function getregisted_properties() {
     function getCustomerTotal() {
         $q = $this->db->select('count(*) AS totCustomer')
                 ->from('customer')
+                ->where('status', "Active")
+                ->where('deleted !=','1')
                 ->order_by('id', 'desc')
                 ->get();
                                 
@@ -1022,6 +1025,8 @@ function getregisted_properties() {
         $q = $this->db->select('count(*) AS totAgent')
                 ->from('user')
                 ->where('type', "2")
+                ->where('status', "Active")
+                ->where('deleted !=','1')
                 ->order_by('id', 'desc')
                 ->get();
                                 
@@ -1034,6 +1039,8 @@ function getregisted_properties() {
         $q = $this->db->select('count(*) AS totEmployee')
                 ->from('user')
                 ->where('type', "3")
+                ->where('status', "Active")
+                ->where('deleted !=','1')
                 ->order_by('id', 'desc')
                 ->get();
                                 
@@ -1054,6 +1061,7 @@ function getregisted_properties() {
         }
         $query = $this->db->get();
         $data = $query->result();
+
         if($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_employee')){
             $agentData[0] = "Please select agent"; 
         }
@@ -1161,6 +1169,51 @@ function getregisted_properties() {
             return $q->result();
         }
         return array();
+    }
+    function get_property_image($propid)
+    {
+        $rs = array();
+            $q = $this->db->select('*')
+                ->from('images')
+                ->order_by("order","ASC")
+                ->where('prop_id',$propid)
+                ->get();
+                                
+        if ($q->num_rows() > 0) {
+            $rs = $q->result();
+        }
+        return $rs;
+    }
+    function delete_propimg($propid){
+      $this->db->where('id', $propid);
+      $this->db->delete('images'); 
+    }
+    function select_maxid()
+    {
+        $rs = array();
+            $q = $this->db->select_max('id')
+                ->from('images')
+                ->get();
+                                
+        if ($q->num_rows() > 0) {
+            $rs = $q->result();
+        }
+
+         if (count($rs) > 0) {
+            $rs_maxid = $rs[0]->id;
+        }else{
+            $rs_maxid = 0;
+        }
+        return $rs_maxid;
+    }
+    function insert_propimg($propimag){
+        $this->db->insert('images', $propimag);
+        $rs = $this->db->insert_id();
+        return $rs;
+    }
+    function update_propimg($propimag){
+       $this->db->where('id', $propimag['id']);
+        $this->db->update('images', $propimag);
     }
     
 }

@@ -1,67 +1,31 @@
 <?php
 
 $this->load->view('header');
-
+$this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <?php $this->load->view('admin_top_nav'); ?>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span2 sidebar-container">
-            <div class="sidebar">
-                <div class="navbar sidebar-toggle">
-                    <div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span></a>
-                    </div>
-                </div>
-                <?php
-                $this->load->view('leftmenu');
-                ?>
-            </div>
-        </div>
-        <div class="span10 body-container">
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb">
-                        <li><?php echo anchor('home', 'Home', "title='Home'"); ?>
-                            <span class="divider">/
-                            </span></li>
-                        <li><?php echo anchor('home/employee_manage', 'Employee Management', "title='Employee Management'"); ?>
-                            <span class="divider">
-                            </span></li>
-								<li style="float:right;"><a href="add_employee"><input type="button" value="Add New" /></a></li>
-                    </ul>
-                </div>
-            </div>
-            <?php if ($this->session->flashdata('success')) { ?>
+     <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
-            <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section class="utopia-widget">
-                        <div class="utopia-widget-title">
-                            <span>Employee Management </span>
-                        </div>
-                        <div class="utopia-widget-content">
-                            <div class="table-responsive">
-                            <table id="example" class="display" cellspacing="0" width="100%">
+    <?php } ?>
+    <div class="row">
+      <div class="main">
+        <h1 class="page-header">Employee List
+          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_employee';">Create Employee</button>
+        </h1>
+        <div class="row">   
+          <div class="col-sm-12">
+                    <div>
+                        <table id="example">
                                 <thead>
                                     <tr>
                                         <th hidden>Id</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Telephone</th>
-                     					<th>Status</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -69,15 +33,23 @@ $this->load->view('header');
                                     <?php
                                     for ($i = 0; $i < count($user); $i++) {
                                         echo "<tr>";
-                                        echo "<td hidden>" . $user[$i]->id. "</td>";
-                                        echo "<td>" . $user[$i]->fname." ".$user[$i]->lname . "</td>";
-                                        echo "<td>" . $user[$i]->email. "</td>";
-                                        echo "<td>" . $user[$i]->mobile_no. "</td>";
-     									echo "<td>" . $user[$i]->status. "</td>";
-                                        echo "<td>";
-                                        echo anchor('home/add_employee/'.$user[$i]->id, '<i class="icon-pencil"></i>', array("title"=>'Edit Employee','class'=>"btn btn-default btn-small",'title'=>'Edit Employee'));
-                                        echo anchor('home/delete_employee/'.$user[$i]->id, '<i class="icon-trash"></i>', array('onClick' => "return confirm('Are you sure want to delete this record?')",'class'=>"btn btn-default btn-small",'title'=>'Delete Employee'));
-                                        echo "</td>";
+                                        echo "<td data-th='Id.' hidden><div>" . $user[$i]->id. "</div></td>";
+                                        echo "<td data-th='Name'><div>" . $user[$i]->fname." ".$user[$i]->lname . "</div></td>";
+                                        echo "<td data-th='Email'><div>" . $user[$i]->email. "</div></td>";
+                                        echo "<td data-th='Telephone'><div>" . $user[$i]->mobile_no. "</div></td>";
+                                        echo "<td data-th='Status'><div>" . $user[$i]->status. "</div></td>";
+                                        ?>
+                                        <td data-th="Actions">
+                                            <div>
+                                                <a href="add_employee/<?php echo $user[$i]->id; ?>" class="btn btn-success btn-xs">Edit</a> 
+                                                &nbsp;<a href="delete_employee/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                            </div>
+                                      </td>
+                                        <?php
+                                        //echo "<td>";
+                                        //echo anchor('home/add_employee/'.$user[$i]->id, '<i class="icon-pencil"></i>', array("title"=>'Edit Employee','class'=>"btn btn-default btn-small",'title'=>'Edit Employee'));
+                                       // echo anchor('home/delete_employee/'.$user[$i]->id, '<i class="icon-trash"></i>', array('onClick' => "return confirm('Are you sure want to delete this record?')",'class'=>"btn btn-default btn-small",'title'=>'Delete Employee'));
+                                       // echo "</td>";
                                         echo "</tr>";
 
                                     }
@@ -86,13 +58,12 @@ $this->load->view('header');
                                 </tbody>
                             </table>
                         </div>
-                        </div>   
-                    </section>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
 <?php
 $this->load->view('footer');
 ?>

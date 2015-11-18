@@ -1,46 +1,10 @@
 <?php
+
 $this->load->view('header');
-?>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-<?php $this->load->view('admin_top_nav'); ?>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span2 sidebar-container">
-            <div class="sidebar">
-                <div class="navbar sidebar-toggle">
-                    <div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span></a>
-                    </div>
-                </div>
-<?php
 $this->load->view('leftmenu');
 ?>
-            </div>
-        </div>
-        <div class="span10 body-container">
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb">
-                        <li><?php echo anchor('home', 'Home', "title='Home'"); ?>
-                            <span class="divider">/
-                            </span></li>
-                        <li><?php echo anchor('newsletter/email_newsletter_list', 'Email Newsletter', "title='Email Newsletter'"); ?>
-                            <span class="divider">
-                            </span></li>
-                            
-                        <li style="float:right;"><a href="<?php echo base_url(); ?>newsletter/emailnewsletter"><input type="button" value="Add New" /></a></li>
-                    </ul>
-                </div>
-            </div>
-<?php if ($this->session->flashdata('success')) { ?>
+<div class="container-fluid">
+     <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
     <?php echo $this->session->flashdata('success'); ?>
@@ -51,13 +15,15 @@ $this->load->view('leftmenu');
     <?php echo $this->session->flashdata('error'); ?>
                 </div>
                 <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section class="utopia-widget">
-                        <div class="utopia-widget-title">
-                            <span>Email Newsletter </span>
-                        </div>
-                        <div class="utopia-widget-content">
-                            <table id="example" class="display" cellspacing="0" width="100%">
+    <div class="row">
+      <div class="main">
+        <h1 class="page-header">Email Newsletter
+          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'emailnewsletter';">Add New</button>
+        </h1>
+        <div class="row">   
+          <div class="col-sm-12">
+                    <div>
+                        <table id="example">
                                 <thead>
                                     <tr>
                                         <th hidden>id</th>
@@ -70,18 +36,18 @@ $this->load->view('leftmenu');
                                     </tr>
                                 </thead>
                                 <tbody>
-<?php
-if (!empty($newsletters)) {
-    foreach ($newsletters as $key => $value) {
-        ?>
+                                    <?php
+                                    if (!empty($newsletters)) {
+                                        foreach ($newsletters as $key => $value) {
+                                            ?>
                                             <tr>
-                                                <td hidden><?php echo $value->id; ?></td>
-                                                <td><?php echo $value->title; ?></td>
-                                                <td><?php echo $value->content; ?></td>
-                                                <td><?php echo $value->campaign_id; ?></td>
-                                                <td><?php echo $value->type; ?></td>
-                                                <td><?php if($value->type=='date'){ echo date("m/d/Y",strtotime($value->schedule)); }else{ echo $value->schedule; } ?></td>
-                                                <td><?php echo date("m/d/Y",strtotime($value->created)); ?></td>
+                                                <td data-th='id.' hidden><div><?php echo $value->id; ?></div></td>
+                                                <td data-th='Title'><div><?php echo $value->title; ?></div></td>
+                                                <td data-th='Content'><div><?php echo $value->content; ?></div></td>
+                                                <td data-th='Campaign ID'><div><?php echo $value->campaign_id; ?></div></td>
+                                                <td data-th='Type'><div><?php echo $value->type; ?></div></td>
+                                                <td data-th='Schedule'><div><?php if($value->type=='date'){ echo date("m/d/Y",strtotime($value->schedule)); }else{ echo $value->schedule; } ?></td>
+                                                <td data-th='Created'><div><?php echo date("m/d/Y",strtotime($value->created)); ?></div></td>
                                             </tr>
                                                     <?php
                                                 }
@@ -89,16 +55,12 @@ if (!empty($newsletters)) {
                                             ?>
                                 </tbody>
                             </table>
-                        </div>   
-                    </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 <?php
 $this->load->view('footer');
 ?>
-
-
-

@@ -33,8 +33,8 @@
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px; width:600px;" >Dear <b><?php echo $agent_name;?></b>,</p>
-                                            <p>You have an inquiry for an appointment on <?php echo $start_date.' to '.$end_date; ?> for the property with Reference No :<?php echo $property_ref_no; ?> Inquiry from : <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
-                                            <p>Please confirm on our system asap by clicking the following link:</p>
+                                            <p>new request for appointment on <?php echo $start_date.' to '.$end_date; ?> for the property with Reference No: <?php echo $property_ref_no; ?>, Inquiry from : <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
+                                            <p>Confirmation link: </p>
                                             <a href="<?php echo $agent_property_link_path; ?>"><?php echo $agent_property_link_path; ?></a>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>

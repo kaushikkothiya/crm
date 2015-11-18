@@ -183,8 +183,11 @@ $('#manage_form').validate({
                   onkeyup:false,
                   focusInvalid: false,
                    submitHandler: function (form) {
+
+                    //alert("call");return false;
                      //event.preventDefault();$("#checkbox1").is(":checked")
-                          if($("#type").val() =='1' || $("#type").val() =='3'){
+                        /*if($("#type").val() =='1' || $("#type").val() =='3')
+                        {
                           if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
                             form.submit();
                           }else{
@@ -192,7 +195,59 @@ $('#manage_form').validate({
                           }
                         }else{
                           form.submit();
-                        }
+                        }*/
+
+                       var h = [];
+                        //var myarr = $(this).attr('id').split("_");
+                        //console.log(myarr);
+                            $("ul.reorder-photos-list li").each(function() { 
+                               var myarr = $(this).attr('id').split("_");
+                               h.push(myarr[2]);  
+                            });
+                            $.ajax({
+                              type: "POST",
+                              //url: baseurl+"order_update.php",
+                              url: baseurl+"home/order_update",
+                              data: {ids: " " + h + "", "prop_id": $('#property_id').val()},
+                              success: function(html) 
+                              {
+                                //form.submit();
+                                if($("#type").val() =='1' || $("#type").val() =='3'){
+                                  if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
+                                    form.submit();
+                                  }else{
+                                    alert('Please select both check box');
+                                  }
+                                }
+                              }
+                              
+                            }); 
+
+                        /*if($("#type").val() =='1' || $("#type").val() =='3'){
+                          if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
+                            form.submit();
+                          }else{
+                            alert('Please select both check box');
+                          }
+                        }*/
+
+                        /*else{
+                          var h = [];
+                          $("ul.reorder-photos-list li").each(function() { 
+                                var myarr = $(this).attr('id').split("_");
+                               h.push(myarr[2]);  
+                            });
+                            $.ajax({
+                              type: "POST",
+                              url: baseurl+"home/order_update",
+                              data: {ids: " " + h + "", "prop_id": $('#property_id').val()},
+                              success: function(html) 
+                              {
+                                form.submit();
+                              }
+                              
+                            }); 
+                        }*/
                     },
                
             });

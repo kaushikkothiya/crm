@@ -1,60 +1,26 @@
 <?php
 
-$this->load->view('header');
-
+$this->load->view('header');?>
+<link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
+<?php
+$this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <?php $this->load->view('admin_top_nav'); ?>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span2 sidebar-container">
-            <div class="sidebar">
-                <div class="navbar sidebar-toggle">
-                    <div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span></a>
-                    </div>
-                </div>
-                <?php
-                $this->load->view('leftmenu');
-                ?>
-                <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
-            </div>
-        </div>
-        <div class="span10 body-container">
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb">
-                        <li><?php echo anchor('home', 'Home', "title='Home'"); ?>
-                            <span class="divider">/
-                            </span></li>
-                        <li><?php echo anchor('home/sms_email_history', 'History', "title='SMS/Email History'"); ?>
-                            <span class="divider">
-                            </span></li>
-								<!-- <li style="float:right;"><a href="add_agent"><input type="button" value="Add New" /></a></li> -->
-                    </ul>
-                </div>
-            </div>
-            <?php if ($this->session->flashdata('success')) { ?>
+     <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
-            <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section class="utopia-widget">
-                        <div class="utopia-widget-title">
-                            <span>SMS / Email History </span>
-                        </div>
-                        <div class="utopia-widget-content">
-                            <table id="example" class="display" cellspacing="0" width="100%">
+    <?php } ?>
+    <div class="row">
+      <div class="main">
+        <h1 class="page-header">SMS / Email History 
+          <!-- <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button> -->
+        </h1>
+        <div class="row">   
+          <div class="col-sm-12">
+                    <div>
+                        <table id="example" class="display" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th hidden>id</th>
@@ -74,36 +40,30 @@ $this->load->view('header');
                                         {
                                             ?>
                                             <tr>
-                                                <td hidden><?php echo $value->id; ?>
-                                                <td><?php echo $value->subject; ?>
-                                                <td><?php echo $value->type; ?>
-                                                <td><?php echo $value->reciever; ?>
-                                                <td><?php echo $value->name; ?>
-                                                <td><?php echo date("d-M-Y", strtotime($value->created_date)); ?>
-                                                <td><a class="btn btn-default btn-small" href="#popup2" title="View" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'><i class="icon-zoom-in"></i></a></td>
-                                                <!--<td>
-                                                 <td>
-                                                    <span style='text-align:left;width: 50%;float: left;'><i class='icon-pencil'></i>&nbsp;
-                                                        <?php //echo anchor('home/add_agent/'.$user[$i]->id, 'Edit', "title='Edit agent'"); ?>
-                                                    </span>
-                                                    <span style='text-align:left;width: 50%;float: left;'><i class='icon-trash'></i>&nbsp;
-                                                        <?php //echo anchor('home/delete_agent/'.$user[$i]->id, 'Delete', array('onClick' => "return confirm('Are you sure want to delete this record?')")) ?>
-                                                    </span>
-                                                </td> -->
-                                            </tr>
+                                                <td data-th='id.' hidden><div><?php echo $value->id; ?></div></td>
+                                                <td data-th='Subject'><div><?php echo $value->subject; ?></div></td>
+                                                <td data-th='Type'><div><?php echo $value->type; ?></div></td>
+                                                <td data-th='Receiver Email/Mobile'><div><?php echo $value->reciever; ?></div></td>
+                                                <td data-th='Receiver Name'><div><?php echo $value->name; ?></div></td>
+                                                <td data-th='Send Date'><div><?php echo date("d-M-Y", strtotime($value->created_date)); ?></div></td>
+                                                <td data-th="Actions">
+                                                <div>
+                                                    <a class="btn btn-success btn-xs" href="#popup2" title="View" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'>View</a>
+                                                </div>
+                                                </td>
+                                                 </tr>
                                             <?php
                                         }
                                     }
                                     ?>
                                 </tbody>
                             </table>
-                        </div>   
-                    </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 <div id="popup2" class="overlay">
     <div class="popup">
         <h2 id="type"></h2>
@@ -146,6 +106,3 @@ function setInquiryId(type,id)
    
 }
 </script>
-
-
-

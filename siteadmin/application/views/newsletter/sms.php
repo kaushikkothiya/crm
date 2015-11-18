@@ -1,144 +1,100 @@
-<?php $this->load->view('header'); ?>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <?php $this->load->view('admin_top_nav'); ?>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span2 sidebar-container">
-            <div class="sidebar">
-                <div class="navbar sidebar-toggle">
-                    <div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span></a>
-                    </div>
-                </div>
-                <?php
-                $this->load->view('leftmenu');
-                ?>
-            </div>
-        </div>
-        <div class="span10 body-container">
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb">
-                        <li><?php echo anchor('home', 'Home', "title='Home'"); ?>
-                            <span class="divider">/
-                            </span></li>
-                        <li><?php echo anchor('newsletter/smsnewsletter', 'SMS Newsletter', array('title' => "SMS Newsletter")); ?>
-                            <span class="divider">/</span></li>
-
-                    </ul>
-                </div>
-            </div>
-            <?php if ($this->session->flashdata('success')) { ?>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <div class="alert alert-success" role="alert">
-                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                            <?php echo $this->session->flashdata('success'); ?>
-                        </div>
-                    </div>
+<?php
+$this->load->view('header');
+$this->load->view('leftmenu');
+?>
+ <div class="container-fluid">
+    <?php if ($this->session->flashdata('success')) { ?>
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section id="formElement" class="utopia-widget utopia-form-box section">
-                        <div class="utopia-widget-title">
-                            <span>SMS Newsletter</span>
-                        </div>
-                        <div class="row-fluid">
-                            <div class="utopia-widget-content">
-                                <div class="span6 utopia-form-freeSpace">
-                                    <div class="row-fluid">
-                                        <div class="span12">
-                                            <form class="form-horizontal" id="form-search">
-                                                <fieldset>
-                                                    <legend>Filters</legend>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">Select user type :</label>
-                                                        <div class="controls">
-                                                            <input type="checkbox" class="ajax_click" name="user_type[]" value="administrator"> Administrator
-                                                            <input type="checkbox" class="ajax_click" name="user_type[]" value="agents"> Agents
-                                                            <input type="checkbox" class="ajax_click" name="user_type[]" value="employees"> Employees
-                                                            <input type="checkbox" class="ajax_click" name="user_type[]" value="customers"> Customers
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">Client Specification</label>
-                                                        <div class="controls">
-                                                            <input type="radio" checked="checked" class="ajax_click" name="client_specification" value="both"> Both
-                                                            <input type="radio" class="ajax_click" name="client_specification" value="sale"> Sale
-                                                            <input type="radio" class="ajax_click" name="client_specification" value="rent"> Rent
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">Price Range</label>
-                                                        <div class="controls">
-                                                            <input type="text" class="ajax_change" name="price_min" value=""> Min<br />
-                                                            To <br />
-                                                            <input type="text" class="ajax_change" name="price_max" value=""> Max
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                </fieldset>
-                                            </form>
-                                            <form class="form-horizontal" id="form-send" method="post">
-                                                <fieldset>
-                                                    <legend>Details</legend>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">Title</label>
-                                                        <div class="controls">
-                                                            <input type="text" name="title" id="sms_title" value="" class="" />
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">#Recipient</label>
-                                                        <div class="controls">
-                                                            <label id="hash_recipient">0</label>
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">Recipient(s)</label>
-                                                        <div class="controls">
-                                                            <select name="receivers[]" multiple="multiple" id="receivers">
-                                                            </select>
-                                                            <div class="error"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">SMS Content</label>
-                                                        <div class="controls">
-                                                            <textarea name="content" id="sms_content" rows="5" cols="50"></textarea>
-                                                            <div class="error">Note: Use <b><i>{first_name}</i></b>, <b><i>{last_name}</i></b> as name placeholder</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="control-group">
-                                                        <label class="control-label" for="">&nbsp;</label>
-                                                        <div class="controls">
-                                                            <input type="button" onclick="sendBulkMessage()" value="Send Newsletter" class="btn btn-primary" />
-                                                        </div>
-                                                    </div>
-                                                </fieldset>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section></div>
+    <div class="row">
+      <div class="main">
+            <h1 class="page-header">SMS Newsletter</h1>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="panel panel-default">
+                    <div class="panel-heading">Create SMS Newsletter</div>
+              <div class="panel-body">
+               <form class="form-horizontal" id="form-search">
+                <legend>Filters</legend>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">Select user type :</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" class="ajax_click" name="user_type[]" value="administrator"> Administrator
+                        <input type="checkbox" class="ajax_click" name="user_type[]" value="agents"> Agents
+                        <input type="checkbox" class="ajax_click" name="user_type[]" value="employees"> Employees
+                        <input type="checkbox" class="ajax_click" name="user_type[]" value="customers"> Customers
+                        <div class="error"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">Client Specification</label>
+                    <div class="col-sm-6">
+                      <input type="radio" checked="checked" class="ajax_click" name="client_specification" value="both"> Both
+                        <input type="radio" class="ajax_click" name="client_specification" value="sale"> Sale
+                        <input type="radio" class="ajax_click" name="client_specification" value="rent"> Rent
+                        <div class="error"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">Price Range</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="ajax_change" name="price_min" value=""> Min<br />
+                        To <br />
+                        <input type="text" class="ajax_change" name="price_max" value=""> Max
+                        <div class="error"></div>
+                    </div>
+                  </div>
+                </form>
+                <form class="form-horizontal" id="form-send" method="post">
+                <legend>Details</legend>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">Title</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="title" id="sms_title" value="" class="" />
+                        <div class="error"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">#Recipient</label>
+                    <div class="col-sm-6">
+                      <label id="hash_recipient">0</label>
+                       <div class="error"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">Recipient(s)</label>
+                    <div class="col-sm-6">
+                        <select name="receivers[]" multiple="multiple" id="receivers">
+                        </select>
+                        <div class="error"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4  control-label">SMS Content</label>
+                    <div class="col-sm-6">
+                        <textarea name="content" id="sms_content" rows="5" cols="50"></textarea>
+                        <div class="error">Note: Use <b><i>{first_name}</i></b>, <b><i>{last_name}</i></b> as name placeholder</div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
+                    <div class="col-sm-6">
+                    <input type="submit" onclick="sendBulkMessage()" value="Send Newsletter" class="btn btn-sm btn-primary" />
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+<?php $this->load->view('footer'); ?>
 <script type="text/javascript">
     $(document).ready(function () {
         $(".ajax_click").on('click', function () {
@@ -186,4 +142,3 @@
         });
     }
 </script>
-<?php $this->load->view('footer'); ?>

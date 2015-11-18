@@ -1,123 +1,105 @@
 <?php
-
-$this->load->view('header');
 //echo'<pre>';print_r($user);exit;
-$totagent =$agent[0]->totAgent;
-$totemployee =$employee[0]->totEmployee;
-$totcustomer =$customer[0]->totCustomer;
-$totinquiry =$inquiry[0]->totInquiry;
-$totProperty =$property[0]->totProperty;
-							
+$totagent = $agent[0]->totAgent;
+$totemployee = $employee[0]->totEmployee;
+$totcustomer = $customer[0]->totCustomer;
+$totinquiry = $inquiry[0]->totInquiry;
+$totProperty = $property[0]->totProperty;
 ?>
+<?php $this->load->view('header'); ?>
+<?php $this->load->view('leftmenu'); ?>
 <div class="container-fluid">
-<div class="row-fluid">
-<div class="span12">
-<?php $this->load->view('admin_top_nav'); ?>
-</div>
-</div>
-<div class="row-fluid">
-<div class="span2 sidebar-container">
-<div class="sidebar">
-<div class="navbar sidebar-toggle">
-<div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-<span class="icon-bar">
-</span>
-<span class="icon-bar">
-</span>
-<span class="icon-bar">
-</span></a>
-</div>
-</div>
-<?php
-$this->load->view('leftmenu');
-?>
-</div>
-</div>
+    <div class="row">
+        <div class="main">
+            <h1 class="page-header">Dashboard</h1>
+            <div class="row">
+                <div class="col-sm-12">
+                    <?php if ($this->session->flashdata('success')) { ?>
+                        <div class="row">
+                            <div class="alert alert-success" role="alert">
+                                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <?php echo $this->session->flashdata('success'); ?>
+                            </div>
+                        </div>
+                    <?php } else if ($this->session->flashdata('error')) { ?>
+                        <div class="row">
+                            <div class="alert alert-error" role="alert">
+                                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 
-<div class="span10 body-container">
-	<?php if ($this->session->flashdata('success')) { ?>
-                <div class="alert alert-success" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <?php echo $this->session->flashdata('success'); ?>
-                </div>
-            <?php }else if($this->session->flashdata('error')){ ?>
-                <div class="alert alert-error" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    
-                    <?php echo $this->session->flashdata('error'); ?>
-                </div>
-            <?php } ?>
+                                <?php echo $this->session->flashdata('error'); ?>
+                            </div>
+                        </div>
+                    <?php } ?>
+                    <div class="row">
+                        <?php if ($this->session->userdata('logged_in_super_user')) { ?>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <a href="<?php echo base_url(); ?>home/agent_manage">
+                                    <div class="dashboard-box fb-bg text-center clearfix">
+                                        <div class="pull-left"> <i class="fa fa-user"></i> </div>
+                                        <div class="pull-right">
+                                            <h3><?php echo $totagent;?></h3>
+                                            <small>Agent</small> </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <a href="<?php echo base_url(); ?>home/customer_manage">
+                                    <div class="dashboard-box twitter-bg text-center clearfix">
+                                        <div class="pull-left"> <i class="fa fa-file-text-o"></i> </div>
+                                        <div class="pull-right">
+                                            <h3><?php echo $totcustomer;?></h3>
+                                            <small>Client</small> </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <a href="<?php echo base_url(); ?>home/employee_manage">
+                                    <div class="dashboard-box youtube-bg text-center clearfix">
+                                        <div class="pull-left"> <i class="fa fa-briefcase"></i> </div>
+                                        <div class="pull-right">
+                                            <h3><?php echo $totemployee;?></h3>
+                                            <small>Employee</small> </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php } ?>
+                        <?php if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) { ?>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <a href="<?php echo base_url(); ?>inquiry/inquiry_manage">
+                                    <div class="dashboard-box instagram-bg text-center clearfix">
+                                        <div class="pull-left"> <i class="fa fa-question-circle"></i> </div>
+                                        <div class="pull-right">
+                                            <h3><?php echo $totinquiry;?></h3>
+                                            <small>Inquiry</small> </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <a href="<?php echo base_url(); ?>home/property_manage">
+                                    <div class="dashboard-box rss-bg text-center clearfix">
+                                        <div class="pull-left"> <i class="fa fa-building"></i> </div>
+                                        <div class="pull-right">
+                                            <h3><?php echo $totProperty;?></h3>
+                                            <small>Property</small> </div>
+                                    </div>
+                                </a>
+                            </div>
 
-<div class="row-fluid">
-<?php  if ($this->session->userdata('logged_in_super_user')) { ?>
-<a href="<?php echo base_url(); ?>home/agent_manage">
-<div class="span3">
-<div class="utopia-chart-legend">
-<div class="utopia-chart-icon"><img src="<?php echo base_url(); ?>img/icons2/user.png">
+                        <?php } ?>
+<!--                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="dashboard-box total-bg text-center clearfix">
+                                <div class="pull-left"> <b>Total</b> </div>
+                                <div class="pull-right">
+                                    <h3>1365</h3>
+                                    <small>Contents</small> </div>
+                            </div>
+                        </div>-->
+                    </div>
+                    <div class="sep"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="utopia-chart-heading"><?php echo $totagent;?>
-</div>
-<div class="utopia-chart-desc">Agent
-</div>
-</div>
-</div>
-</a>
-<a href="<?php echo base_url(); ?>home/customer_manage">
-<div class="span3">
-<div class="utopia-chart-legend">
-<div class="utopia-chart-icon"><img src="<?php echo base_url(); ?>img/icons2/categories.png">
-</div>
-<div class="utopia-chart-heading"><?php echo $totcustomer;?>
-</div>
-<div class="utopia-chart-desc">Client
-</div>
-</div>
-</div>
-</a>
-<a href="<?php echo base_url(); ?>home/employee_manage">
-<div class="span3">
-<div class="utopia-chart-legend">
-<div class="utopia-chart-icon"><img src="<?php echo base_url(); ?>img/icons2/stop.png">
-</div>
-<div class="utopia-chart-heading"><?php echo $totemployee;?>
-</div>
-<div class="utopia-chart-desc">Employee
-</div>
-</div>
-</div>
-</a>
-<?php } ?>
-<?php  if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) { ?>
-<a href="<?php echo base_url(); ?>inquiry/inquiry_manage">
-<div class="span3">
-<div class="utopia-chart-legend">
-<div class="utopia-chart-icon"><img src="<?php echo base_url(); ?>img/icons2/window.png">
-</div>
-<div class="utopia-chart-heading"><?php echo $totinquiry;?>
-</div>
-<div class="utopia-chart-desc">Inquiry
-</div>
-</div>
-</div>
-</a>
-<a href="<?php echo base_url(); ?>home/property_manage">
-<div class="span3">
-<div class="utopia-chart-legend">
-<div class="utopia-chart-icon"><img src="<?php echo base_url(); ?>img/icons2/world.png">
-</div>
-<div class="utopia-chart-heading"><?php echo $totProperty;?>
-</div>
-<div class="utopia-chart-desc">Property
-</div>
-</div>
-</div>
-</a>
-<?php } ?>
-</div>
-</div>
-</div>
-</div>
-<?php
-$this->load->view('footer');
-?>
+<?php $this->load->view('footer'); ?>
 

@@ -1,56 +1,26 @@
 <?php
-$this->load->view('header');
-//$Action = array('1' =>'Waiting','2'=>'Inprocess','3' =>'Pending','4' =>'Complete');
+
+$this->load->view('header'); ?>
+<link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
+<?php
+$this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <?php $this->load->view('admin_top_nav'); ?>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span2 sidebar-container">
-            <div class="sidebar">
-                <div class="navbar sidebar-toggle">
-                    <div class="container"><a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span>
-                            <span class="icon-bar">
-                            </span></a>
-                    </div>
-                </div>
-                <?php
-                $this->load->view('leftmenu');
-                ?>
-            </div>
-        </div>
-        <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
-        <div class="span10 body-container">
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb">
-                        <li><?php echo anchor('home', 'Home', "title='Home'"); ?><span class="divider">/</span></li>
-                        <!-- <li><?php echo anchor('inquiry/inquiry_manage', 'Inquiry Management', "title='Inquiry Management'"); ?><span class="divider">/</span></li> -->
-                        <li><?php echo anchor('inquiry/new_inquiries', 'New Appointment', "title='New Appointment'"); ?><span class="divider">/</span></li>    
-                    </ul>
-                </div>
-            </div>
-            <?php if ($this->session->flashdata('success')) { ?>
+     <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
-            <?php } ?>
-            <div class="row-fluid">
-                <div class="span12"><section class="utopia-widget">
-                        <div class="utopia-widget-title">
-                            <span>New Appointment</span>
-                        </div>
-                        <div class="utopia-widget-content">
-                            <div class="table-responsive">
-                                <table id="example" class="display" cellspacing="0" width="100%">
+    <?php } ?>
+    <div class="row">
+      <div class="main">
+        <h1 class="page-header">New Appointment
+         <!--  <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button> -->
+        </h1>
+        <div class="row">   
+          <div class="col-sm-12">
+                    <div>
+                        <table id="example">
                                     <thead>
                                         <tr>
                                             <th hidden>Id</th>
@@ -68,29 +38,29 @@ $this->load->view('header');
                                         <?php
                                         for ($i = 0; $i < count($user); $i++) {
                                             echo "<tr>";
-                                            echo "<td hidden>" . $user[$i]->id . "</td>";
-                                            echo "<td>" . $user[$i]->property_ref_no . "</td>";
-                                            echo "<td>" . $user[$i]->incquiry_ref_no . "</td>";
+                                            echo "<td data-th='id.' hidden><div>" . $user[$i]->id . "</div></td>";
+                                            echo "<td data-th='Reference No'><div>" . $user[$i]->property_ref_no . "</div></td>";
+                                            echo "<td data-th='Inquiry No'><div>" . $user[$i]->incquiry_ref_no . "</div></td>";
                                             if ($user[$i]->aquired == 'sale') {
-                                                echo "<td> Sale </td>";
+                                                echo "<td data-th='Property Status'> <div>Sale</div> </td>";
                                             } else if ($user[$i]->aquired == 'rent') {
-                                                echo "<td> Rent </td>";
+                                                echo "<td data-th='Property Status'><div> Rent </div></td>";
                                             } else if ($user[$i]->aquired == 'both') {
-                                                echo "<td> Sale/Rent </td>";
+                                                echo "<td data-th='Property Status'><div> Sale/Rent </div></td>";
                                             } else {
-                                                echo "<td> </td>";
+                                                echo "<td data-th='Property Status'> <div></div></td>";
                                             }
 
                                             if ( (isset($user[$i]->a_fname) && !empty($user[$i]->a_fname) ) && isset($user[$i]->a_lname) && !empty($user[$i]->a_lname) ) {
-                                                echo "<td>" . $user[$i]->a_fname . ' ' . $user[$i]->a_lname . "</td>";
+                                                echo "<td data-th='Agent Name'><div>" . $user[$i]->a_fname . ' ' . $user[$i]->a_lname . "</div></td>";
                                             } else {
-                                                echo "<td>" . '--Not assigned--' . "</td>";
+                                                echo "<td data-th='Agent Name'><div>" . '--Not assigned--' . "</div></td>";
                                             }
-                                            echo "<td>" . $user[$i]->u_fname . ' ' . $user[$i]->u_lname . "</td>";
-                                            echo "<td>" . date("d-M-Y", strtotime($user[$i]->created_date)) . "</td>";
+                                            echo "<td data-th='Created by'><div>" . $user[$i]->u_fname . ' ' . $user[$i]->u_lname . "</div></td>";
+                                            echo "<td data-th='Date Created'><div>" . date("d-M-Y", strtotime($user[$i]->created_date)) . "</div></td>";
                                             ?>
                                         <input type="hidden" id="<?php echo trim($user[$i]->id); ?>" value="<?php echo trim($user[$i]->id); ?>" name="<?php echo trim($user[$i]->id); ?>">
-                                        <td data-th="Action">
+                                        <td data-th="Status">
                                             <?php /* <a href="javascript:void(0)" data-id="<?php echo trim($user[$i]->id); ?>" data-status="1" class="btn btn-default btn-small">Action</a> */ ?>
                                             <div class="btn-group">
                                                 <a href="javascript:void(0)" data-ref="<?php echo trim($user[$i]->incquiry_ref_no); ?>" data-id="<?php echo trim($user[$i]->id); ?>" data-status="1" class="btn btn-default btn-small action-agent-status">Confirm</a>
@@ -98,26 +68,32 @@ $this->load->view('header');
                                                 <a href="javascript:void(0)" data-ref="<?php echo trim($user[$i]->incquiry_ref_no); ?>" data-id="<?php echo trim($user[$i]->id); ?>" data-status="3" class="btn btn-default btn-small action-agent-status">Cancel</a>
                                             </div>
                                         </td>
+                                        <td data-th="Actions">
+                                            <div>
+                                                <a href="#popup2" class="btn btn-success btn-xs" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)">View Inquiry</a> 
+                                                <?php if ($this->session->userdata('logged_in_super_user')) { ?>
+                                                &nbsp;<a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                                <?php } ?>
+                                            </div>
+                                        </td>
                                         <?php
-                                        echo "<td>";
-                                        echo '<a class="btn btn-default btn-small" href="#popup2" title="View Inquiry" onclick="setInquiryId(' . $user[$i]->id . ')"><i class="icon-zoom-in"></i></a>';
-                                        if ($this->session->userdata('logged_in_super_user')) {
-                                            echo anchor('inquiry/delete_inquiry/' . $user[$i]->id, '<i class="icon-trash"></i>', array('onclick' => "return confirm('Are you sure you want to delete?')",'title'=>'Delete Inquiry','class'=>'btn btn-default btn-small'));
-                                        }
-                                        echo "</td>";
+                                        //echo "<td>";
+                                        //echo '<a class="btn btn-default btn-small" href="#popup2" title="View Inquiry" onclick="setInquiryId(' . $user[$i]->id . ')"><i class="icon-zoom-in"></i></a>';
+                                       // if ($this->session->userdata('logged_in_super_user')) {
+                                         //   echo anchor('inquiry/delete_inquiry/' . $user[$i]->id, '<i class="icon-trash"></i>', array('onclick' => "return confirm('Are you sure you want to delete?')",'title'=>'Delete Inquiry','class'=>'btn btn-default btn-small'));
+                                       // }
+                                        //echo "</td>";
                                         echo "</tr>";
                                     }
                                     ?>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>   
-                    </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 <div id="popup2" class="overlay">
     <div class="popup">
         <h2>View Inquiry Detail</h2>
@@ -270,6 +246,3 @@ $(document).ready(function () {
 //     $('#message_sub').text("System processing your data, please wait for few mins.........................");
 //     });
 </script>
-
-
-
