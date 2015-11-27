@@ -141,6 +141,7 @@
     overflow: auto;
     margin: 0;
     padding: 5px 8px;
+
 }
 
 .ms-drop ul > li {
@@ -148,6 +149,7 @@
     display: list-item;
     background-image: none;
     position: static;
+    
 }
 
 .ms-drop ul > li .disabled {

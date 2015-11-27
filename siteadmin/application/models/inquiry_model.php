@@ -56,7 +56,8 @@ Class Inquiry_model extends CI_Model {
                $this->db->from('inquiry');
                $this->db->join('user','user.id =inquiry.created_by'); 
                $this->db->where('inquiry.customer_id',$inc_view);
-               $this->db->where('inquiry.created_by',$created_id);
+               //$this->db->where('inquiry.created_by',$created_id);
+                $this->db->where("(inquiry.created_by = '".$created_id."' OR inquiry.agent_id = '".$created_id."')");
                $this->db->order_by('inquiry.created_date','DESC');
                $query = $this->db->get();
                return $query->result();
@@ -66,13 +67,13 @@ Class Inquiry_model extends CI_Model {
                if($inc_view !="latest"){
                     $this->db->where('inquiry.aquired',$inc_view);
                     $this->db->or_where('inquiry.aquired','both');
-                    $this->db->order_by('inquiry.created_date','DESC');
-                    $this->db->where('inquiry.created_by',$created_id);
-                }else{
-                    $this->db->order_by('inquiry.created_date','DESC');
-                    $this->db->where('inquiry.created_by',$created_id);
+                    //$this->db->order_by('inquiry.created_date','DESC');
+                    //$this->db->where('inquiry.created_by',$created_id);
+                    //$this->db->where("(inquiry.created_by = '".$created_id."' OR inquiry.agent_id = '".$created_id."')");
                 }
+               $this->db->where("(inquiry.created_by = '".$created_id."' OR inquiry.agent_id = '".$created_id."')");
                $this->db->join('user','user.id =inquiry.created_by'); 
+               $this->db->order_by('inquiry.created_date','DESC');
                $query = $this->db->get();
                return $query->result();
            }
@@ -143,7 +144,6 @@ Class Inquiry_model extends CI_Model {
         // return $query->result();
     }
      function getrelated_property($post) {
-       
         
         $this->db->select('property.*,city_area.title,city.id as city_id');
         $this->db->join('city_area','city_area.id =property.city_area');
@@ -215,6 +215,7 @@ Class Inquiry_model extends CI_Model {
             }
                 
         }
+        $this->db->where('property.status','Active');
         $query = $this->db->get();
         return $query->result();
     }
@@ -252,7 +253,7 @@ Class Inquiry_model extends CI_Model {
         
       //$TotalDays = date("t", mktime(0,0,0,,1,2015));
 //echo $TotalDays;exit;
-        $this->db->select('inquiry.*,user.*');
+        $this->db->select('inquiry.*,user.fname,user.lname,user.email');
         $this->db->from('inquiry');
         if($this->session->userdata('logged_in_super_user')){
             $this->db->join('user','user.id =inquiry.agent_id','left');
@@ -263,8 +264,10 @@ Class Inquiry_model extends CI_Model {
             $this->db->where('inquiry.agent_id',$id);
         }
         $this->db->where('inquiry.agent_id !=','0');
-        $this->db->where('inquiry.appoint_start_date !=','');
-        $this->db->where('inquiry.appoint_end_date !=','');
+        $this->db->where('inquiry.status','4');
+        $this->db->where("( inquiry.agent_status = '0' OR inquiry.agent_status = '1' OR inquiry.agent_status = '2' )");
+        //$this->db->where('inquiry.appoint_start_date !=','');
+        //$this->db->where('inquiry.appoint_end_date !=','');
         $this->db->order_by('inquiry.appoint_start_date', 'ASC');
 
         $query = $this->db->get();
@@ -300,11 +303,13 @@ Class Inquiry_model extends CI_Model {
    {
         $this->db->select('*');
         $this->db->from('user')->order_by('fname', 'ASC');
-        // if($this->session->userdata('logged_in_agent')){
-        //     $sessionData = $this->session->userdata('logged_in_agent');
-        //     $id = $sessionData['id'];
-        //     $this->db->where('user.id',$id);
-        // }
+        $this->db->where('type','2');
+        $this->db->where('deleted !=','1');
+        if($this->session->userdata('logged_in_agent')){
+            $sessionData = $this->session->userdata('logged_in_agent');
+            $id = $sessionData['id'];
+            $this->db->where('user.id',$id);
+        }
         $query = $this->db->get();
         $data = $query->result();
           
@@ -330,6 +335,19 @@ Class Inquiry_model extends CI_Model {
         }
         return $agentData;
    }
+   
+   function getAllpropertyAgent() {
+
+        $q = $this->db->select("*")
+                ->from('user')
+                ->where('type','2')
+                ->where('deleted !=','1')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
    function agent_detail_byid($id) {
         
         $q = $this->db->select('*')
@@ -688,29 +706,93 @@ Class Inquiry_model extends CI_Model {
     }
 
 function add_appointment_note($post) {
-       echo'<pre>';print_r($post);exit;
-       if($post['is_repetive'] =="1"){
+        
+        $this->db->select('*');
+        $this->db->from('appointment_note');
+        $this->db->where('inquiry_id',$post['id']);
+        $query = $this->db->get();
+        $recorde=$query->result();
+       if($this->session->userdata('logged_in_super_user')) {
+           $sessionData = $this->session->userdata('logged_in_super_user'); 
+           $added_id = $sessionData['id'];
+        }elseif($this->session->userdata('logged_in_agent')){
+           $sessionData = $this->session->userdata('logged_in_agent'); 
+           $added_id = $sessionData['id'];
+        } elseif($this->session->userdata('logged_in_employee')){
+           $sessionData = $this->session->userdata('logged_in_employee'); 
+           $added_id = $sessionData['id'];
+        }
 
-        $today_date = date('Y-m-d H:i:s');
-        $new_user_insert_data = array(
-            'agent_id' => $inquiry_id,
-            'employee_id' => $post['city_area_id'],
-            'start_date' => $post['bathroom_no'],
-            'badroom' => $post['bedroom_no'],
-            'end_date' => $post['reference_number'],
-            'created_date' => $post['property_status'],
-            'update_date' => $post['property_category_id'],
-            'is_repetitive' => $post['min'],
-            'repetitive_type' =>$post['max'], 
-            'created_date' => $today_date,
-            'updated_date' => $today_date,
-            
-        );
-        $insert = $this->db->insert('appointment_note', $new_user_insert_data);
-        return $insert;
-       }else{
-
-       }
+       if(empty($recorde))
+       {
+           if($post['is_repetive'] =="1")
+           {
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'note' => $post['note'],
+                'user_id' => $added_id,
+                'inquiry_id' => $post['id'],
+                'start_date' => date("Y-m-d H:i:s", strtotime($post['start_date'])),
+                'end_date' => date("Y-m-d H:i:s", strtotime($post['end_date'])),
+                'is_repetitive' => $post['is_repetive'],
+                'repetitive_type' =>$post['frequency'], 
+                'created_date' => $today_date,
+                'update_date' => $today_date,
+            );
+            $insert = $this->db->insert('appointment_note', $new_user_insert_data);
+            return $insert;
+            }else{
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'note' => $post['note'],
+                'user_id' => $added_id,
+                'inquiry_id' => $post['id'],
+                'start_date' => date("Y-m-d", strtotime($post['start_date'])),
+                'end_date' => date("Y-m-d", strtotime($post['start_date'])),
+                'is_repetitive' => $post['is_repetive'],
+                'repetitive_type' =>$post['frequency'], 
+                'created_date' => $today_date,
+                'update_date' => $today_date,
+            );
+            $insert = $this->db->insert('appointment_note', $new_user_insert_data);
+            return $insert;
+           }
+        }else{
+            if($post['is_repetive'] =="1")
+           {
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'note' => $post['note'],
+                'user_id' => $added_id,
+                'inquiry_id' => $post['id'],
+                'start_date' => date("Y-m-d H:i:s", strtotime($post['start_date'])),
+                'end_date' => date("Y-m-d H:i:s", strtotime($post['end_date'])),
+                'is_repetitive' => $post['is_repetive'],
+                'repetitive_type' =>$post['frequency'], 
+                'created_date' => $today_date,
+                'update_date' => $today_date,
+            );
+            $insert = $this->db->where('id', $recorde[0]->id)->update('appointment_note', $new_user_insert_data);
+            return $insert;
+            //$insert = $this->db->insert('appointment_note', $new_user_insert_data);
+            //return $insert;
+            }else{
+            $today_date = date('Y-m-d H:i:s');
+            $new_user_insert_data = array(
+                'note' => $post['note'],
+                'user_id' => $added_id,
+                'inquiry_id' => $post['id'],
+                'start_date' => date("Y-m-d", strtotime($post['start_date'])),
+                'end_date' => date("Y-m-d", strtotime($post['start_date'])),
+                'is_repetitive' => $post['is_repetive'],
+                'repetitive_type' =>$post['frequency'], 
+                'created_date' => $today_date,
+                'update_date' => $today_date,
+            );
+            $insert = $this->db->where('id', $recorde[0]->id)->update('appointment_note', $new_user_insert_data);
+            return $insert;
+           }
+        }
         
     }
     function saveClientInquiry_history($post, $inquiry_id) {
@@ -1081,6 +1163,21 @@ function add_appointment_note($post) {
         return $update;
     }
 
+     function appointmentchangeAgentStatus($id,$data){
+        $update = $this->db->where('id',$id)->update('inquiry', $data);
+        if($update){
+            $inquiry = $this->db->select('*')->from('inquiry')->where('id',$id)->get()->result();
+            $inquiry_status = array(
+                'inquiry_id'=> $inquiry[0]->id,
+                'agent_id'=>$inquiry[0]->agent_id,
+                'inquiry_status'=>$inquiry[0]->status,
+                'inquiry_agent_status'=>$inquiry[0]->agent_status,
+            );
+            $this->db->insert('inquiry_status_history',$inquiry_status);
+        }
+        return $update;
+    }
+
 
     function getRescheduleInquiries($id){
         $q = $this->db->select('customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname')
@@ -1134,8 +1231,41 @@ function add_appointment_note($post) {
         }
         return $update;
     }
+    function get_property_add_client($clientId){
+        $q = $this->db->select("*")
+                ->from('customer')
+                ->where('id',$clientId)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
+    
+    function check_inquiry_client_record($clientId){
+        $q = $this->db->select("*")
+                ->from('customer')
+                ->where('id',$clientId)
+                ->where('deleted !=','1')
+                ->where('status','Active')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
 
-
+    function check_inquiry_property_record($propertyid){
+        $q = $this->db->select("*")
+                ->from('property')
+                ->where('id',$propertyid)
+                ->where('status','Active')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
 
 
 }

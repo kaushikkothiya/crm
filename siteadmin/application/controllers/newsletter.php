@@ -21,12 +21,22 @@ class NewsLetter extends CI_Controller {
     }
     
     public function email_newsletter_list(){
+        if (!$this->session->userdata('logged_in_super_user')) {
+            $this->session->set_flashdata('error', 'Not allowed!');
+            redirect('login', 'refresh');
+            exit;
+        }
         $this->load->model('newsletter_model');
         $newsletterds = $this->newsletter_model->getAllNewsLetters();
         $this->load->view('newsletter/email_newsletter_list_view',array('newsletters'=>$newsletterds));
     }
     
     public function sms_newsletter_list(){
+        if (!$this->session->userdata('logged_in_super_user')) {
+            $this->session->set_flashdata('error', 'Not allowed!');
+            redirect('login', 'refresh');
+            exit;
+        }
         $this->load->model('newsletter_model');
         $newsletterds = $this->newsletter_model->getAllSMSNewsLetters();
         $this->load->view('newsletter/sms_newsletter_list',array('newsletters'=>$newsletterds));

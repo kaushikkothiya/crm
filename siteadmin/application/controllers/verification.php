@@ -102,7 +102,7 @@ class Verification extends CI_Controller {
                 $inquiry_num =$this->unic_inquiry_num();
                 $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
                 $insert_customer_inquiry = $this->inquiry_model->new_customer_inquiry_insert($query,$inquiry_num,$property_buy_sale);
-                if($insert_customer_inquiry){
+                 if($insert_customer_inquiry && !empty($email)){
                     include APPPATH . 'third_party/Classes/Mailchimp.php';
                     $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
                     $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
@@ -234,6 +234,9 @@ class Verification extends CI_Controller {
                     $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
                     redirect('/inquiry/property', 'refresh');
       
+                }else{
+                    $this->session->set_flashdata('success', 'E-mail and SMS not send beacuse somethig wrong');
+                    redirect('/inquiry/property', 'refresh');
                 }
                 
             } else {
@@ -266,7 +269,7 @@ class Verification extends CI_Controller {
                     $lname = $this->input->post('lname');
                     $email = $this->input->post('email');
                     $type = $this->input->post('type');
-                    
+                    if(!empty($email)){
                     include APPPATH . 'third_party/Classes/Mailchimp.php';
                     $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
                     $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
@@ -286,7 +289,7 @@ class Verification extends CI_Controller {
                         ),
                     );
                     @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
-
+                    }
                     $this->session->set_flashdata('success', 'Agent added successfully.');
                     redirect('/home/agent_manage', 'refresh');
                    
@@ -319,7 +322,7 @@ class Verification extends CI_Controller {
                 $fname  = $this->input->post('fname');  
                 $lname  = $this->input->post('lname');    
                 $aquired = $this->input->post('aquired');
-                
+                if(!empty($email)){
                 include APPPATH . 'third_party/Classes/Mailchimp.php';
                 $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
                 $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
@@ -339,6 +342,7 @@ class Verification extends CI_Controller {
                     ),
                 );
                 @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
+                }
                 $sendSMSFlag = "";
                 $sendEmailFlag = "";
                 /* sms send start */
@@ -443,6 +447,9 @@ class Verification extends CI_Controller {
                     
                     $this->session->set_flashdata('success', 'Client added successfull. check your E-mail');
                     redirect('/home/customer_manage', 'refresh');      
+                }else{
+                    $this->session->set_flashdata('success', 'E-mail and SMS not send beacuse somethig wrong');
+                    redirect('/home/customer_manage', 'refresh'); 
                 }
                         //$this->session->set_flashdata('success', 'Client added successfull.');
                         //redirect('/home/customer_manage', 'refresh');
@@ -472,7 +479,7 @@ class Verification extends CI_Controller {
                     $lname = $this->input->post('lname');
                     $email = $this->input->post('email');
                     $type = $this->input->post('type');
-                    
+                    if(!empty($email)){
                     include APPPATH . 'third_party/Classes/Mailchimp.php';
                     $apikey = "cfd5c04a3ac23d934368362c187700c4-us3";
                     $unique_id = time() . '_' . rand(1000, 9999) . '_' . rand(1000, 9999);
@@ -492,6 +499,7 @@ class Verification extends CI_Controller {
                         ),
                     );
                     @$mc->lists->subscribe($list_id,array('email'=>$email),$merge_vars,'html',FALSE,true);
+                    }
                     $this->session->set_flashdata('success', 'Employee added successfull.');
                     redirect('/home/employee_manage', 'refresh');
                 } else {
@@ -594,86 +602,97 @@ class Verification extends CI_Controller {
         $this->load->helper('form');
         $this->load->library('form_validation');
         
-        $image_path = APPPATH . '../upload/property/';
-        $config['upload_path'] = $image_path;
-        $config['allowed_types'] = 'gif|jpg|png';
-        $this->load->library('upload', $config);
-        $this->upload->initialize($config);
-        $error['upload_data'] = '';
+        //$image_path = APPPATH . '../upload/property/';
+        //$config['upload_path'] = $image_path;
+        //$config['allowed_types'] = 'gif|jpg|png';
+        //$this->load->library('upload', $config);
+        //$this->upload->initialize($config);
+        //$error['upload_data'] = '';
         $id = $this->input->post('property_id');
-        $old_img = $this->input->post('old_img');
-        if (!$this->upload->do_upload('image')) {
-            if($id=="") {
-                $error = array('msg' => $this->upload->display_errors());
-                $imageName = '';
-            } else { 
-                $error = array('msg' => "Upload success!");
-                $imageName = $old_img;
-            }
-        } else {
+        //$old_img = $this->input->post('old_img');
+        //if (!$this->upload->do_upload('image')) {
+          //  if($id=="") {
+            //    $error = array('msg' => $this->upload->display_errors());
+             //   $imageName = '';
+            //} else { 
+              //  $error = array('msg' => "Upload success!");
+               // $imageName = $old_img;
+            //}
+        // } else {
 
-           $error = array('msg' => "Upload success!");
-           $error['upload_data'] = $this->upload->data();
-           $imageName = $error['upload_data']['file_name'];
-            $configSize1['image_library']   = 'gd2';
-            $configSize1['source_image']    = APPPATH . '../upload/property/'.$imageName;
-            //$configSize1['create_thumb']    = TRUE;
-            $configSize1['maintain_ratio']  = TRUE;
-            $configSize1['width']           = 100;
-            $configSize1['height']          = 100;
-            $configSize1['new_image']       = APPPATH . '../upload/property/100x100/';
+        //    $error = array('msg' => "Upload success!");
+        //    $error['upload_data'] = $this->upload->data();
+        //    $imageName = $error['upload_data']['file_name'];
+        //     $configSize1['image_library']   = 'gd2';
+        //     $configSize1['source_image']    = APPPATH . '../upload/property/'.$imageName;
+        //     //$configSize1['create_thumb']    = TRUE;
+        //     $configSize1['maintain_ratio']  = false;
+        //     $configSize1['width']           = 100;
+        //     $configSize1['height']          = 100;
+        //     $configSize1['new_image']       = APPPATH . '../upload/property/100x100/';
 
-            $this->image_lib->initialize($configSize1);
-            $this->image_lib->resize();
-            $this->image_lib->clear();
+        //     $this->image_lib->initialize($configSize1);
+        //     $this->image_lib->resize();
+        //     $this->image_lib->clear();
 
-            $configSize1['image_library']   = 'gd2';
-            $configSize1['source_image']    = APPPATH . '../upload/property/'.$imageName;
-            //$configSize1['create_thumb']    = TRUE;
-            $configSize1['maintain_ratio']  = TRUE;
-            $configSize1['width']           = 200;
-            $configSize1['height']          = 200;
-            $configSize1['new_image']       = APPPATH . '../upload/property/200x200/';
-            $this->image_lib->initialize($configSize1);
-            $this->image_lib->resize();
-            $this->image_lib->clear();
-        }
+        //     $configSize1['image_library']   = 'gd2';
+        //     $configSize1['source_image']    = APPPATH . '../upload/property/'.$imageName;
+        //     //$configSize1['create_thumb']    = TRUE;
+        //     $configSize1['maintain_ratio']  = false;
+        //     $configSize1['width']           = 200;
+        //     $configSize1['height']          = 200;
+        //     $configSize1['new_image']       = APPPATH . '../upload/property/200x200/';
+        //     $this->image_lib->initialize($configSize1);
+        //     $this->image_lib->resize();
+        //     $this->image_lib->clear();
+        // }
        
-       if (empty($imageName)) {
-            $this->load->view('add_property_view', $error);
-        } else {
+       // if (empty($imageName)) {
+       //      $this->load->view('add_property_view', $error);
+       //  } else {
             if($id=="") {
                 
-                if ($query = $this->user->property_insert($imageName)) {    
-                                                
+                if ($query = $this->user->property_insert()) {    
+                          $property_imageid = explode(',', $_POST['property_imageid']);
+                $cou = 1;
+               foreach ($property_imageid as $prop_imgkey => $prop_imgvalue) {
+                  if (!empty($prop_imgvalue)) {
+                   
+                    $prop_imgdata = array('image' => $prop_imgvalue, 'prop_id' => $query, 'order' => $cou);
+                    $this->user->propertyadd_image($prop_imgdata,$this->session->userdata('img_tocken'));
+                  }
+                  $cou++;
+               }                      
                     // if($_POST['pro_add'] =="Add Property"){
                     //     $this->session->set_flashdata('success', 'Property added successfull.');
                     //     $url = "/home/property_manage/";
                     //     redirect($url , 'refresh');
                     // }else{
 
-                        $url = "/home/propertyExatraImages/".$query;
+                        //$url = "/home/propertyExatraImages/".$query;
+                         $url = "/home/property_manage/";
                         redirect($url , 'refresh');
                     //}
                 } else {
                     $this->load->view('add_property_view', array('error' => ''));
                 }
             } else {
-                if ($query = $this->user->property_update($imageName,$id)) {
+                if ($query = $this->user->property_update($id)) {
                     
                     // if($_POST['pro_up'] =="Update Property"){
                     //     $this->session->set_flashdata('success', 'Property updated successfull.');
                     //     $url = "/home/property_manage/";
                     //     redirect($url, 'refresh');
                     // }else{
-                         $url = "/home/propertyExatraImages/".$id;
+                        // $url = "/home/propertyExatraImages/".$id;
+                        $url = "/home/property_manage/";
                         redirect($url, 'refresh');
                     //}         
                 } else {
                     $this->load->view('add_store_view', array('error' => ''));
                 }
             }
-        }
+       // }
     }
     
     function change_password()

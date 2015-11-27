@@ -65,6 +65,8 @@ a.navbar-brand {
 }
 /* Side Navigation */
 
+
+
 @media(min-width:768px) {
     .side-nav {
         position: fixed;
@@ -306,12 +308,13 @@ a:hover, a:active, a:focus {
 	.responsive-table tr:nth-child(odd) {
 	  background: #f5f5f5!important;
 	}
-	.responsive-table td {
-	  width: 100%;
-	  float: left;
-	  text-align: left!important;
-	  border: 0 !important;
-	}
+	 .responsive-table td {
+   width: 100%;
+   float: left;
+   text-align: left!important;
+   border: 0 !important;
+   word-wrap:break-word;
+ }
 	.responsive-table td:first-child {
 	  border: 0 !important;
 	}
@@ -324,13 +327,14 @@ a:hover, a:active, a:focus {
 	  max-width: 40% !important;
 	  word-wrap: break-word;
 	}
-	.responsive-table td > *,
-	.responsive-table td:before {
-	  vertical-align: middle;
-	  display: inline-block;
-	  max-width: 55%;
-	  margin-left: 0;
-	}
+	 .responsive-table td > *,
+ .responsive-table td:before {
+   vertical-align: middle;
+   display: inline-block;
+   max-width: 55%;
+   margin-left: 0;
+   font-size:12px;
+ }
 	
 	/*--------Table responsive css end-------*/
 }
@@ -385,10 +389,33 @@ a:hover, a:active, a:focus {
 .search-property-form .scroll-box .checkbox  label{ font-size: 14px;}
 @media (max-width: 479px) {
 	.search-property-form .large-input { padding:10px 10px 0 10px; clear:both; float:none; text-align:center;  border-left: solid 1px #ddd; border-right: solid 1px #ddd;}
+
+.popup {
+    width: 90%!important;
+  }
+
 }
 table.dataTable {
     border-collapse: collapse!important;
 }
 button.ms-choice {border: 0;}
 .ms-drop.bottom {left: 0;}
+.clear {clear:both;}
+
 /*----- 17 November 2015 Property search end -------*/
+
+/*-------19-11-2015---------*/
+.action-btn {
+	font-size:15px;
+	padding: 1px 8px;
+	line-height:normal;	
+}
+.seppart{
+	padding: 15px 0px 7px 0px;
+	margin: 0px 5px;
+	background-color: #f2f2f2;
+	/*border:solid 1px #cccccc;*/
+}
+.left{
+	text-align: left!important;
+}

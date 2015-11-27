@@ -260,8 +260,26 @@ class Home extends CI_Controller {
 //property manage start //
 	function property_manage() {
         if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
-            $data['user'] = $this->user->getAllproperty();
             
+            if(!empty($_GET['view_agent'])){
+            $prop_view=$_GET['view_agent'];
+            }else{
+                $prop_view='';
+                
+            }
+            $data['user'] = $this->user->getAllproperty($prop_view);
+            
+            foreach ($data['user'] as $key => $value) {
+               $data['user'][$key]->extra_image = $this->user->getAllproperty_image($value->id);
+            }
+            $data['city'] = $this->inquiry_model->getAllcity();
+            $data['agent'] = $this->inquiry_model->getAllpropertyAgent();
+            $data['city_area'] = $this->inquiry_model->getAllcity_area();
+            $data['bedroom'] = array('1'=>1,'2' =>2,'3' =>3,'4' =>4,'5' =>5,'6' =>6);
+            $data['bathroom'] = array('1'=>'1','2' =>'2','3' =>'3','4' =>'4','5' =>'5','6' =>'6','7' =>'7');
+            $data['bedroom'] = array('1'=>'1','2' =>'2','3' =>'3','4' =>'4','5' =>'5','6' =>'6','7' =>'7');
+            $data['category'] = array('0'=>' [Select all]', '1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
+                   
             $this->load->view('property_list_view', $data);
         } else {
             //If no session, redirect to login page
@@ -338,7 +356,12 @@ class Home extends CI_Controller {
     }
 
     function sms_email_history()
-    {
+    {   
+        if (!$this->session->userdata('logged_in_super_user')) {
+            $this->session->set_flashdata('error', 'Not allowed!');
+            redirect('login', 'refresh');
+            exit;
+        }
         error_reporting(0);
         $data['sms_email_history'] = $this->inquiry_model->get_sms_email_history();
         //echo'<pre>';print_r($data['sms_email_history']);exit;
@@ -415,7 +438,7 @@ class Home extends CI_Controller {
                 $configSize1['image_library']   = 'gd2';
                 $configSize1['source_image']    = APPPATH . '../upload/property/'.$data['file_name'];
                 //$configSize1['create_thumb']    = TRUE;
-                $configSize1['maintain_ratio']  = TRUE;
+                $configSize1['maintain_ratio']  = true;
                 $configSize1['width']           = 100;
                 $configSize1['height']          = 100;
                 $configSize1['new_image']       = APPPATH . '../upload/property/100x100/';
@@ -427,10 +450,18 @@ class Home extends CI_Controller {
                 $configSize1['image_library']   = 'gd2';
                 $configSize1['source_image']    = APPPATH . '../upload/property/'.$data['file_name'];
                 //$configSize1['create_thumb']    = TRUE;
-                $configSize1['maintain_ratio']  = TRUE;
+                $configSize1['maintain_ratio']  = true;
                 $configSize1['width']           = 200;
                 $configSize1['height']          = 200;
                 $configSize1['new_image']       = APPPATH . '../upload/property/200x200/';
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 800;
+                $configSize1['height']          = 400;
+                $configSize1['new_image']       = APPPATH . '../upload/property/800x400/';
                 $this->image_lib->initialize($configSize1);
                 $this->image_lib->resize();
                 $this->image_lib->clear();
@@ -593,6 +624,7 @@ class Home extends CI_Controller {
         
             $this->load->model('newsletter_model');
             $mc_res = $this->newsletter_model->getMinMaxPriceByCustomerID($customerId,$sale_group,$rent_group);
+            if(!empty($mc_res['email'])){
             $merge_vars = array();
             $merge_vars['groupings'] = array(
                 array(
@@ -614,7 +646,7 @@ class Home extends CI_Controller {
             );
             
             @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);
-
+            }
             $data = array(
                             'customer_email'=>$get_exist_customer_Id[0]->email,
                             'customer_name'=>$get_exist_customer_Id[0]->fname.' '.$get_exist_customer_Id[0]->lname,
@@ -738,7 +770,7 @@ class Home extends CI_Controller {
                 }
           /* sms send end */
 
-            $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully.!');
+            $this->session->set_flashdata('success', 'E-mail and SMS not send beacuse somethig wrong');
             redirect('home/property_manage');
         
 
@@ -826,7 +858,7 @@ class Home extends CI_Controller {
                         
                     $this->load->model('newsletter_model');
                     $mc_res = $this->newsletter_model->getMinMaxPriceByCustomerID($customerId,$sale_group,$rent_group);
-                    
+                    if(!empty($mc_res['email'])){
                     $merge_vars = array();
                     $merge_vars['groupings'] = array(
                         array(
@@ -848,7 +880,7 @@ class Home extends CI_Controller {
                     );
                     
                     @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);
- 
+                    }
                         if(!empty($getSelectedPropertyDetails[0]->bedroom)){
                             $bedroom_detail=$getSelectedPropertyDetails[0]->bedroom;
                         }else{
@@ -1000,7 +1032,7 @@ class Home extends CI_Controller {
                         }
                         else{
 
-                            $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully.!');
+                            $this->session->set_flashdata('success', 'E-mail and SMS not send beacuse somethig wrong');
                             redirect('home/property_manage');
                             # code for both send sms and email here...                        
 
@@ -1213,31 +1245,122 @@ class Home extends CI_Controller {
     }
     function delete_propimg()
     {
-        $targetfile = "img_prop/".$_POST['imagename'];
-        unlink($targetfile);
+        //echo $_POST['imagename'];exit;
+        $propertyImgId = $_POST['imageid'];
+        $imagename = $_POST['imagename'];
+        
+            @unlink(APPPATH."../img_prop/".$imagename);
+            @unlink(APPPATH."../img_prop/100x100/".$imagename);
+            @unlink(APPPATH."../img_prop/200x200/".$imagename);
+            
 
-         $delete_img = $this->user->delete_propimg($_POST['imageid']);
+            $delete_img = $this->user->delete_propimg($_POST['imageid']);
+
          exit;
     }
+
+    function delete_propaddimg()        
+    {       
+        $propertyImgId = $_POST['imageid'];
+        $imagename = $_POST['imagename'];
+        
+            @unlink(APPPATH."../img_prop/".$imagename);
+            @unlink(APPPATH."../img_prop/100x100/".$imagename);
+            @unlink(APPPATH."../img_prop/200x200/".$imagename);
+                    
+        $delete_img = $this->user->delete_propaddimg($_POST['imageid']);        
+        exit;       
+    }
+
     function update_propimg()
     {
-        $allowedExts = array("gif", "jpeg", "jpg", "png");
-       if(!empty($_FILES) && $_POST['action'] == "multiple_fileupload"){
-            $targetDir = "img_prop/";
+
+
+        //$allowedExts = array("gif", "jpeg", "jpg", "png");
+       if(!empty($_FILES) && $_POST['action'] == "multiple_fileupload")
+       {
+
+            $max_order = $this->user->select_maxid();
+                       
+            if ($max_order < 1) {
+                $max_order = 1;
+            }else{
+                $max_order = $max_order+1;
+            }
+
+
+            $config['upload_path'] =  realpath(APPPATH . '../img_prop');
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            // echo "<pre>";print_r($_FILES['userImage']);exit;
+            foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+                 $_FILES['afile']['name'] = $filevalue;
+                 $_FILES['afile']['type'] = $_FILES['userImage']['type'][$filekey];
+                 $_FILES['afile']['tmp_name'] = $_FILES['userImage']['tmp_name'][$filekey];
+                 $_FILES['afile']['error'] = $_FILES['userImage']['error'][$filekey];
+                 $_FILES['afile']['size'] = $_FILES['userImage']['size'][$filekey];
+
+                 $data=$this->upload->do_upload("afile");
+                 $data = $this->upload->data();
+
+                 
+                 $propimag  = array('image' =>$data['file_name'] ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
+                $insertid = $this->user->insert_propimg($propimag);
+
+
+                 $configSize1['image_library']   = 'gd2';
+                    $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                    //$configSize1['create_thumb']    = TRUE;
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 100;
+                    $configSize1['height']          = 100;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/100x100/';
+
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                    $configSize1['image_library']   = 'gd2';
+                    $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                    //$configSize1['create_thumb']    = TRUE;
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 200;
+                    $configSize1['height']          = 200;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/200x200/';
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                     $configSize1['image_library']   = 'gd2';
+                    $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                    //$configSize1['create_thumb']    = TRUE;
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 800;
+                    $configSize1['height']          = 400;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/800x400/';
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                    $img_detail[$filekey]['id'] = $insertid;
+                    $img_detail[$filekey]['img_name'] = $data['file_name'];
+            }
+
+       
+           
+           /* $targetDir = "img_prop/";
             foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
                 
                 $fileName = $filevalue;
                 $fnm = explode('.', $filevalue);
-
+                 $fileName =rand('1111','9999').'.'.max($fnm);
                 if(in_array(max($fnm), $allowedExts)){
                     $fileName =rand('1111','9999').'.'.max($fnm);
                     $max_order = $this->user->select_maxid();
-                   // $query = mysqli_query($con,"SELECT * FROM `images` ORDER BY `order` ASC") or die(mysql_error());
-                    //while($row = mysqli_fetch_assoc($query))
-                    //{
-                     //   $rows[$row['order']] = $row;
-                    //}
-                    //$max_order = max(array_keys($rows));
+                  
                     if ($max_order < 1) {
                         $max_order = 1;
                     }else{
@@ -1247,12 +1370,10 @@ class Home extends CI_Controller {
                     $targetFile = $targetDir.$fileName;
 
                     if(move_uploaded_file($_FILES['userImage']['tmp_name'][$filekey],$targetFile)){
-                        //$sql ="INSERT INTO `images`(`image`, `order`,`prop_id`)VALUES('".$fileName."',".$max_order.",".$_POST['prop_id'].")";
-                        //$result = mysqli_query($con,$sql);
                         
                         $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
                         $insertid = $this->user->insert_propimg($propimag);
-                       //echo "";print_r($propimag);exit;
+                       
 
                         $img_detail[$filekey]['id'] = $insertid;
                         $img_detail[$filekey]['img_name'] = base_url()."img_prop/".$fileName;
@@ -1263,24 +1384,24 @@ class Home extends CI_Controller {
                     $img_detail[$filekey]['id'] = '-1';
                     $img_detail[$filekey]['img_name'] = "error_file";
                  }
-            }
+            }*/
 
             echo json_encode($img_detail);
         }
+
     }
     function insert_image()
     {
-        $allowedExts = array("gif", "jpeg", "jpg", "png");
-        $fileName = $_FILES['afile']['name'];
-         $targetDir = "img_prop/";
-        $fnm = explode('.', $fileName);
+        //$allowedExts = array("gif", "jpeg", "jpg", "png");
+        //$fileName = $_FILES['afile']['name'];
+        // $targetDir = "img_prop/";
+        //$fnm = explode('.', $fileName);
         /*$temp = explode(".", $_FILES["file"]['name']);
         $extension = end($temp);
         */
 
-         if(in_array(max($fnm), $allowedExts)){
-             $fileName =rand('1111','9999').'.'.max($fnm);
-             
+         //if(in_array(max($fnm), $allowedExts)){
+             //$fileName =rand('1111','9999').'.'.max($fnm);
               $max_order = $this->user->select_maxid();
                    // $query = mysqli_query($con,"SELECT * FROM `images` ORDER BY `order` ASC") or die(mysql_error());
                     //while($row = mysqli_fetch_assoc($query))
@@ -1294,26 +1415,228 @@ class Home extends CI_Controller {
                         $max_order = $max_order+1;
                     }
 
-                $targetFile = $targetDir.$fileName;
+                //$targetFile = $targetDir.$fileName;
 
-            if(move_uploaded_file($_FILES['afile']['tmp_name'],$targetFile)){
+
+            $config['upload_path'] =  realpath(APPPATH . '../img_prop');
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+                 $_FILES['afile']['name'] = $filevalue;
+                 $_FILES['afile']['type'] = $_FILES['userImage']['type'][$filekey];
+                 $_FILES['afile']['tmp_name'] = $_FILES['userImage']['tmp_name'][$filekey];
+                 $_FILES['afile']['error'] = $_FILES['userImage']['error'][$filekey];
+                 $_FILES['afile']['size'] = $_FILES['userImage']['size'][$filekey];
+            $data=$this->upload->do_upload("afile");
+
+
+            $data = $this->upload->data();
+
+            $propimag  = array('image' =>$data['file_name'] ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
+            $insertid = $this->user->insert_propimg($propimag);
+        
+            // Save data to Database.
+            //if($this->inquiry_model->savePropertyExtraImage($propertyId, $data['file_name']))
+            //{
+                //$propertyImgId = $this->db->insert_id();
+                
+                $configSize1['image_library']   = 'gd2';
+                $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                //$configSize1['create_thumb']    = TRUE;
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 100;
+                $configSize1['height']          = 100;
+                $configSize1['new_image']       = APPPATH . '../img_prop/100x100/';
+
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+                $configSize1['image_library']   = 'gd2';
+                $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                //$configSize1['create_thumb']    = TRUE;
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 200;
+                $configSize1['height']          = 200;
+                $configSize1['new_image']       = APPPATH . '../img_prop/200x200/';
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+                $configSize1['image_library']   = 'gd2';
+                $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                //$configSize1['create_thumb']    = TRUE;
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 800;
+                $configSize1['height']          = 400;
+                $configSize1['new_image']       = APPPATH . '../img_prop/800x400/';
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+           // }
+                $img_detail[$filekey]['id'] = $insertid;
+                    $img_detail[$filekey]['img_name'] = $data['file_name'];
+            //$img_detail[0]['id'] = $insertid;
+            //$img_detail[0]['img_name'] = $data['file_name'];
+        }
+            /*if(move_uploaded_file($_FILES['afile']['tmp_name'],$targetFile)){
                 
                 $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'prop_id'=>$_POST['prop_id']);
                
+                $insertid = $this->user->insert_propimg($propimag);
+                $img_detail[0]['id'] = $insertid;
+                $img_detail[0]['img_name'] = $fileName;
+            }*/
+         /*}
+         else
+         {
+            $img_detail[0]['id'] = '-1';
+            $img_detail[0]['img_name'] = "error_file";
+         }*/
+        echo json_encode($img_detail);
+    }
 
-               $insertid = $this->user->insert_propimg($propimag);
+
+    function insertproperty_image()
+    {
+        /*if (isset($this->session->userdata('img_tocken')) && !empty($this->session->userdata('img_tocken'))) {
+            $tocken = $this->session->userdata('img_tocken');
+        }else{
+            $tocken = md5(rand(1111,9999));
+            $this->session->set_userdata('img_tocken', $tocken);
+        }*/
+        if(!empty($this->session->userdata('img_tocken')))
+        {
+            $tocken = $this->session->userdata('img_tocken');
+        }else{
+            $tocken = md5(rand(1111,9999));
+            $this->session->set_userdata('img_tocken', $tocken);            
+        }
+
+       
+        $max_order = $this->user->select_maxid_insprop();
+        // $query = mysqli_query($con,"SELECT * FROM `images` ORDER BY `order` ASC") or die(mysql_error());
+        //while($row = mysqli_fetch_assoc($query))
+        //{
+        //   $rows[$row['order']] = $row;
+        //}
+        //$max_order = max(array_keys($rows));
+        if ($max_order < 1) {
+            $max_order = 1;
+        }else{
+            $max_order = $max_order+1;
+        }
+
+
+        $config['upload_path'] =  realpath(APPPATH . '../img_prop');
+        $config['allowed_types'] = 'gif|jpg|png|jpeg';
+        
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+
+        foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+            $_FILES['afile']['name'] = $filevalue;
+            $_FILES['afile']['type'] = $_FILES['userImage']['type'][$filekey];
+            $_FILES['afile']['tmp_name'] = $_FILES['userImage']['tmp_name'][$filekey];
+            $_FILES['afile']['error'] = $_FILES['userImage']['error'][$filekey];
+            $_FILES['afile']['size'] = $_FILES['userImage']['size'][$filekey];
+            $data=$this->upload->do_upload("afile");
+
+            $data = $this->upload->data();
+            $propimag  = array('image' =>$data['file_name'] ,'order'=> $max_order,'tocken'=> $tocken,'created' => date('Y-m-d H:i:s'));
+            $insertid = $this->user->insert_propadd_img($propimag);
+
+            // Save data to Database.
+            //if($this->inquiry_model->savePropertyExtraImage($propertyId, $data['file_name']))
+            //{
+                //$propertyImgId = $this->db->insert_id();
+                
+                $configSize1['image_library']   = 'gd2';
+                $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                //$configSize1['create_thumb']    = TRUE;
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 100;
+                $configSize1['height']          = 100;
+                $configSize1['new_image']       = APPPATH . '../img_prop/100x100/';
+
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+                $configSize1['image_library']   = 'gd2';
+                $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                //$configSize1['create_thumb']    = TRUE;
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 200;
+                $configSize1['height']          = 200;
+                $configSize1['new_image']       = APPPATH . '../img_prop/200x200/';
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+                $configSize1['maintain_ratio']  = true;
+                $configSize1['width']           = 800;
+                $configSize1['height']          = 400;
+                $configSize1['new_image']       = APPPATH . '../img_prop/800x400/';
+                $this->image_lib->initialize($configSize1);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+
+           // }
+
+                $img_detail[$filekey]['id'] = $insertid;
+                $img_detail[$filekey]['img_name'] = $data['file_name'];
+
+            //$img_detail[0]['id'] = $insertid;
+            //$img_detail[0]['img_name'] = $data['file_name'];
+
+        }
+
+        //$allowedExts = array("gif", "jpeg", "jpg", "png");
+        //$fileName = $_FILES['afile']['name'];
+        //$targetDir = "img_prop/";
+        //$fnm = explode('.', $fileName);
+        /*$temp = explode(".", $_FILES["file"]['name']);
+        $extension = end($temp);
+        */
+
+         /*if(in_array(max($fnm), $allowedExts)){
+
+            $fileName =rand('1111','9999').'.'.max($fnm); 
+            $max_order = $this->user->select_maxid_insprop();
+                   
+            if ($max_order < 1) {
+                $max_order = 1;
+            }else{
+                $max_order = $max_order+1;
+            }
+
+            $targetFile = $targetDir.$fileName;
+
+            if(move_uploaded_file($_FILES['afile']['tmp_name'],$targetFile)){
+                
+                $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'created' => date('Y-m-d H:i:s'));
+                $insertid = $this->user->insert_propadd_img($propimag);
 
                 $img_detail[0]['id'] = $insertid;
-                $img_detail[0]['img_name'] = base_url()."img_prop/".$fileName;
+                $img_detail[0]['img_name'] = $fileName;
+
             }
          }
          else
          {
             $img_detail[0]['id'] = '-1';
             $img_detail[0]['img_name'] = "error_file";
-         }
+         }*/
     echo json_encode($img_detail);
     }
+
     function order_update()
     {
         $idArray = explode(",",$_POST['ids']);
@@ -1328,6 +1651,151 @@ class Home extends CI_Controller {
         }
         return true;
     }
+
+    function uploadFormData_insform()
+    {   
+        if(!empty($this->session->userdata('img_tocken')))
+        {
+            $tocken = $this->session->userdata('img_tocken');
+        }else{
+            $tocken = md5(rand(1111,9999));
+            $this->session->set_userdata('img_tocken', $tocken);            
+        }
+
+       /* if((isset($this->session->userdata('img_tocken'))) && (!empty($this->session->userdata('img_tocken'))) {
+            $tocken = $this->session->userdata('img_tocken');
+        }else{
+            $tocken = md5(rand(1111,9999));
+            $this->session->set_userdata('img_tocken', $tocken);
+        }*/
+
+        //$_SESSION['img_tocken'] = $tocken;
+        $allowedExts = array("gif", "jpeg", "jpg", "png");
+       if(!empty($_FILES) && $_POST['action'] == "multiple_fileupload"){
+            
+            //$targetDir = "img_prop/";
+
+            $max_order = $this->user->select_maxid_insprop();
+           
+            if ($max_order < 1) {
+                $max_order = 1;
+            }else{
+                $max_order = $max_order+1;
+            }
+
+
+            $config['upload_path'] =  realpath(APPPATH . '../img_prop');
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            
+            foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+                 $_FILES['afile']['name'] = $filevalue;
+                 $_FILES['afile']['type'] = $_FILES['userImage']['type'][$filekey];
+                 $_FILES['afile']['tmp_name'] = $_FILES['userImage']['tmp_name'][$filekey];
+                 $_FILES['afile']['error'] = $_FILES['userImage']['error'][$filekey];
+                 $_FILES['afile']['size'] = $_FILES['userImage']['size'][$filekey];
+
+                 $data=$this->upload->do_upload("afile");
+                 $data = $this->upload->data();
+
+                $propimag  = array('image' =>$data['file_name'] ,'order'=> $max_order,'tocken'=> $tocken,'created' => date('Y-m-d H:i:s'));
+                $insertid = $this->user->insert_propadd_img($propimag);
+
+                 $configSize1['image_library']   = 'gd2';
+                    $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                    //$configSize1['create_thumb']    = TRUE;
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 100;
+                    $configSize1['height']          = 100;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/100x100/';
+
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                    $configSize1['image_library']   = 'gd2';
+                    $configSize1['source_image']    = APPPATH . '../img_prop/'.$data['file_name'];
+                    //$configSize1['create_thumb']    = TRUE;
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 200;
+                    $configSize1['height']          = 200;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/200x200/';
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                    $configSize1['maintain_ratio']  = true;
+                    $configSize1['width']           = 800;
+                    $configSize1['height']          = 400;
+                    $configSize1['new_image']       = APPPATH . '../img_prop/800x400/';
+                    $this->image_lib->initialize($configSize1);
+                    $this->image_lib->resize();
+                    $this->image_lib->clear();
+
+                    $img_detail[$filekey]['id'] = $insertid;
+                        //$img_detail[$filekey]['img_name'] = base_url()."img_prop/".$fileName;
+                    $img_detail[$filekey]['img_name'] = $data['file_name'];
+            }
+
+           /* foreach ($_FILES['userImage']['name'] as $filekey => $filevalue) {
+                
+
+                $fileName = $filevalue;
+                $fnm = explode('.', $filevalue);
+
+                if(in_array(max($fnm), $allowedExts)){
+                    $fileName =rand('1111','9999').'.'.max($fnm);
+                    $max_order = $this->user->select_maxid_insprop();
+                   
+                    if ($max_order < 1) {
+                        $max_order = 1;
+                    }else{
+                        $max_order = $max_order+1;
+                    }
+
+                    $targetFile = $targetDir.$fileName;
+
+                    if(move_uploaded_file($_FILES['userImage']['tmp_name'][$filekey],$targetFile)){                        
+                        $propimag  = array('image' =>$fileName ,'order'=> $max_order, 'created' => date('Y-m-d H:i:s'));
+                        $insertid = $this->user->insert_propadd_img($propimag);
+                       
+                        $img_detail[$filekey]['id'] = $insertid;
+                        //$img_detail[$filekey]['img_name'] = base_url()."img_prop/".$fileName;
+                        $img_detail[$filekey]['img_name'] = $fileName;
+                    }
+                
+
+                }
+                else
+                 {
+                    $img_detail[$filekey]['id'] = '-1';
+                    $img_detail[$filekey]['img_name'] = "error_file";
+                 }
+            }*/
+
+            echo json_encode($img_detail);
+        }
+    }
+
+
+    function propadd_order_update()
+    {
+        $idArray = explode(",",$_POST['ids']);
+
+        $count = 1;
+        foreach ($idArray as $propkey => $propvalue){
+
+             $propimag  = array('order'=> $count , 'id'=>$propvalue);
+             $insertid = $this->user->update_propaddimg($propimag);
+
+            $count ++;  
+        }
+        
+    }
+
     function final_appointment_conform()
     {
 
@@ -1825,6 +2293,105 @@ class Home extends CI_Controller {
             $this->session->set_flashdata('error', 'Your are not Authorize.');
             redirect($url, 'refresh');
         }
+    }
+    function property_search_result(){
+        $user=$this->user->getproperty_search_result($_POST);
+        // echo '<table id="example">';
+        // echo '<thead>';
+        // echo '<tr>';
+        // echo '<th hidden>Id</th>';        
+        // echo '<th>Reference No</th>';
+        // echo '<th>Agent Name</th>';
+        // echo '<th>Property Area</th>';        
+        // echo '<th style="max-width: 70px">Property Status</th>';               
+        // echo '<th style="text-align: center; max-width: 80px">Price(€)</th>';               
+        // echo '<th style="min-width: 60px">Furnish Type</th>';       
+        // echo '<th>Image</th>';
+        // echo '<th style="width: 55px">Status</th>';
+        // echo '<th style="min-width: 135px">Action</th>';
+        // echo '</tr>';       
+        // echo '</thead>';
+        // echo '<tbody id="property_search_result">';    
+        for ($i = 0; $i < count($user); $i++) {
+            echo "<tr>";
+            echo '<td data-th="id." hidden><div>' . $user[$i]->id. '</div></td>';
+            echo '<td data-th="Reference No."><div>' . $user[$i]->reference_no."</br></br>Created on ".date("d-M-Y", strtotime($user[$i]->created_date))."</br></br>Updated on  ".date("d-M-Y", strtotime($user[$i]->updated_date)). '</div></td>';
+            echo '<td data-th="Agent Name"><div>' . $user[$i]->fname." ".$user[$i]->lname. '</div></td>';
+            echo '<td data-th="Property Area"><div>' . $user[$i]->title. '</div></td>';
+            
+            if($user[$i]->type =='1'){
+                echo '<td data-th="Property Status"><div>' ."Sale". '</div></td>';
+                if(!empty($user[$i]->sale_price)){
+                    echo '<td data-th="Price(€)" style="text-align: right"><div>' ."€ ".number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
+                }else{
+                    echo '<td data-th="Price(€)"><div></div> </td>';
+                }
+            }elseif ($user[$i]->type =='2') {
+               echo '<td data-th="Property Status"><div>' ."Rent". '</div></td>';
+               if(!empty($user[$i]->rent_price)){
+                  echo '<td data-th="Price(€)" style="text-align: right"><div>' ."€ ".number_format($user[$i]->rent_price, 0, ".", ","). '</div></td>';               
+                }else{
+                    echo '<td data-th="Price(€)"><div></div> </td>';
+                }
+            }elseif ($user[$i]->type =='3') {
+               echo '<td data-th="Property Status"><div>' ."Both(Sale/Rent)". '</div></td>';
+               if(!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)){
+                    echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € '. number_format($user[$i]->sale_price, 0, ".", ",")." <br /> RP. € ".number_format($user[$i]->rent_price, 0, ".", ","). '</div></td>';
+                }else{
+                 echo '<td data-th="Price(€)"><div></div> </td>';   
+                }
+            }else{
+                echo '<td data-th="Property Status"><div></div> </td>';
+                echo '<td data-th="Price(€)"><div> </div></td>';
+            }
+            echo '<td data-th="Furnish Type" style="min-width:60px"><div>';
+            
+            if($user[$i]->furnished_type =='1'){
+                 echo 'Furnished';
+            }elseif ($user[$i]->furnished_type =='2') {
+                echo 'Semi-Furnished';
+            }elseif ($user[$i]->furnished_type =='3') {
+                echo 'Un-Furnished';
+            }
+            echo '</div></td>';
+            if(!empty($user[$i]->extra_image)){
+                echo '<td data-th="Image"><div>';
+                echo '<img src="'.base_url()."img_prop/100x100/".$user[$i]->extra_image[0]->extra_image.'" width="75" height="75">';
+                echo '</div></td>';
+            }else{
+                echo '<td data-th="Image"><div>';
+                echo '<img src="'.base_url().'upload/property/100x100/noimage.jpg" width="75" height="75">';
+                echo '</div></td>';
+
+            } 
+            echo '<td data-th="Status">';
+            echo '<div>';
+            echo '<div class="sep"></div><div class="sep"></div><div class="sep"></div>';
+            if($user[$i]->status=='Active'){
+              echo '<span style="width:10px;height:10px;display:inline-block;background:#5cb85c;"></span> Active'; 
+            }else{ 
+              echo '<span style="width:10px;height:10px;display:inline-block;background:#d9534f;"></span> Inactive';   
+            } 
+            echo '</div>';   
+            echo '</td>';  
+            echo '<td data-th="Actions">';  
+            echo '<div>';
+            echo '<a data-toggle="modal" data-target="#myModal" onclick="setPropertyId('.$user[$i]->id.')" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Send Inquiry"><i class="fa fa-paper-plane"></i></a>';    
+            echo '<a href="view_property/'.$user[$i]->id.'"  target="_blank" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a>';        
+            echo '<a href="add_property/'.$user[$i]->id.'" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a>';
+                    
+            if ($this->session->userdata('logged_in_super_user')) { 
+             echo '<a href="delete_property/'.$user[$i]->id.'" onclick="return confirm("Are you sure want to delete this record?");" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>';
+             
+            }
+            echo '</div>';
+            echo '</td>';    
+            echo '</tr>';
+            
+        }
+        //echo '</tbody>';
+        //echo '</table>';
+        //echo $inquiryDetailHtml;
     }
 }
 

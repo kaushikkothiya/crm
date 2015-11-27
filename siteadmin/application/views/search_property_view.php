@@ -4,7 +4,12 @@ $this->load->view('header');?>
 <?php
 $this->load->view('leftmenu');
 ?>
+<style>
+.ms-drop ul {
+    max-height: 230px!important;
+}
 
+</style>
  <div class="container-fluid">
     <div class="row">
       <div class="main">
@@ -19,8 +24,13 @@ $this->load->view('leftmenu');
         <div class="row">
           <div class="col-sm-12">
             <div class="panel panel-default">
-              <div class="panel-heading">Property Search 
-             <div class="text-center"><?php echo $this->session->userdata('customer_name_property'); ?></div>
+              <div class="panel-heading">
+                <?php   
+                  $customer_datail = $this->inquiry_model->get_property_add_client($this->session->userdata('customer_property_id'));
+                ?>
+              Client Name : <?php echo $customer_datail[0]->fname." ".$customer_datail[0]->lname; ?>
+              <button class="btn btn-sm btn-info pull-right" type="button" onClick="window.location.href = 'inquiry_manage?view_client=<?php echo $this->session->userdata('customer_property_id'); ?>';">Past Inquiry</button>
+              <div class="clear"></div>
               </div>
 
               <div class="panel-body">
@@ -176,7 +186,7 @@ $this->load->view('leftmenu');
                         
                       </div>
                       
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label class="col-md-4  control-label">Reason:</label>
                         <div class="col-md-8">
                           <label class="radio-inline">
@@ -187,7 +197,26 @@ $this->load->view('leftmenu');
                           </label>
                         </div>
                       </div>
+ -->
                      </div>
+
+                    <div class="clearfix sep"></div>
+
+                    <div class="seppart">
+                         <div class="form-group">
+                        <label class="col-md-5  control-label">Reason:</label>
+                        <div class="col-md-5">
+                          <label class="radio-inline">
+                            <input type="radio" name="inq_apment"  <?php if($inquiry_flag == "1"){ echo "checked"; } ?> value="inquiry"> Inquiry
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="inq_apment" <?php if($inquiry_flag == "0" || $this->session->userdata('appointment_selected') == "1"){ echo "checked"; } ?> value="appointment"> Appointment
+                          </label>
+                        </div>
+                      </div>
+
+                    </div>
+
                  </div>
                   <hr>
                   <div class="form-group">
@@ -198,10 +227,11 @@ $this->load->view('leftmenu');
                   </div>
                 </div>
                 </form>
-                <hr>
+                
                 <?php
                 if(!empty($search_detail)){
                 ?> 
+                <hr>
                  <div id="property_search_result">
                 <div class="row">   
                     <div class="col-sm-12">
@@ -298,17 +328,20 @@ $this->load->view('leftmenu');
                                                 if($inquiry_flag == "1")
                                                 {?>
                                                     <input type="checkbox" id="" name="pro_checkbox" class="propertyIdArr"  value="<?php echo trim($search_detail[$i]->id); ?>" >
-                                                    <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-success btn-xs">View</a>
+                                                    <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
+                                                    <!-- <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-info btn-xs">View</a> -->
                                                 <?php
                                                  //$arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
                                                 //echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
                                                    
                                                 }else{?>
                                                     <input type="radio" id="property_id" name="property_id" checked value="<?php echo trim($search_detail[$i]->id); ?>" />
+                                                    <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
+                                                    <!-- <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-info btn-xs">View</a> -->
                                                     <?php
                                                    // $arrayName = array('target' => '_blank','title'=>'View Property Details' );?>&nbsp;&nbsp;&nbsp;<?php
                                                     // echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
-                                                     echo anchor('home/view_property/'.$search_detail[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
+                                                     //echo anchor('home/view_property/'.$search_detail[$i]->id, '<i class="icon-zoom-in"></i>',array('target' => '_blank','title'=>'View Property Details','class'=>"btn btn-default btn-small" ));
                                                 }
                                                 ?>
                                             </div></td>
@@ -400,8 +433,8 @@ $this->load->view('footer');
                           
                             $('.propertyIdArr').on('click',function(){
                                 var totle_count= $('input[name=pro_checkbox]:checked').length;
-                                if(totle_count >'3'){
-                                    alert('You can not select more then three property.');
+                                if(totle_count >'10'){
+                                    alert('You can not select more then ten property.');
                                     $(this).removeAttr('checked');
                                 }
                             });

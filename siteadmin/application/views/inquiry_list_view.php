@@ -1,47 +1,55 @@
 <?php
 
 $this->load->view('header');?>
-<link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
+<!-- <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet"> -->
 <?php
 $this->load->view('leftmenu');
 $Action = array('2' =>'Text-Send','3' =>'Follow-Up','4' =>'Appointment','5' =>'Complete');
 $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7','5' =>'99E2A3');
 ?>
 <div class="container-fluid">
-     <?php if ($this->session->flashdata('success')) { ?>
+     <div class="row">
+      <div class="main">
+         <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
     <?php } ?>
-    <div class="row">
-      <div class="main">
           <h1 class="page-header">Inquiry List
              <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-          <a href="#popup1"><button class="btn btn-sm btn-success pull-right" type="button">Import Excel File</button></a>
+          <a><button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right" type="button">Import Excel File</button></a>
           <?php } ?>
         </h1>
         <div class="row">
         <form action="inquiry_manage" name="mul_rec" id="mul_rec" method="post" enctype="multipart/form-data">
-                        <div class="col-sm-2 pull-right">
-                            <span style="width:15px;height:15px;display:inline-block;background:#FFFF00;"></span> Register</br><!-- Txt-Send -->
-                            <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Text-Send </br><!-- Txt-Send -->
-                            <span style="width:15px;height:15px;display:inline-block;background:#FFCCFF;"></span> Follow-Up </br><!-- Follow-Up -->
-                            <span style="width:15px;height:15px;display:inline-block;background:#D9EDF7;"></span> Appointment </br><!-- Appointment -->
-                            <span style="width:15px;height:15px;display:inline-block;background:#99E2A3;"></span> Complete<!-- Complete -->
-                
-                
-                    </div>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <span>View Inquiry By :  &nbsp;&nbsp;
-                        <select name="view_inc"  id="view_inc" class="form-control" style="width:200px" onchange="view_inquiry(this.value);">
+                        <div class="col-md-12"> 
+                          <span style="width:15px;height:15px;display:inline-block;background:#FFFF00;"></span> Register &nbsp;&nbsp;
+                            <!-- Txt-Send --> 
+                            <span style="width:15px;height:15px;display:inline-block;background:#EBAF22;"></span> Text-Send &nbsp;&nbsp;
+                            <!-- Txt-Send --> 
+                            <span style="width:15px;height:15px;display:inline-block;background:#FFCCFF;"></span> Follow-Up &nbsp;&nbsp;
+                            <!-- Follow-Up --> 
+                            <span style="width:15px;height:15px;display:inline-block;background:#D9EDF7;"></span> Appointment &nbsp;&nbsp;
+                            <!-- Appointment --> 
+                            <span style="width:15px;height:15px;display:inline-block;background:#99E2A3;"></span> Complete<!-- Complete --> 
+                        </div>
+                        <div class="clearfix sep"></div>
+                        <div class="clearfix sep"></div>
+                     <div class="col-md-3">
+                      <span>View Inquiry By :  &nbsp;&nbsp;
+                      <select name="view_inc"  id="view_inc" class="form-control" style="width:200px" onchange="view_inquiry(this.value);">
                             <option value="" <?php if(empty($_GET['view'])) { echo "selected"; } ?>>All</option>
                             <option value="rent" <?php if(!empty($_GET['view']) && $_GET['view']== "rent") { echo "selected"; } ?> >Rent inquiry</option>
                             <option value="sale" <?php if(!empty($_GET['view']) && $_GET['view']== "sale") { echo "selected"; } ?>>Sale inquiry</option>
                             <option value="latest" <?php if(!empty($_GET['view']) && $_GET['view']== "latest") { echo "selected"; } ?>>Latest inquiry</option>
                         </select>
-                        </span>
-                        <span>View Inquiry for :  &nbsp;&nbsp;
-                        <select name="view_inc_client"  id="view_inc_client" class="form-control" style="width:200px" onchange="view_inquiry_client(this.value);">
+                      </span> 
+                      </div>
+                      
+                      <div class="col-md-3">
+                      <span>View Inquiry for :  &nbsp;&nbsp;
+                      <select name="view_inc_client"  id="view_inc_client" class="form-control" style="width:200px" onchange="view_inquiry_client(this.value);">
                             <?php 
                             ?>
                             <option value="" <?php if(empty($_GET['view_client'])) { echo "selected"; } ?>>All</option>
@@ -49,10 +57,15 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                             <option value="<?php echo $value->id;?>" <?php if(!empty($_GET['view_client']) && $_GET['view_client']== $value->id) { echo "selected"; } ?> ><?php echo $value->fname.' '.$value->lname;?></option>
                             <?php }?>
                         </select>
-                        </span>   
+                      </span>
+                      </div> 
+                      <div class="clearfix sep"></div>
+                      <div class="clearfix sep"></div>
+
+
           <div class="col-sm-12">
                     <div>
-                        <table id="example">
+                        <table id="inquiry_list">
                                 <thead>
                                     <tr>
                                         <th hidden>Id</th>
@@ -64,7 +77,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                         <th>Created by</th>
                                         <th>Date Created</th>
                                         <th>Status</th>
-                                        <th>Action</th>
+                                        <th style="width: 100px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,14 +141,20 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                          <td data-th="Actions">
                                             <div>
                                                 <?php if (empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date == "0000-00-00 00:00:00")) { ?>
-                                                    <a href="scheduleAppointment/<?php echo $user[$i]->id; ?>" class="btn btn-success btn-xs">Schedule Appointment</a> 
+                                                    <a href="scheduleAppointment/<?php echo $user[$i]->id; ?>"  class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a> 
+                                                    <!-- <a  onclick="checkclient_property(<?php echo $user[$i]->id; ?>,<?php echo $user[$i]->customer_id; ?>,<?php echo $user[$i]->property_id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a>  -->
+                                                    <!-- href="scheduleAppointment/<?php echo $user[$i]->id; ?>"<a href="scheduleAppointment/<?php echo $user[$i]->id; ?>" class="btn btn-info btn-xs">Schedule Appointment</a>  -->
                                                 <?php if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_employee')) {  ?>
-                                                    &nbsp;<a href="#popup2" class="btn btn-success btn-xs" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)">View Inquiry</a> 
+                                                    <a data-toggle="modal" data-target="#myModal" class="btn btn-default btn-xs action-btn" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
+                                                    <!-- &nbsp;<a href="#popup2" class="btn btn-info btn-xs" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)">View Inquiry</a>  -->
                                                 <?php } }else{ ?>
-                                                    &nbsp;<a href="#popup2;" onclick="setInquiryId(<?php echo $user[$i]->id; ?>) " class="btn btn-success btn-xs">View Inquiry</a> 
-                                                    &nbsp;<a href="add_agent/<?php echo $user[$i]->id; ?>" class="btn btn-success btn-xs">Scheduled</a> 
+                                                    <a data-toggle="modal" data-target="#myModal" onclick="setInquiryId(<?php echo $user[$i]->id; ?>) " class="btn btn-default btn-xs action-btn" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
+                                                    <!-- &nbsp;<a href="#popup2" onclick="setInquiryId(<?php echo $user[$i]->id; ?>) " class="btn btn-info btn-xs">View Inquiry</a>  -->
+                                                    <a class="btn btn-default btn-xs action-btn" rel="tooltip" title="Scheduled"><i class="fa fa-sort"></i></a> 
+                                                    <!-- &nbsp;<a class="btn btn-info btn-xs">Scheduled</a>  -->
                                                 <?php } if ($this->session->userdata('logged_in_super_user')) { ?>
-                                                &nbsp;<a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                                <a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
+                                                <!-- &nbsp;<a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a> -->
                                                 <?php } ?>
                                             </div>
                                         </td>
@@ -187,7 +206,53 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
             </div>
         </div>
     </div>
-<div id="popup1" class="overlay">
+    <!-- Modal -->
+<div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">View Inquiry Detail</h4>
+      </div>
+      <div class="modal-body">
+        <div id="inquiry_datail_popup">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- Modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Import Database</h4>
+      </div>
+       <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>index.php/Excelread/inquire_export" enctype="multipart/form-data">
+       <fieldset>
+        <div class="modal-body">
+        <input type="file" name="inquire_xls_files" id="inquire_xls_files"><br>
+        Download Format Excel File:
+        <a class="" href="<?php echo base_url(); ?>files/example_file/Inquiries.xlsx">Click Here</a>
+        <br><br>
+        <div id="message_sub">
+        </div>
+      </div>
+      <div class="modal-footer" id="hd_sub">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" id="inq_submit" class="btn btn-primary" width="" value="Submit" >
+      </div>
+       </fieldset>
+    </form>
+    </div>
+  </div>
+</div>
+<!-- <div id="popup1" class="overlay">
     <div class="popup">
         <h2>Import Database</h2>
         <a class="close" href="#">×</a>
@@ -210,7 +275,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
 
                     <div class="control-group">
                         <div class="controls">
-                            <!--<input type="submit" class="btn" value="Add Inquiry" name="inquiry_form" id="inquiry_form">-->
+                            
                         </div>
                     </div>
                 </fieldset>
@@ -220,8 +285,8 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
             </div>
         </div>
     </div>
-</div>
-<div id="popup2" class="overlay">
+</div> -->
+<!-- <div id="popup2" class="overlay">
     <div class="popup">
         <h2>View Inquiry Detail</h2>
         <a class="close" href="#">×</a>
@@ -233,8 +298,32 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
             </div>
         </div>
     </div>
+</div> -->
+<!-- Modal -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Inquiry Reference No. :<b class="popup-ref">#Reference No</b></h4>
+      </div>
+        <div class="modal-body">
+                <div class="" id="inquiry_status_change_popup">
+                    <input type="hidden" name="inquiry[id]" id="status_change_inquiry_id" value="" />
+                    <input type="hidden" name="property[id]" id="status_change_property_id" value="" />
+                    <input type="hidden" name="inquiry[status]" id="status_change_inquiry_status" value="" />
+                    <label for="status_change_content" id="lbl_status_change_content" class="" style="font-weight:bold">Content :</label>
+                    <textarea id="status_change_comments" name="inquiry[content]" class="span12" rows="10" cols="50" ></textarea>
+                    <div class="modal-footer" id="hd_sub">
+                <button class="btn btn-primary summit_inquiry_status_with_comment" id="lbl_status_change_button">Change Status</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+     </div>
+    </div>
+   </div>
+ </div>
 </div>
-<div id="popup3" class="overlay">
+<!-- <div id="popup3" class="overlay">
     <div class="popup">
         <h2>Inquiry Reference No. : <b class="popup-ref">#Reference No</b></h2>
         <a class="close" href="#">×</a>
@@ -251,7 +340,7 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <?php
@@ -280,9 +369,11 @@ $(document).ready(function(){
     
     $(document).on('click','.summit_inquiry_status_with_comment',function(){
         //console.log($(this).parents('.content').prev().html());
-        $(this).parents('.popup').find('a.close').trigger('click');
-        var href = window.location.href.split("#");
-        window.location = href[0]+"#";
+        
+        // $(this).parents('.popup').find('a.close').trigger('click');
+        // var href = window.location.href.split("#");
+        // window.location = href[0]+"#";
+        $('#myModal2').modal('hide')
         changeInquiryStatus();
     });
     
@@ -307,14 +398,15 @@ $(document).ready(function(){
             $("#lbl_status_change_content").html('Comments :');
             $("#lbl_status_change_button").html('Submit Follow –Up Feedback');
             
-
-            window.location = href[0] + "#popup3";
+            $('#myModal2').modal('show')
+            //window.location = href[0] + "#popup3";
         }else if($(this).val()==5){
             $("#lbl_status_change_content").show();
             $("#status_change_comments").show();
             $("#lbl_status_change_content").html('Feedback :');
             $("#lbl_status_change_button").html('Complete');            
-            window.location = href[0] + "#popup3";
+            //window.location = href[0] + "#myModal2";
+            $('#myModal2').modal('show')
         }
     }); 
 });
@@ -383,6 +475,24 @@ $("#inquireexcel_form").submit(function( event ) {
         return false;
     }
 });
+function checkclient_property(incid,custid,propertyid){
+$.ajax({
+        type: "post",
+        url:baseurl+"index.php/inquiry/check_client_property_activation",
+        data: {custid:custid,propertyid:propertyid},
+        success: function(msg){
+            if(msg =='true'){
+                window.location="<?php echo base_url(); ?>scheduleAppointment/"+incid;
+            }else if(msg =='property_inactive'){
+                alert('This Inquiry Property is inactive');
+            }else if(msg =='customer_inactive'){
+                alert('This Inquiry Property is inactive');
+            }else{
+                window.location="<?php echo base_url(); ?>scheduleAppointment/"+incid;
+            }
+        }
+    });
+}
 // $(".pushme").click(function () {
 //     $('#hd_sub').hide();
     

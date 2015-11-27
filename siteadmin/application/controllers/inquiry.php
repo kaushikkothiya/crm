@@ -106,7 +106,7 @@ class Inquiry extends CI_Controller {
             
             $this->load->model('newsletter_model');
             $mc_res = $this->newsletter_model->getMinMaxPriceByCustomerID($cust_id,$sale_group,$rent_group);
-                        
+            if(!empty($mc_res['email'])){            
             $merge_vars = array();
             $merge_vars['groupings'] = array(
                 array(
@@ -126,9 +126,8 @@ class Inquiry extends CI_Controller {
                     'groups' => $mc_res['sale_grps']
                 ),
             );
-            
-            
-            @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);             
+                @$mc->lists->subscribe($list_id,array('email'=>$mc_res['email']),$merge_vars,'html',FALSE,true);             
+            }
             $agent_detail = $this->inquiry_model->get_agent_email($_POST['agent']);
             $agent_property_link_path = base_url()."home/appointment_conform/".$data."/".$agent_detail[0]->id;
             
@@ -407,12 +406,16 @@ class Inquiry extends CI_Controller {
         $customer_datail = $this->inquiry_model->check_customer_exist($_POST);
        
         if(!empty($customer_datail)){
-        $this->session->set_userdata('customer_property_id', $customer_datail[0]->id);
-        $this->session->set_userdata('customer_name_property', $customer_datail[0]->fname." ".$customer_datail[0]->lname);
-        echo "true";exit;    
-    }else{
-        echo "false";exit;
-    }
+            if($customer_datail[0]->deleted =="1"){
+                echo "inactive";exit;
+            }else{
+                $this->session->set_userdata('customer_property_id', $customer_datail[0]->id);
+                $this->session->set_userdata('customer_name_property', $customer_datail[0]->fname." ".$customer_datail[0]->lname);
+                echo "true";exit;    
+            }
+        }else{
+            echo "false";exit;
+        }
         
     }
     
@@ -612,6 +615,7 @@ class Inquiry extends CI_Controller {
                             $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
                         }
                         $this->session->unset_userdata('customer_property_id');   
+                         $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check your E-mail!');
                         redirect('inquiry/inquiry_manage');
                     }
                     elseif ($_POST['sendInquiryBy'] == "sendSms")
@@ -676,6 +680,7 @@ class Inquiry extends CI_Controller {
                         }    
                         /* sms send end */
                           $this->session->unset_userdata('customer_property_id'); 
+                          $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check SMS!');
                           redirect('inquiry/inquiry_manage');
                     
                     } elseif ($_POST['sendInquiryBy'] == "sendBoth"){
@@ -784,6 +789,7 @@ class Inquiry extends CI_Controller {
                                // $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                             }
                         }
+                        
                         if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
                         {
                             $history_type_sms   = "SMS/E-mail";
@@ -813,10 +819,13 @@ class Inquiry extends CI_Controller {
                             
                             $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check your E-mail!');
                             redirect('inquiry/inquiry_manage');      
+                        }else{
+                            $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Check your E-mail!');
+                            redirect('inquiry/inquiry_manage');      
                         }
                         
                     }else{
-                        $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully.!');
+                        $this->session->set_flashdata('success', 'E-mail and SMS not send beacuse somethig wrong.');
                         redirect('inquiry/inquiry_manage');
                         # code for both send sms and email here...                        
 
@@ -837,7 +846,7 @@ class Inquiry extends CI_Controller {
     function scheduleAppointment($inquiryId)
     {
         if($inquiryId !="")
-        {
+        { 
             $inquiryDetail = $this->inquiry_model->getInquiryDetailById($inquiryId);
             
             if($inquiryDetail[0]->property_id == "0")
@@ -846,8 +855,8 @@ class Inquiry extends CI_Controller {
                 $this->session->set_userdata('customer_property_buy_sale', $inquiryDetail[0]->aquired);
                 $this->session->set_userdata('appointment_selected', "1");
                 redirect('/inquiry/property', 'refresh');
-            }
-            elseif($inquiryDetail[0]->appoint_start_date == "0000-00-00 00:00:00" && $inquiryDetail[0]->appoint_end_date == "0000-00-00 00:00:00")
+            }else
+            //elseif($inquiryDetail[0]->appoint_start_date == "0000-00-00 00:00:00" && $inquiryDetail[0]->appoint_end_date == "0000-00-00 00:00:00")
             {
                 $this->session->unset_userdata('selected_property_id');
                 $this->session->set_userdata('selected_property_id', $inquiryDetail[0]->property_id);
@@ -949,13 +958,25 @@ class Inquiry extends CI_Controller {
     function get_agent_calandar_detail()
     {
         $data= $this->inquiry_model->agent_schedule();
-         
+         // echo'<pre>';print_r($data);exit;
          foreach ($data as $z=>$val)
               { 
                 //$rand = dechex(rand(0x000000, 0xFFFFFF));
-                $rand="3b91ad";
+                if(trim($val->agent_status) =='0'){
+                    $rand="00bfff";
+                }elseif (trim($val->agent_status) =='1') {
+                   $rand="EBAF22";
+                }elseif (trim($val->agent_status) =='2') {
+                   $rand="FFCCFF";
+                }else{
+                    $rand="ffffff";
+                }
+                
                  $data[$z]->color = ('#' . $rand);
-                 $data[$z]->title  =  $val->fname.' '.$val->lname.' '.date("H:i", strtotime($val->appoint_start_date))." to: ".date("H:i", strtotime($val->appoint_end_date));
+                 $data[$z]->title  =  $val->fname.' '.$val->lname;
+                 $data[$z]->status  =  $val->agent_status;
+                 $data[$z]->id  =  $val->id;
+                 $data[$z]->description  = 'Appointment start: '.date("Y-m-d H:i:s", strtotime($val->appoint_start_date))." to Appointment end : ".date("Y-m-d H:i:s", strtotime($val->appoint_end_date));
                  $data[$z]->start  = $val->appoint_start_date;
                  $data[$z]->end  =  $val->appoint_end_date;
                  
@@ -1095,6 +1116,13 @@ class Inquiry extends CI_Controller {
          
 
         if(isset($data[0]->aquired) && !empty($data[0]->aquired)){
+            if(trim($data[0]->aquired) =='rent'){
+                $data[0]->aquired = 'Rent';
+            }elseif (trim($data[0]->aquired) =='sale') {
+               $data[0]->aquired = 'Sale';
+            }elseif (trim($data[0]->aquired) =='both') {
+                $data[0]->aquired = 'Sale/Rent';
+            }
             $inquiryDetailHtml .= '<lable><b>Property Status</b></lable> :<lable>'.$data[0]->aquired.'</lable> ';
             $inquiryDetailHtml .=  '<br><br>';
         }
@@ -1153,7 +1181,8 @@ class Inquiry extends CI_Controller {
     function ajax_update_status(){
         
         $id = $_POST['id'];
-        $property_id = $_POST['property_id'];
+        if(isset($_POST['property_id']))
+            $property_id = $_POST['property_id'];
         $status = $_POST['status'];
         $comments = $_POST['comments'];
         
@@ -1174,7 +1203,6 @@ class Inquiry extends CI_Controller {
         exit;
     }
     function appointment_note_add(){
-        
         if($this->inquiry_model->add_appointment_note($_POST)){
             $response['status'] = true;
         }
@@ -1183,6 +1211,7 @@ class Inquiry extends CI_Controller {
     }
 
      function new_inquiries(){
+        if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
         if($this->session->userdata('logged_in_employee')){
             $this->session->set_flashdata('error', 'Not allowed!');
             redirect('home');
@@ -1197,6 +1226,9 @@ class Inquiry extends CI_Controller {
         $inquiries = $this->inquiry_model->getNewInquiries($user['id']);
         $data = array('user'=>$inquiries);
         $this->load->view('new_inquiries', $data);
+        }else{
+         redirect('login', 'refresh');
+        }
     }
 
     function ajax_change_inquiry_agent_status(){
@@ -1224,9 +1256,27 @@ class Inquiry extends CI_Controller {
         echo json_encode($response);
         exit;
     }
+     function ajax_calaneder_change_status(){
+        
+        $id = (isset($_POST['id']) && !empty($_POST['id']))?$_POST['id']:0;
+        $agent_status = (isset($_POST['agent_status']) && !empty($_POST['agent_status']))?$_POST['agent_status']:0;
+        $data = array('agent_status'=>$agent_status);
+        if($this->inquiry_model->appointmentchangeAgentStatus($id,$data)){
+            $response['status'] = true;
+            if($agent_status==1){
+                $response['msg'] = "Appointment has been confirmed";
+            }else if($agent_status==2){
+                $response['msg'] = "Inquiry has been sent for rescheduling.";
+            }else if($agent_status==3){
+                $response['msg'] = "Appointment request has been cancel.";
+            }
+        }
+        echo json_encode($response);
+        exit;
+    }
 
     function reschedule_inquiries(){
-        
+        if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
         if($this->session->userdata('logged_in_employee')){
             $user = $this->session->userdata('logged_in_employee');
         }else if($this->session->userdata('logged_in_agent')){
@@ -1238,11 +1288,14 @@ class Inquiry extends CI_Controller {
         
         $data = array('reschedule_inquiries'=>$reschedule_inquiries);
         $this->load->view('reschedule_inquiries', $data);
+        }else {
+         redirect('login', 'refresh');
+        }
     }
 
 
     function cancel_inquiries(){
-        
+        if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
         if($this->session->userdata('logged_in_employee')){
             $user = $this->session->userdata('logged_in_employee');
         }else if($this->session->userdata('logged_in_agent')){
@@ -1254,8 +1307,34 @@ class Inquiry extends CI_Controller {
         $cancel_inquiries = $this->inquiry_model->getCanceledInquiries($user['id']);
         $data = array('cancel_inquiries'=>$cancel_inquiries);
         $this->load->view('cancel_inquiries', $data);
+       }else{
+        redirect('login', 'refresh');
+       }
     }
-
+function check_client_property_activation()
+{
+   
+    $customer_detail = $this->inquiry_model->check_inquiry_client_record($_POST['custid']);
+    if($_POST['propertyid'] !='0'){
+        $property_detail = $this->inquiry_model->check_inquiry_property_record($_POST['propertyid']);
+        $flag='1';
+    }else{
+        $property_detail =array();       
+        $flag='0';
+    }
+    if(!empty($customer_detail))
+    {
+        if(!empty($property_detail) && $flag='1'){
+            echo 'true';
+        }else if (empty($property_detail) && $flag='0') {
+            echo 'property_inactive';
+        }else{
+            echo 'true';
+        }
+    }else{
+        echo 'customer_inactive';
+    }
+}
 
 }
 

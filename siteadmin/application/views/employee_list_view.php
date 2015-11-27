@@ -4,16 +4,16 @@ $this->load->view('header');
 $this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-     <?php if ($this->session->flashdata('success')) { ?>
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
     <?php } ?>
-    <div class="row">
-      <div class="main">
         <h1 class="page-header">Employee List
-          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_employee';">Create Employee</button>
+          <button class="btn btn-sm btn-info pull-right" type="button" onClick="window.location.href = 'add_employee';">Create Employee</button>
         </h1>
         <div class="row">   
           <div class="col-sm-12">
@@ -41,8 +41,8 @@ $this->load->view('leftmenu');
                                         ?>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="add_employee/<?php echo $user[$i]->id; ?>" class="btn btn-success btn-xs">Edit</a> 
-                                                &nbsp;<a href="delete_employee/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                                 <a href="add_employee/<?php echo $user[$i]->id; ?>" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a> 
+                                                <a href="delete_employee/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
                                             </div>
                                       </td>
                                         <?php

@@ -185,5 +185,16 @@ margin:0px 0px 10px 0px !important;
     font-size: 11px;
     width: 72%;
 }
+
+.popup {
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 80%;
+    position: relative;
+    transition: all 5s ease-in-out;
+  }
+
 }
 @media screen and (max-width: 320px){}

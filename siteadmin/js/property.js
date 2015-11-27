@@ -22,7 +22,12 @@ $(document).ready(function(){
     }, "Please select bedrooms");
  
  $.validator.addMethod('check_bathrooms', function (value,element) { 
-     return this.optional(element) || value != 0;   
+     if(value!='0' ||$('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16' ){
+        return true;
+    }else{
+        return false;
+    }
+     //return this.optional(element) || value != 0;   
     }, "Please select bathrooms");
 
  $.validator.addMethod('check_type', function (value,element) { 
@@ -45,7 +50,28 @@ $.validator.addMethod('check_agent_id', function (value,element) {
 
 $('#manage_form').validate({
                  rules:{
-
+                        fname:{
+                          //required:true
+                           required: function (element) {
+                       
+                                 if($('#lname').val() !=''){
+                                  return '';                               
+                                 }
+                                 else
+                                 {
+                                    return true;
+                                    
+                                 }  
+                              },
+                        }, 
+                        // email:{
+                        //   required:true,
+                        //   email:true,
+                        // },
+                        mobile_no:{
+                          required:true,
+                          number:true,
+                        },
                         type:{
                           check_type:true
                         },
@@ -87,12 +113,38 @@ $('#manage_form').validate({
                           //maxlength:10
                         },
                         bedrooms:{
-                                required:true,
+                                required: function (element) {
+                       
+                                 if($('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16'){
+                                  return '';                               
+                                 }
+                                 else
+                                 {
+                                    return true;
+                                    
+                                 }  
+                              },
+                                //required:true,
                                },
                         // bedrooms:{
                         //       check_bedrooms:true
                         //       },
                         bathrooms:{
+                              // required: function (element) {
+                       
+                              //    if($('#property_category').val() =='11' || $('#property_category').val() =='9'){
+                              //        return '';                            
+                              //    }
+                              //    else
+                              //    {
+                              //       if($('#bathrooms').val() =='0'){
+                              //         return true;
+                              //       }else{
+                              //         return '';
+                              //       }
+                                    
+                              //    }  
+                              // },
                               check_bathrooms:true
                               },
                         link_url:{
@@ -153,6 +205,12 @@ $('#manage_form').validate({
                             
                         },
                 messages:{
+                         fname:{required:"First name or last name must not be empty"},
+                         //lname:{required:"last name must not be  empty"},
+                         email:{required:"Email must not be  empty",email:"Enter valid email"},
+                         password:{required:"Password must not be  empty"},
+                         mobile_no:{required:"Mobile number must not be empty",number:"Mobile number must contain only digits"},     
+                          
                          address:{/*required:"address must not be  empty",*/maxlength:"address must not enter More then 500 characters"},     
                          rent_price:{required:"Rent Price must not be empty",number:"Rent Price  must contain only digits"},     
                          sale_price:{required:"Selling Price must not be empty",number:"Selling Price must contain only digits"},     
@@ -160,6 +218,7 @@ $('#manage_form').validate({
                          reference_no:{required:"Reference Number must not be  empty",remote: 'Your reference number is already exits'},
                          image:{required:"Image must not be  empty",accept:"Only images with type jpg/png/gif are allowed"},
                          bedrooms:{required:"Please select bedrooms"},
+                         //bathrooms:{required:"Please select bathrooms"},
                          link_url:{required:"URL link must not be  empty",url:"Please enter a valid URL Link1"},
                          link_url1:{url:"Please enter a valid URL Link2"},
                          link_url2:{url:"Please enter a valid URL Link3"},
@@ -197,7 +256,8 @@ $('#manage_form').validate({
                           form.submit();
                         }*/
 
-                       var h = [];
+                        if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+                             var h = [];
                         //var myarr = $(this).attr('id').split("_");
                         //console.log(myarr);
                             $("ul.reorder-photos-list li").each(function() { 
@@ -219,9 +279,25 @@ $('#manage_form').validate({
                                     alert('Please select both check box');
                                   }
                                 }
+                                else{
+                                  form.submit();
+                                }
                               }
                               
                             }); 
+                        }else{
+                          if($("#type").val() =='1' || $("#type").val() =='3'){
+                            if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
+                              form.submit();
+                            }else{
+                              alert('Please select both check box');
+                            }
+                          }else{
+                            form.submit();
+                          }
+                        }
+
+                      
 
                         /*if($("#type").val() =='1' || $("#type").val() =='3'){
                           if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
@@ -248,8 +324,8 @@ $('#manage_form').validate({
                               
                             }); 
                         }*/
-                    },
-               
+                    
+                    }               
             });
 
 

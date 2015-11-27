@@ -25,6 +25,8 @@ Class User extends CI_Model {
         $q = $this->db->select("*")
                 ->from('customer')
                 ->order_by('fname asc, lname asc')
+                ->where('status', 'Active')
+                ->where('deleted !=', '1')
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -164,7 +166,7 @@ function property_ref_check($post) {
         $data = $query->result();
           
         for ($i = 0; $i < count($data); $i++) {
-            $country[$data[$i]->id] =$data[$i]->prefix_code.'-'.$data[$i]->country;
+            $country[$data[$i]->id] = $data[$i]->country.' '.$data[$i]->prefix_code;
         }
         return $country;
     }
@@ -351,8 +353,22 @@ function getAllagent() {
 
 
     function customer_insert($num) {
-        //$section_prefix = "customer_";
-        //echo'<pre>';print_r($_POST);exit;
+        if($this->session->userdata('logged_in_super_user')){
+            $sessionData = $this->session->userdata('logged_in_super_user');
+            $added_by = $sessionData['type'];
+            $added_id = $sessionData['id'];
+        }
+        if($this->session->userdata('logged_in_agent')){
+            $sessionData = $this->session->userdata('logged_in_agent');
+            $added_by = $sessionData['type'];
+            $added_id = $sessionData['id'];
+        }
+        if($this->session->userdata('logged_in_employee')) {
+           $sessionData = $this->session->userdata('logged_in_employee'); 
+           $added_by = $sessionData['type'];
+           $added_id = $sessionData['id'];
+        }
+
         $today_date = date('Y-m-d H:i:s');
         $new_user_insert_data = array(
             'customer_ref_id' =>$num,
@@ -371,6 +387,8 @@ function getAllagent() {
             'type' => '0',
             'reference_from' => $this->input->post('reference_from'),
             'aquired' =>$this->input->post('aquired'),
+            'added_by'=>$added_by,
+            'added_id'=>$added_id
             //'aquired' => $this->input->post('aquired'),
         );
         $insert = $this->db->insert('customer', $new_user_insert_data);
@@ -517,8 +535,8 @@ function customer_mobile_check($post) {
                 ->from('customer')
                 ->where('mobile_no',$post['mobile_no'])
                 ->where('coutry_code',$post['country_code'])
-                ->where('deleted !=',"1")
                 ->where('id !=',$post['id'])
+                ->where('deleted !=',"1")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -596,20 +614,43 @@ function customer_mobile_check($post) {
         return array();    
     }
 }
-function getAllproperty() {
+function getAllproperty($prop_agent) {
+    if(empty($prop_agent)){
           $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
                 ->from('property')
-                ->join('user','user.id =property.agent_id')
-                ->join('city_area','city_area.id =property.city_area')
+                ->join('user','user.id =property.agent_id','left')
+                ->join('city_area','city_area.id =property.city_area','left')
                 ->order_by('id', 'desc')
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
         }
+        return array();  
+    }else{
+        $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+                ->from('property')
+                ->join('user','user.id =property.agent_id','left')
+                ->join('city_area','city_area.id =property.city_area','left')
+                ->where('property.agent_id',$prop_agent)
+                ->order_by('id', 'desc')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }    
+}
+function getAllproperty_image($id){
+    $q = $this->db->select("image as extra_image")
+                ->from('images')
+                ->where('prop_id',$id)
+                ->order_by('order','ASC')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
         return array();      
-
-        
-    }
+}
 function getregisted_properties() {
         if($this->session->userdata('logged_in_super_user')){
           $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
@@ -634,8 +675,8 @@ function getregisted_properties() {
                 ->join('user','user.id =property.agent_id')
                 ->join('city_area','city_area.id =property.city_area')
                 ->order_by('id', 'desc')
-                ->where('added_by',$added_by)
-                ->where('added_id',$added_id)
+                ->where('agent_id',$added_id)
+               // ->where('added_id',$added_id)
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -739,7 +780,7 @@ function getregisted_properties() {
         return $update;
     }
     
-    function property_insert($image) {
+    function property_insert() {
         
         if($this->session->userdata('logged_in_super_user')){
             $sessionData = $this->session->userdata('logged_in_super_user');
@@ -784,7 +825,7 @@ function getregisted_properties() {
             'long_desc' => $this->input->post('long_decs'),
             'status' => $this->input->post('status'),
             'url_link' => $url_link,
-            'image' => $image,
+            //'image' => $image,
             'created_date' => $today_date,
             'updated_date' => $today_date,
             'agent_id' => $this->input->post('agent_id'),
@@ -851,7 +892,7 @@ function getregisted_properties() {
     }
         return $insert;
     }
-    function property_update($image,$id) {
+    function property_update($id) {
 //echo'<pre>';print_r($_POST);exit;
 
         if($this->session->userdata('logged_in_super_user')){
@@ -895,7 +936,7 @@ function getregisted_properties() {
             'long_desc' => $this->input->post('long_decs'),
             'status' => $this->input->post('status'),
             'url_link' => $url_link,
-            'image' => $image,
+            //'image' => $image,
             'updated_date' => $today_date,
             'agent_id' => $this->input->post('agent_id'),
             'rent_val' => $this->input->post('rent_val'),
@@ -1085,8 +1126,8 @@ function getregisted_properties() {
    function get_property_view_detail_($id){
      $q = $this->db->select('property.*,city.title as CityTitle,city_area.title as CityareaTitle')
                 ->from('property')
-                ->join('city','city.id =property.city_id')
-                ->join('city_area','city_area.id =property.city_area')
+                ->join('city','city.id =property.city_id','left')
+                ->join('city_area','city_area.id =property.city_area','left')
                 ->where('property.id',$id)
                 ->get();
                                 
@@ -1108,9 +1149,10 @@ function getregisted_properties() {
         return array();
     }
      function get_property_view_image($id) {
-        $q = $this->db->select('image_name')
-                ->from('propety_extra_images')
-                ->where('property_id',$id)
+        $q = $this->db->select('image')
+                ->from('images')
+                ->where('prop_id',$id)
+                ->order_by("order","ASC")
                 ->get();
                                 
         if ($q->num_rows() > 0) {
@@ -1188,6 +1230,12 @@ function getregisted_properties() {
       $this->db->where('id', $propid);
       $this->db->delete('images'); 
     }
+
+    function delete_propaddimg($propid){        
+        $this->db->where('id', $propid);        
+        $this->db->delete('images_temp');       
+    }
+
     function select_maxid()
     {
         $rs = array();
@@ -1214,6 +1262,116 @@ function getregisted_properties() {
     function update_propimg($propimag){
        $this->db->where('id', $propimag['id']);
         $this->db->update('images', $propimag);
+    }
+    function select_maxid_insprop(){
+        $rs = array();
+            $q = $this->db->select_max('id')
+                ->from('images_temp')
+                ->get();
+                                
+        if ($q->num_rows() > 0) {
+            $rs = $q->result();
+        }
+
+        
+        if (count($rs) > 0 && !empty($rs[0]->id)) {
+            $rs_maxid = $rs[0]->id;
+        }else{
+            $rs_maxid = 0;
+        }
+        return $rs_maxid;
+    }
+    function insert_propadd_img($propimag){
+        $this->db->insert('images_temp', $propimag);
+        $rs = $this->db->insert_id();
+        return $rs;
+    }
+
+    function update_propaddimg($propimag){
+        $this->db->where('id', $propimag['id']);
+        $this->db->update('images_temp', $propimag);
+    }
+
+    function propertyadd_image($imagenm,$tocken){
+        
+        $prop_imgname = $imagenm['image'];
+
+        $this->db->where('image', $prop_imgname);
+        $this->db->where('tocken', $tocken);
+        $this->db->delete('images_temp'); 
+        
+    
+        $this->db->insert('images', $imagenm);
+        $rs = $this->db->insert_id();   
+    }
+    function getproperty_search_result($post) {
+       
+        
+        $this->db->select('property.*,city_area.title,city.id as city_id');
+        $this->db->join('city_area','city_area.id =property.city_area');
+        $this->db->join('city','city.id =property.city_id');
+        $this->db->from('property');
+        if(!empty($post['property_type'])){
+            if($post['property_type'] !='3'){
+                $this->db->where("( property.type = '". $post['property_type']."' OR property.type = '3' )");
+            }
+        }
+        
+        if(!empty($post['country_id']) && $post['country_id'] !='0')
+            $this->db->where('property.country_id', $post['country_id']);
+
+        if(!empty($post['city']) && $post['city'] !='0')
+            $this->db->where('property.city_id', $post['city']);
+        if(!empty($post['furnished_type']))
+        {
+           $this->db->where_in('property.furnished_type',$post['furnished_type']);
+        }
+        if(!empty($post['selectItemcity_area']))
+        {
+           $this->db->where_in('property.city_area',$post['selectItemcity_area']);
+        }
+        if(!empty($post['property_category']))
+            $this->db->where_in('property.property_type', $post['property_category']);
+
+        if(!empty($post['bedroom']))
+            $this->db->where('property.bedroom', $post['bedroom']);
+
+        if(!empty($post['bathroom']))
+            $this->db->where('property.bathroom', $post['bathroom']);
+        
+
+        if(!empty($post['reference_no']))
+            $this->db->where('property.reference_no', $post['reference_no']);
+
+        if(!empty($post['property_type']) && $post['property_type']=="1"){
+            if(!empty($post['min_price']))
+                $this->db->where('property.sale_price >=', $post['min_price']);
+            if(!empty($post['max_price']))
+                $this->db->where('property.sale_price <=', $post['max_price']);
+
+        }elseif (!empty($post['property_type']) && $post['property_type']=="2") {
+            if(!empty($post['min_price']))
+                $this->db->where('property.rent_price >=', $post['min_price']);
+            if(!empty($post['max_price']))
+                $this->db->where('property.rent_price <=', $post['max_price']);
+        
+        }elseif (!empty($post['property_type'])&& $post['property_type']=="3"){
+            if(!empty($post['min_price']))
+            {
+                //$this->db->where('( property.sale_price >= '.$post['min_price'].' OR property.rent_price >= '.$post['min_price'].' )');
+                $this->db->where('property.sale_price >=', $post['min_price']);
+                $this->db->or_where('property.rent_price >=', $post['min_price']);
+            }
+            if(!empty($post['max_price']))
+            {
+               //$this->db->where('( property.sale_price >= '.$post['max_price'].' OR property.rent_price >= '.$post['max_price'].' )');
+                $this->db->where('property.sale_price <=', $post['max_price']);
+                $this->db->or_where('property.rent_price <=', $post['max_price']);
+            }
+                
+        }
+        $query = $this->db->get();
+        return $query->result();
     }
     
 }

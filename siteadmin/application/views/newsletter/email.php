@@ -3,14 +3,15 @@ $this->load->view('header');
 $this->load->view('leftmenu');
 ?>
  <div class="container-fluid">
-    <?php if ($this->session->flashdata('success')) { ?>
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-    <div class="row">
-      <div class="main">
+    
             <h1 class="page-header">E-mail Newsletter</h1>
         <div class="row">
           <div class="col-sm-12">
@@ -40,7 +41,7 @@ $this->load->view('leftmenu');
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">Rent Range :</label>
-                    <div class="col-sm-6 rent both">
+                    <div class="col-sm-4 rent both">
                          <select class="sub-field form-control ajax_change " name="rent_range">
                             <option value="">Select</option>
                             <?php foreach($rent_group as $rng){ ?>
@@ -51,7 +52,7 @@ $this->load->view('leftmenu');
                    </div> 
                     <div class="form-group">    
                          <label class="col-md-3 col-sm-4  control-label">Sale Range :</label>
-                        <div class="col-sm-6 sale both"> 
+                        <div class="col-sm-4 sale both"> 
                             <select class="sub-field form-control ajax_change" name="sale_range">
                             <option value="">Select</option>
                             <?php foreach($sale_group as $rng){ ?>
@@ -71,16 +72,16 @@ $this->load->view('leftmenu');
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">Receivers(S)</label>
-                    <div class="col-sm-6">
-                        <select name="receivers[]" multiple="multiple" id="receivers">
+                    <div class="col-sm-4">
+                        <select name="receivers[]" class="form-control" multiple="multiple" id="receivers">
                         </select>
                         <div class="error"></div>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">E-mail Content :</label>
-                    <div class="col-sm-6 rent both">
-                          <textarea name="content" id="email_content" rows="5" cols="50"></textarea>
+                    <div class="col-sm-4 rent both">
+                          <textarea name="content" class="form-control" id="email_content" rows="5" cols="50"></textarea>
                           <div class="error">Note: Use <b><i>{first_name}</i></b>, <b><i>{last_name}</i></b> as name placeholder</div>
                     </div>
                    </div>
@@ -88,13 +89,13 @@ $this->load->view('leftmenu');
                     
                     <div class="form-group">    
                          <label class="col-md-3 col-sm-4  control-label">Campaign Name :</label>
-                        <div class="col-sm-6 sale both"> 
+                        <div class="col-sm-4 sale both"> 
                            <input id="newsletter_campaign_name" type="text" value="" class="form-control" name="campaign_name" />
                         </div>
                     </div>
                     <div class="form-group">    
                          <label class="col-md-3 col-sm-4  control-label">Schedule</label>
-                        <div class="col-sm-6 sale both"> 
+                        <div class="col-sm-4 sale both"> 
                             <input type="radio" checked="checked" class="" name="schedule" value="now"> Send Now
                             <input type="radio" class="" name="schedule" value="date"> Set Date
                         <div class="error"></div>
@@ -102,7 +103,7 @@ $this->load->view('leftmenu');
                     </div>
                     <div class="form-group schedule date">    
                          <label class="col-md-3 col-sm-4  control-label">Set Date :</label>
-                        <div class="col-sm-6 sale both"> 
+                        <div class="col-sm-4 sale both"> 
                           <input type="text" value="" name="schedule_date" class="form-control txt_date" />
                         </div>
                     </div>
@@ -134,7 +135,7 @@ $this->load->view('leftmenu');
 <?php $this->load->view('footer'); ?>
 <script type="text/javascript">
     $(document).ready(function () {
-        //$( ".txt_date" ).datepicker();
+        $( ".txt_date" ).datepicker();
         //$("#email_content").cleditor();
         $('input[name=schedule]').on('click',function(){
             $(".form-group.schedule").hide();

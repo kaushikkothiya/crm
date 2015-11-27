@@ -23,16 +23,54 @@
 <!--<script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.cleditor.js"></script>-->
 <script type="text/javascript" src="<?php echo base_url(); ?>js/upload/load-image.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/upload/image-gallery.min.js"></script>
-
+<script type="text/javascript" src="<?php echo base_url(); ?>new/js/moment.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.knob.js"></script>
+
 <script type="text/javascript" charset="utf-8">
+    function strip(html) {
+        var tmp = document.createElement("DIV");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+     }
         $(document).ready(function() {
+            
+            $.fn.dataTable.moment = function ( format, locale ) {
+                var types = $.fn.dataTable.ext.type;
+
+                // Add type detection
+                types.detect.unshift( function ( d ) {
+                    return moment( strip(d), format, locale, true ).isValid() ?
+                        'moment-'+format :
+                        null;
+                } );
+
+                // Add sorting method - use an integer for the sorting
+                types.order[ 'moment-'+format+'-pre' ] = function ( d ) {
+                    return moment( d, format, locale, true ).unix();
+                };
+            };
+            
+            $.fn.dataTable.moment('D-MMM-YYYY');
+            
             $('#example').DataTable({
-              "lengthMenu": [ 30, 60, 90, 150, 300 ]
+              "lengthMenu": [ 15, 30, 45, 60, 75 ],
+                "order": [[ 0, "desc" ]]
              });
+             
+             $('#inquiry_list').DataTable({
+              "lengthMenu": [ 15, 30, 45, 60, 75 ],
+                "order": [[ 7, "desc" ]]
+             });
+             $('#inquiry_list')
+            .removeClass( 'display' )
+            .addClass('table table-striped table-bordered responsive-table');
+            
+            
             $('#example')
             .removeClass( 'display' )
             .addClass('table table-striped table-bordered responsive-table');
+            
+            
             
         } );
 

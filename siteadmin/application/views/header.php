@@ -7,7 +7,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 <link rel="icon" href="<?php echo base_url(); ?>images/favicon.ico">
-<title><?php echo $this->config->item('TITLE'); ?>- Real Estate</title>
+<title><?php echo $this->config->item('TITLE'); ?>Monopolion - Real Estate</title>
 <!-- Bootstrap core CSS -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/datatable/jquery.dataTables.min.css">
 
@@ -20,7 +20,7 @@
 <link href="<?php echo base_url(); ?>css/gallery/modal.css" rel="stylesheet">
 <link href="<?php echo base_url(); ?>css/toaster.css" rel="stylesheet">
 <link href="<?php echo base_url(); ?>css/jquery.cleditor.css" rel="stylesheet" type="text/css"/>
-<link href="<?php echo base_url(); ?>css/loader/demo.css" rel="stylesheet">
+<!-- <link href="<?php echo base_url(); ?>css/loader/demo.css" rel="stylesheet"> -->
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>css/datetimepicker/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>css/datetimepicker/jquery-ui-timepicker-addon.css">
@@ -30,4 +30,5 @@
 </head>
 <body>
 <div class="app">
+	<div class="modal"></div>
     

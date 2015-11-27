@@ -1,19 +1,19 @@
 <?php
 
 $this->load->view('header'); ?>
-<link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet">
+<!-- <link href="<?php echo base_url(); ?>css/popupbox.css" rel="stylesheet"> -->
 <?php
 $this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-     <?php if ($this->session->flashdata('success')) { ?>
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
     <?php } ?>
-    <div class="row">
-      <div class="main">
         <h1 class="page-header">New Appointment
          <!--  <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button> -->
         </h1>
@@ -70,9 +70,12 @@ $this->load->view('leftmenu');
                                         </td>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="#popup2" class="btn btn-success btn-xs" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)">View Inquiry</a> 
+                                                <a data-toggle="modal" data-target="#myModal" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
+                                                <!-- <a href="#popup2" class="btn btn-info btn-xs" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)">View Inquiry</a>  -->
                                                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-                                                &nbsp;<a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                               <a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
+                                                
+                                               <!--  &nbsp;<a href="delete_inquiry/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a> -->
                                                 <?php } ?>
                                             </div>
                                         </td>
@@ -94,7 +97,22 @@ $this->load->view('leftmenu');
             </div>
         </div>
     </div>
-<div id="popup2" class="overlay">
+    <!-- Modal -->
+<div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">View Inquiry Detail</h4>
+      </div>
+      <div class="modal-body">
+        <div class="" id="inquiry_datail_popup">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div id="popup2" class="overlay">
     <div class="popup">
         <h2>View Inquiry Detail</h2>
         <a class="close" href="#">×</a>
@@ -106,8 +124,31 @@ $this->load->view('leftmenu');
             </div>
         </div>
     </div>
+</div> -->
+<!-- Modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Inquiry Reference No. :<b class="popup-ref">#Reference No</b></h4>
+      </div>
+            <div class="modal-body">
+                <div class="" id="inquiry_status_change_popup">
+                    <input type="hidden" name="inquiry[id]" id="status_change_inquiry_id" value="" />
+                    <input type="hidden" name="inquiry[status]" id="status_change_inquiry_status" value="" />
+                    <label for="status_change_content" id="lbl_status_change_content" class="" style="font-weight:bold">Content :</label>
+                    <textarea id="status_change_comments" name="inquiry[content]" class="span12" rows="10" cols="50" ></textarea>
+                    <div class="modal-footer" id="hd_sub">
+                       <button class="btn btn-primary summit_inquiry_status_with_comment">Change Status</button>
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div id="popup3" class="overlay">
+<!-- <div id="popup3" class="overlay">
     <div class="popup">
         <h2>Inquiry Reference No. : <b class="popup-ref">#Reference No</b></h2>
         <a class="close" href="#">×</a>
@@ -123,7 +164,7 @@ $this->load->view('leftmenu');
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <?php
 $this->load->view('footer');
 ?>
@@ -160,8 +201,9 @@ $(document).ready(function () {
                                   
     $(document).on('click','.summit_inquiry_status_with_comment',function(){
         if($("#status_change_comments").val()!=""){
-            var href = window.location.href.split("#");
-            window.location = href[0]+"#";
+            // var href = window.location.href.split("#");
+            // window.location = href[0]+"#";
+            $('#myModal1').modal('hide')
             changeAgentStatus();
         }else{
             alert("We need your comments if you want to cancel this Inquiry.");
@@ -177,7 +219,8 @@ $(document).ready(function () {
             $(".popup-ref").html($(this).data('ref'));
             $("#lbl_status_change_content").html('Comments :');
             var href = window.location.href.split("#");
-            window.location = href[0] + "#popup3";
+            //window.location = href[0] + "#popup3";
+            $('#myModal1').modal('show')
         }
     });
 

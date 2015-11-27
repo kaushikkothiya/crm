@@ -13,7 +13,7 @@ $this->load->view('leftmenu');
                 </div>
         <?php } ?>
         <h1 class="page-header">Client List
-          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_customer';">Create Client</button>
+          <button class="btn btn-sm btn-info pull-right" type="button" onClick="window.location.href = 'add_customer';">Create Client</button>
         </h1>
         <div class="row">   
           <div class="col-sm-12">
@@ -29,7 +29,7 @@ $this->load->view('leftmenu');
                                         <th>Reference From</th>
                                         <th>Property Status</th>
                                         <th>Status</th>
-                                        <th>Action</th>
+                                        <th style="width: 187px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -64,10 +64,9 @@ $this->load->view('leftmenu');
                                         ?>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="add_customer/<?php echo $user[$i]->id; ?>" class="btn btn-success btn-xs">Edit</a> 
-                                                &nbsp;<a href="<?php echo base_url(); ?>inquiry/inquiry_manage/?view_client=<?php echo $user[$i]->id; ?>" class="btn btn-danger btn-xs">View Inquiry</a>
-                                                &nbsp;<a href="delete_customer/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
-
+                                                <a href="<?php echo base_url(); ?>inquiry/inquiry_manage/?view_client=<?php echo $user[$i]->id; ?>" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
+                                                <a href="add_customer/<?php echo $user[$i]->id; ?>" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a> 
+                                                <a href="delete_customer/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
                                             </div>
                                         </td>
                                         <?php

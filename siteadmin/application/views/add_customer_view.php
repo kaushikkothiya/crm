@@ -32,14 +32,15 @@ if (isset($user[0])) {
 }
 ?>
  <div class="container-fluid">
- 	<?php if ($this->session->flashdata('success')) { ?>
+ 	<div class="row">
+      <div class="main">
+      	<?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-    <div class="row">
-      <div class="main">
+    
       	<?php if ($this->uri->segment(3)) { ?>
     		<h1 class="page-header">Edit Client</h1>
 		<?php } else { ?>
@@ -191,13 +192,13 @@ if (isset($user[0])) {
 							    $checked3 = '';
 							}
 						?>
-						<label class="radio">
+						<label class="radio-inline">
 							<?php echo form_radio($aquired_id, 'sale',$checked1 , 'class="radio_buttons required"'); ?>
 							Sale</label>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($aquired_id, 'rent', $checked2, 'class="radio_buttons required"'); ?>
 							Rent</label>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($aquired_id, 'both', $checked3, 'class="radio_buttons required"'); ?>
 							Both</label>
 							
@@ -220,10 +221,10 @@ if (isset($user[0])) {
 							    $checked2 = 'checked="checked"';
 							}
 							?>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($status, 'Active', $checked2, 'class="required"'); ?>
 							Active</label> 
-						<label class="radio">
+						<label class="radio-inline">
 							<?php echo form_radio($status, 'Inactive', $checked1, 'class="required"'); ?>
 							Inactive
 						</label>

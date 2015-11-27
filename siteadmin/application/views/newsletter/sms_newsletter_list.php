@@ -4,7 +4,9 @@ $this->load->view('header');
 $this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-     <?php if ($this->session->flashdata('success')) { ?>
+     <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
         <div class="alert alert-success" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <?php echo $this->session->flashdata('success'); ?>
@@ -15,10 +17,9 @@ $this->load->view('leftmenu');
             <?php echo $this->session->flashdata('error'); ?>
         </div>
     <?php } ?>
-    <div class="row">
-      <div class="main">
+    
         <h1 class="page-header">SMS Newsletter
-          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'smsnewsletter';">Add New</button>
+          <button class="btn btn-sm btn-info pull-right" type="button" onClick="window.location.href = 'smsnewsletter';">Add New</button>
         </h1>
         <div class="row">   
           <div class="col-sm-12">

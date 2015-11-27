@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <link rel="icon" href="<?php echo base_url(); ?>images/favicon.ico">
-        <title><?php echo $this->config->item('TITLE'); ?>- Real Estate</title>
+        <title><?php echo $this->config->item('TITLE'); ?>Monopolion - Real Estate</title>
         <!-- Bootstrap core CSS -->
         <link href="<?php echo base_url(); ?>new/css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom styles for this template -->

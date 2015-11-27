@@ -13,7 +13,7 @@ $this->load->view('leftmenu');
                 </div>
     <?php } ?>
         <h1 class="page-header">Agent List
-          <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button>
+          <button class="btn btn-sm btn-info pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button>
         </h1>
         <div class="row">   
           <div class="col-sm-12">
@@ -41,8 +41,8 @@ $this->load->view('leftmenu');
                                         ?>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="add_agent/<?php echo $user[$i]->id; ?>" class="btn btn-info btn-xs">Edit</a> 
-                                                &nbsp;<a href="delete_agent/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                                <a href="add_agent/<?php echo $user[$i]->id; ?>" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a> 
+                                                <a href="delete_agent/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
                                             </div>
                                         </td>
                                         <?php

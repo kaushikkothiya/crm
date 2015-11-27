@@ -1,11 +1,11 @@
 .modal {
         display:    none;
         position:   fixed;
-        z-index:    9999;
+        z-index:    9999!important;
         height:     10%;
         width:      5%;
-        left: 70%;
-        top: 80%;
+        left: 50%!important;
+        top: 50%!important;
         border : none;
 
         background: url('../../img/loading.gif') 

@@ -1,6 +1,6 @@
+<link href="<?php echo base_url(); ?>css/style_photos.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>css/loader/demo.css" rel="stylesheet">
 <?php
-//include_once("db.php");
-//$db = new DB();
 $this->load->view('header');
 $this->load->view('leftmenu');
 if (isset($user[0])) {
@@ -126,7 +126,7 @@ if (isset($user[0])) {
 	$map_address=$this->input->post('search_address');
 }
 ?>
-<link href="<?php echo base_url(); ?>css/style_photos.css" rel="stylesheet" type="text/css" />
+
 <!--<script type="text/javascript" src="<?php //echo base_url(); ?>js/jquery-ui.js"></script>
 <script type="text/javascript" src="<?php //echo base_url(); ?>js/jquery-1.8.3.min.js"></script>-->
 <style>
@@ -139,14 +139,14 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 <script src="<?php echo base_url(); ?>js/multifileuplod/jquery.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/multifileuplod/uploadify.css">-->
 <div class="container-fluid">
-	<?php if ($this->session->flashdata('success')) { ?>
+	<div class="row">
+      <div class="main">
+      	<?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-    <div class="row">
-      <div class="main">
       	<?php if ($this->uri->segment(3)) { ?>
       	<h1 class="page-header">Edit Property </h1>
       	<?php } else { ?>
@@ -161,6 +161,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                 <?php echo form_open_multipart('verification/create_property', array('class' => 'form-horizontal')); ?>
                 <input type="hidden" id="property_id" name="property_id" value="<?php if(isset($id) && !empty($id)){ echo $id; } ?>">
+               	<input type="hidden" id="property_imageid" name="property_imageid" value="">
                 <?php echo form_hidden('id', $id); ?>
                 <?php 
 				if(!empty($id))
@@ -317,12 +318,12 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                           
                         </div>
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label class="col-md-4 col-sm-4 control-label">Address :</label>
                         <div class="col-md-8 col-sm-8">
                         	<textarea id="address" class="form-control" rows="3" name="address" value="<?php echo $address;?>"><?php echo $address; ?></textarea>
                         </div>
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <label class="col-md-4 col-sm-4 control-label">Agent :</label>
                         <div class="col-md-8 col-sm-8">
@@ -555,6 +556,12 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 								$device = 'id="city_area_id" class="form-control"';
 								echo form_dropdown('city_area_id',$city_area_rec, $selected, $device);
 							?>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-md-4 col-sm-4 control-label">Address:</label>
+                          <div class="col-md-8 col-sm-8">
+                              <textarea id="address" class="form-control" rows="3" name="address" value="<?php echo $address;?>"><?php echo $address; ?></textarea>
                           </div>
                         </div>
 
@@ -1002,18 +1009,18 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                         
 
-                        <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">image :</label>
+                        <!-- <div class="form-group">
+                          <label class="col-md-4 col-sm-4 control-label">Primary Image :</label>
                           <div class="col-md-8 col-sm-8">
                           	<input type="file" name="image" id="image" class="file"></br></br>
                               <p class="help-block"><small class="text-danger">The recommended size should be 350px X 350px</small></p>
                               
                           </div>
-                        </div>
+                        </div> -->
 
                         <!--set code remaining start-->
                         <?php 
-							if(!empty($image)){
+							/*if(!empty($image)){
 							if (isset($user[0])) {
 							    echo form_hidden('old_img', $image);
 							?>
@@ -1025,8 +1032,13 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 							</div>
 							</div>
 							</div>
-							<div id="gallery" data-toggle="" data-target=""><a><img src="<?php echo base_url().'upload/property/100x100/'.$image; ?>" width="100" height="100"></a>
-							</div>
+							 <div class="form-group">
+	                          <label class="col-md-4 col-sm-4 control-label"></label>
+	                          <div class="col-md-8 col-sm-8">
+	                          	<div id="gallery" data-toggle="" data-target=""><a><img src="<?php echo base_url().'upload/property/100x100/'.$image; ?>" width="100" height="100"></a>
+								</div>
+							  </div>
+	                        </div>
 							<?php
 								}
 							}else{
@@ -1038,31 +1050,30 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 	                          	<div id="gallery" data-toggle="" data-target=""><a><img src="<?php echo base_url().'upload/property/100x100/noimage.jpg'.$image; ?>" width="100" height="100"></a>
 							</div>  
 	                          </div>
-	                        </div>
+	                        </div>*/
 							
-							<?php } ?>
+							  //} ?>
 							<!--set code remaining end-->
 
                     </div>
 
                   </div><!-- /row -->
+                
                 <!--edit by kaushik -->
                   <hr>
                   <?php 
                   if(isset($id) && !empty($id)){ ?>
-                  	
-                   
                   <div id="drop-area">
 							<h3 class="drop-text">Drag and Drop Images Here</h3>
-							<input type="file" name="uploadButton" id="uploadButton" />
+							<input type="file" multiple name="uploadButton" id="uploadButton" />
 				  </div>
 						</br></br>
 						<label style="color:red;">The recommended size should be 350px X 350px</label>
 					<?php 
 						if(isset($prop_img)){
 					?>
-					<div id="save_reorder_top"  style="margin-top:50px;">
-						<a href="javascript:void(0);" class="btn outlined mleft_no reorder_link" id="save_reorder">reorder photos</a>
+					<div id="save_reorder_top"  style="margin-top:10px;">
+						<!--<a href="javascript:void(0);" class="btn outlined mleft_no reorder_link" id="save_reorder">reorder photos</a>-->
 					    <!--<div id="reorder-helper" class="light_box" style="display:none;">
 				    	</div>-->
 					    <div class="gallery">
@@ -1087,15 +1098,29 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                   <?php 
                    }else{ ?>
-                   		<div id="drop-area_add">
-							<h3 class="drop-text">Drag and Drop Images Here</h3>
-							<input type="file" name="uploadButton" id="uploadButton" />
-				  		</div>
-						</br></br>
-						<label style="color:red;">The recommended size should be 350px X 350px</label>
+                   		<div id="drop-area_add">		
+                   			<div id="drop-area_add">
+								<h3 class="drop-text">Drag and Drop Images Here</h3>		
+								
+								<input type="file" multiple name="uploadButton" id="uploadButton" />	
+								
+							</div>
+						</div>
+						</br></br>		</br></br>
+						<label style="color:red;">The recommended size should be 350px X 350px</label>		<label style="color:red;">The recommended size should be 350px X 350px</label>
+			
+						<div id="save_reorder_top" style="margin-top:50px;">		
+						<!--<a href="javascript:void(0);" class="btn outlined mleft_no reorder_link" id="save_reorder">reorder photos</a>-->
+						<!--<div id="reorder-helper" class="light_box" style="display:none;">		
+						</div>-->		
+						<div class="gallery">		
+						<ul id="gallery_area" class="reorder_ul reorder-photos-list">		
+								
+						</ul>		
+						</div>		
+						</div>
                    <?php }
-                  ?>
-                  
+                  ?>                  
 					<!--edit by kaushik-->
                   <hr>
 
@@ -1251,14 +1276,16 @@ function hide_agresive_div(){
 if($("#type").val() =='1'){
 $("#check_box_agreement").show();
 $("#rent_div").hide();
+$('#rent_price').val('');
 $("#sale_div").show();
 }else if($("#type").val() =='2'){
 	$("#check_box_agreement").hide();
 	$("#sale_div").hide();
+	$('#sale_price').val('');
 	$("#rent_div").show();
 }else{
 	$("#check_box_agreement").show();
-	$("#sale_div").show();
+	$("#sale_div").show('');
 	$("#rent_div").show();
 }
 }
@@ -1471,6 +1498,10 @@ function spance_remove(e){
 				}
 				if(city_area=="Select city area"){
 					var city_area="";
+				}else if(city_area.trim()=='City Center'){
+					var city_area="Limassol Kalogries";
+				}else if(city_area.trim()=='Agios Ioannis'){
+					var city_area="Agios Ioannis Police Station, Giannoulli Chalepa, Limassol, Cyprus";
 				}
 				var address = city_area+' '+city+' '+country;	
 				
@@ -1507,13 +1538,12 @@ function spance_remove(e){
 
 </script>
 
-
 <script type="text/javascript">
 $(document).ready(function(){
 	//$('.reorder_link').on('click',function(){
 
 		$("ul.reorder-photos-list").sortable({ tolerance: 'pointer' });
-		$('.reorder_link').html('save reordering');
+		//$('.reorder_link').html('save reordering');
 		$('.reorder_link').attr("id","save_reorder");
 		$('#reorder-helper').slideDown('slow');
 		$('.image_link').attr("href","javascript:void(0);");
@@ -1521,10 +1551,9 @@ $(document).ready(function(){
 		$("#save_reorder").click(function( e ){
 			if( !$("#save_reorder i").length )
 			{
-				$(this).html('').prepend('<img src="images/refresh-animated.gif"/>');
-				$("ul.reorder-photos-list").sortable('destroy');
-				$("#reorder-helper").html( "Reordering Photos - This could take a moment. Please don't navigate away from this page." ).removeClass('light_box').addClass('notice notice_error');
-	
+				//$(this).html('').prepend('<img src="images/refresh-animated.gif"/>');
+				//$("ul.reorder-photos-list").sortable('destroy');
+				//$("#reorder-helper").html( "Reordering Photos - This could take a moment. Please don't navigate away from this page." ).removeClass('light_box').addClass('notice notice_error');
 				var h = [];
 				//var myarr = $(this).attr('id').split("_");
 				//console.log(myarr);
@@ -1532,20 +1561,40 @@ $(document).ready(function(){
 					 var myarr = $(this).attr('id').split("_");
 					 h.push(myarr[2]);  
 				});
-				$.ajax({
-					type: "POST",
-					//url: baseurl+"order_update.php",
-					url: baseurl+"home/order_update",
-					data: {ids: " " + h + "", "prop_id": $('#property_id').val()},
-					success: function(html) 
-					{
-						//window.location.reload();
-						/*$("#reorder-helper").html( "Reorder Completed - Image reorder have been successfully completed. Please reload the page for testing the reorder." ).removeClass('light_box').addClass('notice notice_success');
-						$('.reorder_link').html('reorder photos');
-						$('.reorder_link').attr("id","");*/
-					}
-					
-				});	
+				
+				if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+					$.ajax({
+						type: "POST",
+						//url: baseurl+"order_update.php",
+						url: baseurl+"home/order_update",
+						data: {ids: " " + h + "", "prop_id": $('#property_id').val()},
+						success: function(html) 
+						{
+							//window.location.reload();
+							/*$("#reorder-helper").html( "Reorder Completed - Image reorder have been successfully completed. Please reload the page for testing the reorder." ).removeClass('light_box').addClass('notice notice_success');
+							$('.reorder_link').html('reorder photos');
+							$('.reorder_link').attr("id","");*/
+						}
+					});	
+				}else{
+					$.ajax({
+						type: "POST",
+						//url: baseurl+"order_update.php",
+						url: baseurl+"home/propadd_order_update",
+						data: {ids: " " + h + ""},
+						success: function(html) 
+						{
+
+							//window.location.reload();
+							/*$("#reorder-helper").html( "Reorder Completed - Image reorder have been successfully completed. Please reload the page for testing the reorder." ).removeClass('light_box').addClass('notice notice_success');
+							$('.reorder_link').html('reorder photos');
+							$('.reorder_link').attr("id","");*/
+						}
+					});
+				}
+
+
+				
 				return false;
 			}	
 			e.preventDefault();		
@@ -1568,10 +1617,6 @@ $(document).ready(function(){
 	var image = e.originalEvent.dataTransfer.files;
 	createFormData(image);
 	});
-
-
-
-
 
 
 $("#drop-area_add").on('dragenter', function (e){
@@ -1622,14 +1667,28 @@ $("#drop-area_add").on('dragenter', function (e){
 	//});
 
 document.querySelector('#uploadButton').addEventListener('change', function(e) {
-  var file = this.files[0];
-  var fd = new FormData();
-  fd.append("afile", file);
+
+
+	if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+		var url = baseurl+'home/insert_image';
+	}else{
+		var url = baseurl+'home/insertproperty_image';
+	}
+
+	var fd = new FormData();
+	for (i = 0; i < this.files.length; i++) {
+		fd.append('userImage['+i+']', this.files[i]);  
+		//fileaddd[i] = this.files[i];
+	}
+
+  //var file = this.files[0];
+  //var fd = new FormData();
+  //fd.append("afile", file);
   fd.append("prop_id", $('#property_id').val());
   // These extra params aren't necessary but show that you can include other data.
   fd.append("action", "single_fileupload");
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', baseurl+'home/insert_image', true);
+  xhr.open('POST', url, true);
   
   xhr.upload.onprogress = function(e) {
     if (e.lengthComputable) {
@@ -1645,17 +1704,26 @@ document.querySelector('#uploadButton').addEventListener('change', function(e) {
       //image.src = resp.dataUrl;
       //document.body.appendChild(image);
      // var obj = jQuery.parseJSON(data);
+     var propimg_str = $('#property_imageid').val();
 		for (i = 0; i < obj.length; i++) {
 			if (obj[i].id == "-1") {
 				alert("Please You Only Upload Image File.");
 			}else{
-				$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+obj[i].img_name+"'></li>");	
+				$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+baseurl+"img_prop/"+obj[i].img_name+"'></li>");
+				
+				if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+					
+				}else{
+					propimg_str = obj[i].img_name+","+propimg_str;
+				}			
 			}
 		}
+		$('#property_imageid').val(propimg_str);
     };
   };
   xhr.send(fd);
 }, false);
+
 
 });
 
@@ -1672,31 +1740,37 @@ function createFormData(image) {
 
 	formImage.append('action', "multiple_fileupload");
 
-	/*if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+	if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
 		uploadFormData(formImage);
 	}else{
 		uploadFormData_insform(formImage);
-	}*/
-	uploadFormData(formImage);
+	}
+	//uploadFormData(formImage);
 }
 function uploadFormData_insform(formData) {
 	$.ajax({
 		//url: baseurl+"update.php",
-		url: baseurl+"home/update_propimg",
+		url: baseurl+"home/uploadFormData_insform",
 		type: "POST",
 		data: formData,
 		contentType:false,
 		cache: false,
 		processData: false,
 		success: function(data){
+			//var propimg_str = "";
+			var propimg_str = $('#property_imageid').val();
 			var obj = jQuery.parseJSON(data);
 			for (i = 0; i < obj.length; i++) {
 				if (obj[i].id == "-1") {
 					alert("Please You Only Upload Image File.");
 				}else{
-	    			$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+obj[i].img_name+"'></li>");
+	    			$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+baseurl+"img_prop/"+obj[i].img_name+"'></li>");
+					
+	    			propimg_str = obj[i].img_name+","+propimg_str;
 				}
 			}
+
+			$('#property_imageid').val(propimg_str);
 			//alert(obj.id);
 			//console.log(data);
 			//return false;
@@ -1721,7 +1795,7 @@ function uploadFormData(formData) {
 				if (obj[i].id == "-1") {
 					alert("Please You Only Upload Image File.");
 				}else{
-	    			$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+obj[i].img_name+"'></li>");
+	    			$('#gallery_area').append("<li class='ui-sortable-handle' id='image_li_"+obj[i].id+"'><div onclick=delete_propimage('"+obj[i].id+"','"+obj[i].img_name+"') style='color:red'><b>X</b></div><img alt='' src='"+baseurl+"img_prop/"+obj[i].img_name+"'></li>");
 				}
 			}
 			//alert(obj.id);
@@ -1739,15 +1813,41 @@ function delete_propimage(id,imagename){
             imagename: imagename,
             imageid:id
         };
+        
+        if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+			var path = baseurl+"home/delete_propimg";
+		}else{
+			var path = baseurl+"home/delete_propaddimg";
+		}
+
         $.ajax({
             type: "POST",
             //url: baseurl+"update.php",
-            url: baseurl+"home/delete_propimg",
+            url: path,
             data:data,
             success: function(res) {
             	$("#image_li_"+id).hide();
+            	if($('#property_id').val() != 'NULL' && $('#property_id').val().length != 0){
+					
+				}else{
+					var propimg_str = $('#property_imageid').val();
+
+    				arrimg = imagename.split('/');
+    				
+    				var foo = arrimg[arrimg.length - 1];
+
+    				var propimg_str = $('#property_imageid').val();
+
+    				img_namearr = propimg_str.split(',');
+    									
+    				var index = img_namearr.indexOf(foo);
+    				img_namearr.splice(index, 1);
+
+    				var myVar2 = img_namearr.join(',');
+
+    				$('#property_imageid').val(myVar2);
+				}
             }
         });
 }
 </script>
-

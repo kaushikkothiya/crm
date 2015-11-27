@@ -2,15 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+       <!--  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-        <title>Monopolion</title>
+        <title>Monopolion</title> -->
     </head>
     <body bgcolor="#f0f3f4" style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif;font-size:12px; color:#000;">
         <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f0f3f4">
             <tr>
                 <td>
-                    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="max-width:600px; margin-top:20px; display:block;">
+                    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin-top:20px; display:block;">
                         <!--Email header start-->
                         <tbody>
                         <tr>
@@ -32,7 +32,7 @@
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px; width:600px;" >Dear  <b><?php echo $fname;?>&nbsp;<?php echo $lname;?></b>,</p>
+                                            <p style="margin: 0px;" >Dear  <b><?php echo $fname;?>&nbsp;<?php echo $lname;?></b>,</p>
                                             <p>Welcome and Thank you for choosing our company to find your ideal property.</p>
                                             <p>Your Customer ID: <?php echo $id;?>.</p> 
                                             Any further information please call: 8000 7000

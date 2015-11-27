@@ -6,14 +6,14 @@ $this->load->view('header'); ?>
 $this->load->view('leftmenu');
 ?>
 <div class="container-fluid">
-     <?php if ($this->session->flashdata('success')) { ?>
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
     <?php } ?>
-    <div class="row">
-      <div class="main">
         <h1 class="page-header">Appointment (Reschedule)
           <!-- <button class="btn btn-sm btn-success pull-right" type="button" onClick="window.location.href = 'add_agent';">Create Agent</button> -->
         </h1>
@@ -67,9 +67,11 @@ $this->load->view('leftmenu');
                                         </td>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="#popup2" class="btn btn-success btn-xs" onclick="setInquiryId(<?php echo $reschedule_inquiries[$i]->id; ?>)">View Inquiry</a> 
+                                                <a href="#popup2" onclick="setInquiryId(<?php echo $reschedule_inquiries[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
+                                                <!-- <a href="#popup2" class="btn btn-info btn-xs" onclick="setInquiryId(<?php echo $reschedule_inquiries[$i]->id; ?>)">View Inquiry</a>  -->
                                                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-                                                &nbsp;<a href="delete_inquiry/<?php echo $reschedule_inquiries[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a>
+                                                <a href="delete_inquiry/<?php echo $reschedule_inquiries[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
+                                                <!-- &nbsp;<a href="delete_inquiry/<?php echo $reschedule_inquiries[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a> -->
                                                 <?php } ?>
                                             </div>
                                         </td>

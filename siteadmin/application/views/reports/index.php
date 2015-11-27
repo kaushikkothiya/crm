@@ -2,6 +2,7 @@
 <?php $this->load->view('header'); ?>
 <?php $this->load->view('leftmenu'); ?>
 <?php $Action = array('1' => 'Register', '2' => 'Text-Send', '3' => 'Follow-Up', '4' => 'Appointment', '5' => 'Complete'); ?>
+<?php $Agent_Action = array('0' => 'Pending', '1' => 'Confirmed', '2' => 'Rechedule', '3' => 'Cancel'); ?>
 <div class="container-fluid">
     <div class="row">
         <div class="main">
@@ -113,20 +114,20 @@
                                         <div class="col-sm-<?php echo ($user['type'] == 3) ? '12' : '6'; ?>">
                                             <ul class="list-group">
                                                 <li class="list-group-item disabled">Inquiries</li>
-                                                <li class="list-group-item"><span class="badge"><?php echo count($reporting['inquiries']); ?></span>Total</li>
-                                                <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['appointments_assigned']; ?></span>Appointments Assigned</li>
-                                                <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['inquiry_completed']; ?></span>Inquiries Completed</li>
+                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Total Inquiries posted by you"><?php echo count($reporting['inquiries']); ?></span>Total</li>
+                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries assigned to agent by you"><?php echo $reporting['summery']['appointments_assigned']; ?></span>Appointments Assigned</li>
+                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries completed and posted by you"><?php echo $reporting['summery']['inquiry_completed']; ?></span>Inquiries Completed</li>
                                             </ul>
                                         </div>
                                         <?php if ($user['type'] == 1 || $user['type'] == 2) { ?>
                                             <div class="col-sm-6">
                                                 <ul class="list-group">
                                                     <li class="list-group-item disabled">Appointments</li>
-                                                    <li class="list-group-item"><span class="badge"><?php echo count($reporting['appointments']); ?></span>Total</li>
-                                                    <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['appointments_completed']; ?></span>Appointments Completed</li>
-                                                    <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['appointments_canceled']; ?></span>Appointments Canceled</li>
-                                                    <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['appointments_reschedule']; ?></span>Appointments Reschedule</li>
-                                                    <li class="list-group-item"><span class="badge"><?php echo $reporting['summery']['appointments_confirmed']; ?></span>Appointments Confirmed</li>
+                                                    <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Total Appointments assigned to you"><?php echo count($reporting['appointments']); ?></span>Total</li>
+                                                    <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Appointments Completed and assigned to you"><?php echo $reporting['summery']['appointments_completed']; ?></span>Appointments Completed</li>
+                                                    <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Appointments Canceled by you"><?php echo $reporting['summery']['appointments_canceled']; ?></span>Appointments Cancelled</li>
+                                                    <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Appointments Reschedule by you"><?php echo $reporting['summery']['appointments_reschedule']; ?></span>Appointments Rescheduled</li>
+                                                    <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Appointments Confirmed by you"><?php echo $reporting['summery']['appointments_confirmed']; ?></span>Appointments Confirmed</li>
                                                 </ul>  
                                             </div>
                                         <?php } ?>
@@ -203,7 +204,11 @@
                                                                         <td data-th="Agent Name"><div><?php echo ucfirst($inquiry->a_fname . ' ' . $inquiry->a_lname); ?></div></td>
                                                                         <td data-th="Created by"><div><?php echo ucfirst($inquiry->u_fname . ' ' . $inquiry->u_lname); ?></div></td>
                                                                         <td data-th="Date Created"><div><?php echo date("d-M-Y", strtotime($inquiry->created_date)); ?></div></td>
-                                                                        <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?><?php if (!empty($inquiry->diff_ass_conf) && $inquiry->diff_ass_conf != 0) { ?>&nbsp;&nbsp;<span class="badge"><?php echo $inquiry->diff_ass_conf; ?></span><?php } ?></div></td> 
+                                                                        <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?> <?php echo ($inquiry->status==4)?'('.$Agent_Action[$inquiry->inquiry_agent_status].')':''; ?> <?php if (!empty($inquiry->diff_ass_conf) && !empty($inquiry->diff_ass_conf)) {
+                                                                            $dtF = new DateTime("@0");
+                                                                            $dtT = new DateTime("@".$inquiry->diff_ass_conf);
+                                                                            $diff = $dtF->diff($dtT)->format('%a days, %h hours, %i minutes and %s seconds');
+                                                                            ?>&nbsp;&nbsp;<span class="badge"><?php echo $diff; ?></span><?php } ?></div></td> 
                                                                     </tr>
                                                                 <?php } ?>
                                                             <?php } else { ?>

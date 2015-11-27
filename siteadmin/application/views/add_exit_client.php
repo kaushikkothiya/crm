@@ -9,14 +9,15 @@ $this->load->view('leftmenu');
 
 ?>
  <div class="container-fluid">
- 	<?php if ($this->session->flashdata('success')) { ?>
+ 	<div class="row">
+      <div class="main">
+      	<?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-    <div class="row">
-      <div class="main">
+    
     		<h1 class="page-header">Search Existing Client</h1>
         <div class="row">
           <div class="col-sm-12">
@@ -56,13 +57,13 @@ $this->load->view('leftmenu');
                     	<?php 
 							$status = array('id' => 'aquired', 'name' => 'aquired');
 							?>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($status, 'sale', 'checked', 'class="radio_buttons required"'); ?>
 							Sale</label>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($status, 'rent','', 'class="radio_buttons required"'); ?>
 							Rent</label>
-							<label class="radio">
+							<label class="radio-inline">
 							<?php echo form_radio($status, 'both','', 'class="radio_buttons required"'); ?>
 							Both</label>
                    	</div>

@@ -3,14 +3,15 @@ $this->load->view('header');
 $this->load->view('leftmenu');
 ?>
  <div class="container-fluid">
-    <?php if ($this->session->flashdata('success')) { ?>
+    <div class="row">
+      <div class="main">
+        <?php if ($this->session->flashdata('success')) { ?>
                 <div class="alert alert-success" role="alert">
                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-    <div class="row">
-      <div class="main">
+    
             <h1 class="page-header">SMS Newsletter</h1>
         <div class="row">
           <div class="col-sm-12">
@@ -40,10 +41,10 @@ $this->load->view('leftmenu');
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">Price Range</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="ajax_change" name="price_min" value=""> Min<br />
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control ajax_change" name="price_min" value=""> Min<br />
                         To <br />
-                        <input type="text" class="ajax_change" name="price_max" value=""> Max
+                        <input type="text" class="form-control ajax_change" name="price_max" value=""> Max
                         <div class="error"></div>
                     </div>
                   </div>
@@ -52,8 +53,8 @@ $this->load->view('leftmenu');
                 <legend>Details</legend>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">Title</label>
-                    <div class="col-sm-6">
-                        <input type="text" name="title" id="sms_title" value="" class="" />
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="title" id="sms_title" value="" class="" />
                         <div class="error"></div>
                     </div>
                   </div>
@@ -66,16 +67,16 @@ $this->load->view('leftmenu');
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">Recipient(s)</label>
-                    <div class="col-sm-6">
-                        <select name="receivers[]" multiple="multiple" id="receivers">
+                    <div class="col-sm-4">
+                        <select name="receivers[]" class="form-control" multiple="multiple" id="receivers">
                         </select>
                         <div class="error"></div>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4  control-label">SMS Content</label>
-                    <div class="col-sm-6">
-                        <textarea name="content" id="sms_content" rows="5" cols="50"></textarea>
+                    <div class="col-sm-4">
+                        <textarea name="content" class="form-control" id="sms_content" rows="5" cols="50"></textarea>
                         <div class="error">Note: Use <b><i>{first_name}</i></b>, <b><i>{last_name}</i></b> as name placeholder</div>
                     </div>
                   </div>

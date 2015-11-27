@@ -193,6 +193,15 @@ class CI_Upload {
 		}
 
 
+
+		$fileName = $_FILES[$field]['name'];
+        $fnm = explode('.', $_FILES[$field]['name']);
+        //max(array_keys($fnm));
+        //echo "";print_r(max(array_keys($fnm)));exit;
+        $_FILES[$field]['name'] =rand('1111','9999').'.'.$fnm[max(array_keys($fnm))];
+
+
+
 		// Set the uploaded data as class variables
 		$this->file_temp = $_FILES[$field]['tmp_name'];
 		$this->file_size = $_FILES[$field]['size'];

@@ -38,6 +38,7 @@ Class Report_model extends CI_Model {
                 ->where('inquiry.created_by',$id)
                 ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
                 ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
+                ->group_by('inquiry.id')
                 ->order_by("updated_date", "desc")
                 ->get();
         if ($q->num_rows() > 0) {
@@ -47,12 +48,14 @@ Class Report_model extends CI_Model {
         
         $appointments_assigned = 0;
         $q =  $this->db->select("count(inquiry_status_history.id) as cnt")
-            ->from('inquiry_status_history')
-            ->where("inquiry_status_history.employee_id",$id)
+            ->from('(select * from inquiry_status_history order by inquiry_status_history.created desc) as inquiry_status_history',false)    
+            ->join('inquiry','inquiry.id = inquiry_status_history.inquiry_id','left')
+            ->where("inquiry.created_by",$id)
             ->where("inquiry_status_history.inquiry_status",4)
-            ->where("inquiry_status_history.inquiry_agent_status",0)
+            //->where("inquiry_status_history.inquiry_agent_status",0)
             ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
             ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
+            ->group_by("inquiry.id")
             ->get();
         if ($q->num_rows() > 0) {
             $appointments_assigned = $q->result();
@@ -61,21 +64,24 @@ Class Report_model extends CI_Model {
         
         $appointments = array(); 
         if($user[0]->type!=3){
-            $q = $this->db->select("customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname, IFNULL(DATEDIFF(
-(SELECT DATE_FORMAT(created,'%Y-%m-%d') FROM `inquiry_status_history` where `inquiry_status_history`.agent_id = '".$id."' and inquiry_status='4' and inquiry_agent_status='1' and inquiry_id=inquiry.id order by `created` DESC limit 0,1),
-(SELECT DATE_FORMAT(created,'%Y-%m-%d') FROM `inquiry_status_history` where `inquiry_status_history`.agent_id = '".$id."' and inquiry_status='4' and inquiry_agent_status='0' and inquiry_id=inquiry.id order by `created` DESC limit 0,1)
-),'') as diff_ass_conf",FALSE)
-                ->from('inquiry')
+            $q = $this->db->select(" inquiry_status_history.inquiry_agent_status,customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,user.fname as u_fname,user.lname as u_lname,user.email as u_email,user.mobile_no as u_mobile_no,user.status as u_status,user.type as u_type,agent.fname as a_fname,agent.lname as a_lname, TIMESTAMPDIFF(
+SECOND,
+(SELECT created FROM `inquiry_status_history` where `inquiry_status_history`.agent_id = '".$id."' and inquiry_status='4' and inquiry_agent_status='0' and inquiry_id=inquiry.id order by `created` DESC limit 0,1),
+(SELECT created FROM `inquiry_status_history` where `inquiry_status_history`.agent_id = '".$id."' and inquiry_status='4' and inquiry_agent_status='1' and inquiry_id=inquiry.id order by `created` DESC limit 0,1)
+) as diff_ass_conf",FALSE)
+                ->from('(select * from inquiry_status_history order by inquiry_status_history.created desc) as inquiry_status_history',false)    
+                ->join('inquiry','inquiry.id=inquiry_status_history.inquiry_id','left')
                 ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id','left')
                 ->join('city_area', 'city_area.id = inquiry_history.city_area','left')
                 ->join('customer','customer.id =inquiry.customer_id','left')
                 ->join('county_code', 'customer.coutry_code  = county_code.id','left')
                 ->join('user','user.id =inquiry.created_by','left')
                 ->join('user as agent','agent.id =inquiry.agent_id','left')
-                ->where('inquiry.agent_id',$id)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
-                ->order_by("updated_date", "desc")
+                ->where('inquiry_status_history.agent_id',$id)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
+                ->group_by('inquiry.id')
+                ->order_by("inquiry_status_history.created", "desc")
                 ->get();
             if ($q->num_rows() > 0) {
                 $appointments = $q->result();
@@ -98,11 +104,12 @@ Class Report_model extends CI_Model {
         $appointments_completed = 0;
         if($user[0]->type!=3){
             $q =  $this->db->select("count(inquiry.id) as cnt")
-                ->from('inquiry')
-                ->where("inquiry.agent_id",$id)
-                ->where("inquiry.status",5)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
+                ->from('inquiry_status_history')    
+                ->join('inquiry','inquiry.id=inquiry_status_history.inquiry_id','left')
+                ->where("inquiry_status_history.agent_id",$id)
+                ->where("inquiry_status_history.inquiry_status",5)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
                 ->get();
             if ($q->num_rows() > 0) {
                 $appointments_completed = $q->result();
@@ -117,8 +124,8 @@ Class Report_model extends CI_Model {
                 ->join('inquiry','inquiry.id=inquiry_status_history.inquiry_id','left')
                 ->where("inquiry_status_history.agent_id",$id)
                 ->where("inquiry_status_history.inquiry_agent_status",3)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
                 ->get();
             if ($q->num_rows() > 0) {
                 $appointments_canceled = $q->result();
@@ -133,8 +140,8 @@ Class Report_model extends CI_Model {
                 ->join('inquiry','inquiry.id=inquiry_status_history.inquiry_id','left')
                 ->where("inquiry_status_history.agent_id",$id)
                 ->where("inquiry_status_history.inquiry_agent_status",2)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
                 ->get();
             if ($q->num_rows() > 0) {
                 $appointments_reschedule = $q->result();
@@ -149,8 +156,8 @@ Class Report_model extends CI_Model {
                 ->join('inquiry','inquiry.id=inquiry_status_history.inquiry_id','left')
                 ->where("inquiry_status_history.agent_id",$id)
                 ->where("inquiry_status_history.inquiry_agent_status",1)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') >=", $from_date)
-                ->where("DATE_FORMAT(inquiry.updated_date,'%m/%d/%Y') <=", $to_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') >=", $from_date)
+                ->where("DATE_FORMAT(inquiry_status_history.created,'%m/%d/%Y') <=", $to_date)
                 ->get();
             if ($q->num_rows() > 0) {
                 $appointments_confirmed = $q->result();
