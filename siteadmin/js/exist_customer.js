@@ -36,7 +36,10 @@ $('#manage_form').validate({
                                      if(msg =='false'){
                                          alert('Customer Not Exist');
                                          return false;
-                                     }else{
+                                     }else if (msg =='inactive') {
+                                        alert('This customer is not active');
+                                         return false;
+                                     }else{exit;
                                          form.submit();
 
                                      }
