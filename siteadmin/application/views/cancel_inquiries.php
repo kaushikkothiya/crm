@@ -68,7 +68,7 @@ $this->load->view('leftmenu');
                                         </td>
                                         <td data-th="Actions">
                                             <div>
-                                                <a href="#popup2" onclick="setInquiryId(<?php echo $cancel_inquiries[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
+                                                <a data-toggle="modal" data-target="#myModal" onclick="setInquiryId(<?php echo $cancel_inquiries[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
                                                 <!-- <a href="#popup2" class="btn btn-info btn-xs" onclick="setInquiryId(<?php echo $cancel_inquiries[$i]->id; ?>)">View Inquiry</a>  -->
                                                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
                                                 <a href="delete_inquiry/<?php echo $cancel_inquiries[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
@@ -94,7 +94,7 @@ $this->load->view('leftmenu');
             </div>
         </div>
     </div>
-<div id="popup2" class="overlay">
+<!-- <div id="popup2" class="overlay">
     <div class="popup">
         <h2>View Inquiry Detail</h2>
         <a class="close" href="#">×</a>
@@ -106,6 +106,37 @@ $this->load->view('leftmenu');
             </div>
         </div>
     </div>
+</div> -->
+<!-- Modal -->
+<div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">View Inquiry Detail</h4>
+      </div>
+      <div class="modal-body">
+        <div class="" id="inquiry_datail_popup">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div  class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Inquiry Reference No.<b class="popup-ref">#Reference No</b> </h4>
+      </div>
+      <h3>Message :</h3>
+      <div class="modal-body">
+        <div class="" id="inquiry_status_change_popup">
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="popup3" class="overlay">
     <div class="popup">
@@ -168,11 +199,12 @@ $this->load->view('footer');
     
 $(document).ready(function () {
     $(document).on('click','.show_cancel_message',function(){
-        if($(this).data('message')!="")
+        if($(this).data('message')!=""){
             $(".popup-ref").html($(this).data('ref'));
             $("#inquiry_status_change_popup").html($(this).data('message'));
             var href = window.location.href.split("#");
-            window.location = href[0]+"#popup3";
+            $('#myModal1').modal('show')
+            //window.location = href[0]+"#popup3";
         }else{
             alert("No message to display!");
         }
@@ -197,7 +229,8 @@ $(document).ready(function () {
             $(".popup-ref").html($(this).data('ref'));
             $("#lbl_status_change_content").html('Comments :');
             var href = window.location.href.split("#");
-            window.location = href[0] + "#popup3";
+            $('#myModal1').modal('show')
+            //window.location = href[0] + "#popup3";
         }
     });
 
@@ -231,6 +264,7 @@ $(document).ready(function () {
                                                 url: baseurl + "index.php/inquiry/get_inquiry_recored",
                                                 data: 'inquiry_id=' + inquiryId,
                                                 success: function (msg) {
+                                                    $('#myModal').modal('show')
                                                     $("#inquiry_datail_popup").html(msg);
                                                 }
                                             });

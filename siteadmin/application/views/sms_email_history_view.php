@@ -46,7 +46,7 @@ $this->load->view('leftmenu');
                                                 <td data-th='Receiver Email/Mobile'><div><?php echo $value->reciever; ?></div></td>
                                                 <td data-th='Receiver Name'><div><?php echo $value->name; ?></div></td>
                                                 <td data-th='Send Date'><div><?php echo date("d-M-Y", strtotime($value->created_date)); ?></div></td>
-                                                <td data-th="Actions">
+                                                <td data-th="Text">
                                                 <div>
                                                     <a data-toggle="modal" data-target="#myModal" class="btn btn-default btn-xs action-btn" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)' rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
                                                     <!-- <a class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal" title="View" onClick='setInquiryId("<?php echo $value->type; ?>",<?php echo $value->id; ?>)'>View</a> -->

@@ -120,7 +120,7 @@ $this->load->view('leftmenu');
                     <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
                     <div class="col-sm-6">
-                    <input type="submit" onclick="sendBulkEmail()" value="Send Newsletter" class="btn btn-sm btn-primary" />
+                        <input type="button" onclick="sendBulkEmail()" value="Send Newsletter" class="btn btn-sm btn-primary" />
                     </div>
                   </div>
                       

@@ -17,9 +17,16 @@
         <div class="wrapper">
             <div class="container">
                 <div class="row">
+                
                     <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
                         <div class="text-center"><img class="img-responsive" src="<?php echo base_url(); ?>images/logo.png" width="200" alt=""/></div>
                         <div class="sep"></div>
+                        <?php if ($this->session->flashdata('success')) { ?>
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <?php echo $this->session->flashdata('success'); ?>
+                </div>
+            <?php } ?>
                         <?php echo form_open('verification/forgote_password'); ?>
                         <h3 class="form-signin-heading">Forgot password?</h3>
                         <label for="inputEmail" class="sr-only">Email address</label>

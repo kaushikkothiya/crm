@@ -226,6 +226,7 @@ $('#manage_form').validate({
                         // long_decs:{required:"Long Description must not be  empty"},
                         },
                  showErrors:function(errorMap, errorList){
+                     $("div.overlay").hide();
                      var error=[];
                      $.each(errorMap, function(key, value) {
                          error.push(value);

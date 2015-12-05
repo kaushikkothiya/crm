@@ -124,7 +124,9 @@ Class Newsletter_model extends CI_Model {
         //$this->db->select("`customer`.`id`,  `property`.`sale_price`,`property`.`rent_price`,`customer`.`fname`,`customer`.`lname`,`customer`.`email`,`county_code`.`prefix_code`,`customer`.`mobile_no`, IF(TRUE,4,NULL) as 'type' ",false)
         $this->db->select("`customer`.`id`,  `customer`.`fname`,`customer`.`lname`,`customer`.`email`,`county_code`.`prefix_code`,`customer`.`mobile_no`, IF(TRUE,4,NULL) as 'type' ",false)
                 ->from('customer')
-                ->join('county_code', 'customer.coutry_code  = county_code.id','left');
+                ->join('county_code', 'customer.coutry_code  = county_code.id','left')
+                ->where('customer.status','Active')
+                ->where('customer.deleted','0');
         
         if(!empty($data['sale_range']) || !empty($data['rent_range'])){
             $this->db->join('inquiry', 'customer.id  = inquiry.customer_id','left');
@@ -220,7 +222,9 @@ Class Newsletter_model extends CI_Model {
         
         $this->db->select('user.id,user.fname,user.lname,user.email,county_code.prefix_code,user.mobile_no,user.type')
                 ->from('user')
-                ->join('county_code', 'user.coutry_code  = county_code.id','left');
+                ->join('county_code', 'user.coutry_code  = county_code.id','left')
+                ->where('user.status','Active')
+                ->where('user.deleted','0');
         
         if(!empty($data['user_type'])){
             $where = array();

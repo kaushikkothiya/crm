@@ -61,7 +61,7 @@ if (isset($user[0])) {
 					echo form_hidden('id', $id);
 				?>
 				  <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">First Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">First Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                    <?php
 							$fname = array(
@@ -75,7 +75,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Last Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Last Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                    <?php
 							$lname = array(
@@ -89,7 +89,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Email :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Email <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                       	<?php
 							$email = array(
@@ -103,7 +103,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Set Password :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Set Password <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                       <?php
 							$password = array(
@@ -121,7 +121,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label"> City :</label>
+                    <label class="col-md-3 col-sm-4 control-label"> City <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                     	<?php
 							$citydata =$this->user->getallcity();
@@ -136,7 +136,7 @@ if (isset($user[0])) {
                       </div>
                   </div>
                   <div class="form-group">
-                        <label class="col-md-3 col-sm-4 control-label">Mobile :</label>
+                        <label class="col-md-3 col-sm-4 control-label">Mobile <span class="star">*</span> :</label>
                         <div class="col-sm-2 col-md-2">
                         <?php
 							$country =$this->user->getall_countrycode();

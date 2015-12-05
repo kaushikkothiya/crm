@@ -88,7 +88,10 @@ $this->load->view('header');
 	 <?php
  echo "<span style='float:left; margin-right:5px;'>".form_submit('submit', 'Confirm Appointment', 'class="btn"')."</span>"; 
  echo "<span style='float:left; margin-right:5px;'>".form_submit('submit', 'Reschedule Appointment', 'class="btn"')."</span>";
- echo anchor('home/appointment_conform/'.$inquiry.'/'.$agent.'#popup', 'Cancel Appointment', 'class="btn"');
+ //echo anchor('home/appointment_conform/'.$inquiry.'/'.$agent, 'Cancel Appointment', 'data-toggle=modal data-target=#myModal');
+ ?>
+<button data-toggle="modal" data-target="#myModal" class="btn btn-sm fluid-btn"  type="button">cancel</button>
+ <?php
  function get_propertytypeby_id($id)
     {
         
@@ -141,7 +144,36 @@ $this->load->view('header');
         </div>
     </div>
 </div>
+
+<div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Agent Comment</h4>
+      </div>
+      <form name="excel_form" id="excel_form" method="post" action="<?php echo base_url(); ?>index.php/home/final_appointment_conform" enctype="multipart/form-data">
+        <div class="modal-body">
+        <textarea cols="50" rows="5" name="comment" required id="comment"></textarea>
+        <input type="hidden" id="inquiry" name="inquiry" value="<?php echo $inquiry; ?>">
+        <input type="hidden" id="inquiry" name="agent" value="<?php echo $agent; ?>">
+        <!-- <div id="hd_sub">
+        <input type="submit" class="pushme btn span2" name="submit" value="Submit" >
+        </div> -->
+      </div>
+      <div class="modal-footer" id="hd_sub">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" name="submit" value="Submit" >
+
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
 <script type="text/javascript">
 
 </script>
+<?php
+$this->load->view('footer');
+?>
 

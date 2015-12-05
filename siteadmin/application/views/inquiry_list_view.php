@@ -141,8 +141,8 @@ $Action_color = array('1'=>'FFFF00','2' =>'EBAF22','3' =>'FFCCFF','4' =>'D9EDF7'
                                          <td data-th="Actions">
                                             <div>
                                                 <?php if (empty($user[$i]->property_id) || ($user[$i]->appoint_start_date == "0000-00-00 00:00:00" && $user[$i]->appoint_end_date == "0000-00-00 00:00:00")) { ?>
-                                                    <a href="scheduleAppointment/<?php echo $user[$i]->id; ?>"  class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a> 
-                                                    <!-- <a  onclick="checkclient_property(<?php echo $user[$i]->id; ?>,<?php echo $user[$i]->customer_id; ?>,<?php echo $user[$i]->property_id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a>  -->
+                                                    <!-- <a href="scheduleAppointment/<?php echo $user[$i]->id; ?>"  class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a>  -->
+                                                    <a  onclick="checkclient_property(<?php echo $user[$i]->id; ?>,<?php echo $user[$i]->customer_id; ?>,<?php echo $user[$i]->property_id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Schedule Appointment"><i class="fa fa-calendar-check-o"></i></a>
                                                     <!-- href="scheduleAppointment/<?php echo $user[$i]->id; ?>"<a href="scheduleAppointment/<?php echo $user[$i]->id; ?>" class="btn btn-info btn-xs">Schedule Appointment</a>  -->
                                                 <?php if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_employee')) {  ?>
                                                     <a data-toggle="modal" data-target="#myModal" class="btn btn-default btn-xs action-btn" onclick="setInquiryId(<?php echo $user[$i]->id; ?>)" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a> 
@@ -476,19 +476,23 @@ $("#inquireexcel_form").submit(function( event ) {
     }
 });
 function checkclient_property(incid,custid,propertyid){
+
 $.ajax({
         type: "post",
         url:baseurl+"index.php/inquiry/check_client_property_activation",
         data: {custid:custid,propertyid:propertyid},
         success: function(msg){
+           
             if(msg =='true'){
-                window.location="<?php echo base_url(); ?>scheduleAppointment/"+incid;
+                window.location="<?php echo base_url(); ?>inquiry/scheduleAppointment/"+incid;
             }else if(msg =='property_inactive'){
                 alert('This Inquiry Property is inactive');
             }else if(msg =='customer_inactive'){
                 alert('This Inquiry Property is inactive');
+            }else if(msg =='customer_property_inactive'){
+                alert('This Inquiry Property and client is inactive');
             }else{
-                window.location="<?php echo base_url(); ?>scheduleAppointment/"+incid;
+                window.location="<?php echo base_url(); ?>inquiry/scheduleAppointment/"+incid;
             }
         }
     });

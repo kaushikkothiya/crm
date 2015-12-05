@@ -20,6 +20,10 @@
                     <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
                         <div class="text-center"><img class="img-responsive" src="<?php echo base_url(); ?>images/logo.png" width="200" alt=""/></div>
                         <div class="sep"></div>
+                        <?php  if($this->session->flashdata('danger')){ ?>
+                        <div class="text-center alert alert-danger"><?php echo $this->session->flashdata('danger'); ?></div>
+                        <div class="sep"></div>
+                        <?php  } ?>
                         <?php echo form_open('verifylogin'); ?>
                         <h3 class="form-signin-heading">Please sign in</h3>
                         <label for="inputEmail" class="sr-only">Email address</label>

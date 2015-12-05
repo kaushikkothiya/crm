@@ -29,6 +29,7 @@
 
 </head>
 <body>
+    <div class="overlay"><span class="loader">&nbsp;</span></div>
 <div class="app">
 	<div class="modal"></div>
     

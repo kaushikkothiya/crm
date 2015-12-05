@@ -35,7 +35,7 @@ if (isset($user_pass[0])) {
 		<div class="row">
           <div class="col-sm-12">
             <div class="panel panel-default">
-            		<div class="panel-heading">Change Password</div>
+            		<div class="panel-heading">Change Password :</div>
               <div class="panel-body">
                <?php echo form_open('verification/change_password', array('class' => 'form-horizontal')); ?>
  				<input type="hidden" id="change_pass_id" name="change_pass_id" value="<?php if(isset($id) && !empty($id)){ echo $id; } ?>">
@@ -43,7 +43,7 @@ if (isset($user_pass[0])) {
 					echo form_hidden('old_password', $old_password); 
 				?>
 				  <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Current Password :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Current Password <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                    <?php
 							$pass_arr = array(
@@ -58,7 +58,7 @@ if (isset($user_pass[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">New Password :</label>
+                    <label class="col-md-3 col-sm-4 control-label">New Password <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                    <?php
 							$new_pass_arr = array(
@@ -74,7 +74,7 @@ if (isset($user_pass[0])) {
                   </div>
                   
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Confirm New Password :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Confirm New Password <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                     	<?php
 							$conf_pass_arr = array(

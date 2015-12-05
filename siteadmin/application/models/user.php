@@ -4,16 +4,17 @@ Class User extends CI_Model {
 
     function login($username, $password) {
         
-        $this->db->select('id, fname, lname, email, password, mobile_no, type');
+        $this->db->select('id, fname, lname, email, password, mobile_no, type,status,deleted');
         $this->db->from('user');
         $this->db->where('email', $username);
         $this->db->where('password', MD5($password));
         //$this->db->where('role_name', 'admin');
-        $this->db->where('status', 'Active');
+        //$this->db->where('status', 'Active');
+        //$this->db->where('deleted', 0);
         $this->db->limit(1);
 
         $query = $this->db->get();
-
+          
         if ($query->num_rows() == 1) {
             return $query->result();
         } else {
@@ -58,6 +59,31 @@ Class User extends CI_Model {
             'state_id' => "1",
             'city_id' => $this->input->post('city_id'),
             'updated_date' => $today_date,
+            
+            );
+       
+        $update = $this->db->where('id', $id)->update('user', $new_user_update_data);
+        return $update;
+    }
+
+    function update_user_profile_agent($id,$image) {
+       //$section_prefix = "agent_";
+        $today_date = date('Y-m-d H:i:s');
+        
+       
+            $new_user_update_data = array(
+            'fname' => $this->input->post('fname'),
+            'lname' => $this->input->post('lname'),
+            'email' => $this->input->post('email'),
+            'mobile_no' => $this->input->post('mobile_no'),
+            'contry_id' =>"1",
+            'state_id' => "1",
+            'city_id' => $this->input->post('city_id'),
+            'updated_date' => $today_date,
+            'image'=>$image,
+            'experience'=>$this->input->post('experience'),
+            'Diplomas'=>$this->input->post('diplomas'),
+            'Languages'=>$this->input->post('languages')
             
             );
        
@@ -194,7 +220,7 @@ function property_ref_check($post) {
        return $data;
     }
     
-    function agent_insert() {
+    function agent_insert($image) {
         //$section_prefix = "agent_";
       // echo'<pre>';print_r($_POST);exit;
         $today_date = date('Y-m-d H:i:s');
@@ -211,13 +237,17 @@ function property_ref_check($post) {
             'city_id' => $this->input->post('city_id'),
             'created_date' => $today_date,
             'updated_date' => $today_date,
-            'status' => $this->input->post('status')
+            'status' => $this->input->post('status'),
+            'image'=>$image,
+            'experience'=>$this->input->post('experience'),
+            'Diplomas'=>$this->input->post('diplomas'),
+            'Languages'=>$this->input->post('languages')
         );
         $insert = $this->db->insert('user', $new_user_insert_data);
         return $insert;
     }
 
-    function agent_update($id) {
+    function agent_update($id,$image) {
        // echo'<pre>';print_r($_POST);exit;
        //$section_prefix = "agent_";
         $today_date = date('Y-m-d H:i:s');
@@ -236,7 +266,11 @@ function property_ref_check($post) {
             'state_id' => "1",
             'city_id' => $this->input->post('city_id'),
             'updated_date' => $today_date,
-            'status' => $this->input->post('status')
+            'status' => $this->input->post('status'),
+            'image'=>$image,
+            'experience'=>$this->input->post('experience'),
+            'Diplomas'=>$this->input->post('diplomas'),
+            'Languages'=>$this->input->post('languages')
             );
         }
         else
@@ -252,7 +286,11 @@ function property_ref_check($post) {
             'state_id' => "1",
             'city_id' => $this->input->post('city_id'),
             'updated_date' => $today_date,
-            'status' => $this->input->post('status')
+            'status' => $this->input->post('status'),
+            'image'=>$image,
+            'experience'=>$this->input->post('experience'),
+            'Diplomas'=>$this->input->post('diplomas'),
+            'Languages'=>$this->input->post('languages')
             );
         }
         $update = $this->db->where('id', $id)->update('user', $new_user_update_data);
@@ -725,7 +763,16 @@ function getregisted_properties() {
         }
     }
 	
-	
+	function get_user_type($email) {
+        $query = $this->db->select('*')
+                ->from('user')
+                ->where('email',$email)
+                ->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        }
+        return array();
+    }
 	
     function change_password($user_id, $password) {
         $change_password_update_data = array(
@@ -734,12 +781,13 @@ function getregisted_properties() {
         $insert = $this->db->where('id', $user_id)->update('user', $change_password_update_data);
         return $insert;
     }
-    function forgote_password($email, $password) {
+    function forgote_password($password,$email) {
+      
         $change_password_update_data = array(
-            'password' => MD5($password),
+            'password' => $password,
         );
-        $insert = $this->db->where('email', $email)->update('user', $change_password_update_data);
-        return $insert;
+        $update = $this->db->where('email', $email)->update('user', $change_password_update_data);
+        return $update;
     }
     
     
@@ -1161,7 +1209,7 @@ function getregisted_properties() {
         return array();
     }
     function get_genral_facilities($id) {
-        $q = $this->db->select('property_facility.*,facilities.title')
+        $q = $this->db->select('property_facility.*,facilities.title,facilities.image')
                 ->from('property_facility')
                 ->join('facilities','facilities.id =property_facility.facility_id')
                 ->where('property_facility.property_id',$id)
@@ -1174,7 +1222,7 @@ function getregisted_properties() {
         return array();
     }
     function get_instrumental_facilities($id) {
-        $q = $this->db->select('property_facility.*,facilities.title')
+        $q = $this->db->select('property_facility.*,facilities.title,facilities.image')
                 ->from('property_facility')
                 ->join('facilities','facilities.id =property_facility.facility_id')
                 ->where('property_facility.property_id',$id)

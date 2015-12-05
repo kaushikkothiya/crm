@@ -4,6 +4,7 @@ if($this->uri->segment(3)) {
 }else{
 	$property_id="";
 }
+
 $this->load->view('header');
 $this->load->view('leftmenu');
 if (isset($user[0])) {
@@ -55,6 +56,7 @@ if (isset($user[0])) {
 				 echo form_open_multipart('verification/new_client_customer_details', array('class' => 'form-horizontal')); 
 				}
 				 ?>	
+                            
 				 <input type="hidden" id="customer_id" name="customer_id" value="<?php if(isset($id) && !empty($id)){ echo $id; } ?>">
 			   	<?php  
 					echo form_hidden('id', $id);
@@ -73,7 +75,7 @@ if (isset($user[0])) {
                 </div>
 
 				  <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">First Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">First Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                   <?php
 						$fname = array(
@@ -89,7 +91,7 @@ if (isset($user[0])) {
 	                </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Last Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Last Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                   <?php
 							$lname = array(
@@ -109,7 +111,7 @@ if (isset($user[0])) {
 							$email = array(
 								'name' => 'email',
 								'id' => 'email',
-								'value' => set_value('email', $email),
+								'value' => ( isset($_POST) && (isset($_POST['email'])) )?$_POST['email']:set_value('email', $email),
 								'class' => 'form-control',
 								//'onblur' => "customer_EmailFunction();"
 							);
@@ -118,7 +120,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label"> City :</label>
+                    <label class="col-md-3 col-sm-4 control-label"> City <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                     	<?php
 								$citydata =$this->inquiry_model->getallcity();
@@ -133,7 +135,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                        <label class="col-md-3 col-sm-4 control-label">Mobile :</label>
+                        <label class="col-md-3 col-sm-4 control-label">Mobile <span class="star">*</span> :</label>
                         <div class="col-sm-2 col-md-2">
                         <?php
 							$country =$this->user->getall_countrycode();
@@ -152,7 +154,7 @@ if (isset($user[0])) {
 	                        $contact = array(
 								'name' => 'mobile_no',
 								'id' => 'mobile_no',
-								'value' => set_value('mobile_no', $contact),
+								'value' => ( isset($_POST) && (isset($_POST['mobile_no'])) )?$_POST['mobile_no']:set_value('mobile_no', $contact),
 								'maxlength' =>"10",
 								'class' => 'form-control',
 								'onkeypress'=>'return numbersonly(event)'
@@ -166,37 +168,23 @@ if (isset($user[0])) {
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">Property Status :</label>
                     <div class="col-sm-6">
-                    	<?php 
-							$status = array('id' => 'aquired', 'name' => 'aquired');
-							?>
-							<label class="radio-inline">
-							<?php echo form_radio($status, 'sale','checked' , 'class="radio_buttons required"'); ?>
-							Sale</label>
-							<label class="radio-inline">
-							<?php echo form_radio($status, 'rent', '', 'class="radio_buttons required"'); ?>
-							Rent</label>
-							<label class="radio-inline">
-							<?php echo form_radio($status, 'both', '', 'class="radio_buttons required"'); ?>
-							Both</label>
-                   	</div>
+                    	<?php  $status = array('id' => 'aquired', 'name' => 'aquired'); ?>
+                            <label class="radio-inline"><?php echo form_radio($status, 'sale',(empty($_POST) || (isset($_POST['aquired']) && $_POST['aquired']=='sale'))?'checked':'' , 'class="radio_buttons required"'); ?> Sale</label>
+                            <label class="radio-inline"><?php echo form_radio($status, 'rent', (isset($_POST) && (isset($_POST['aquired']) && $_POST['aquired']=='rent'))?'checked':'', 'class="radio_buttons required"'); ?> Rent</label>
+                            <label class="radio-inline"><?php echo form_radio($status, 'both', (isset($_POST) && (isset($_POST['aquired']) && $_POST['aquired']=='both'))?'checked':'', 'class="radio_buttons required"'); ?> Both</label>
+                    </div>
                  </div>
  
 	              <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
                     <div class="col-sm-6">
-                    <?php
-					if ($id=="") {
-					?>
-					<input type="submit" class="btn btn-sm btn-primary" value="Add Client" name="customer_form" id="customer_form">
-					<!-- <input type="submit" class="btn span5" value="Add Client" name="customer_form" id="customer_form"> -->
-					<?php } else { 
-					?>
-					<input type="submit" class="btn span5" value="Update Client" name="customer_form" id="customer_form">
-					<?php
-					}
-					?>
-					<?php echo anchor('inquiry/new_exist_client', 'Cancel', array('title' => 'Cancel', 'class' => 'btn btn-sm btn-default')); ?>
-                     
+                    <?php if ($id=="") { ?>
+                        <input type="submit" class="btn btn-sm btn-primary" value="Add Client" name="customer_form" id="customer_form">
+                    <!-- <input type="submit" class="btn span5" value="Add Client" name="customer_form" id="customer_form"> -->
+                    <?php } else { ?>
+                        <input type="submit" class="btn span5" value="Update Client" name="customer_form" id="customer_form">
+                    <?php } ?>
+                    <?php echo anchor('inquiry/new_exist_client', 'Cancel', array('title' => 'Cancel', 'class' => 'btn btn-sm btn-default')); ?>
                     </div>
                   </div>
                 </form>
@@ -210,7 +198,7 @@ if (isset($user[0])) {
 <?php
 $this->load->view('footer');
 ?>
-<script type="text/javascript" src="<?php echo base_url(); ?>js/customer.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/new_customer.js"></script>
 <script type="text/javascript">
 function numbersonly(e){ 	 
     var unicode=e.charCode? e.charCode : e.keyCode;    

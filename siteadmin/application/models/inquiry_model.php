@@ -215,7 +215,7 @@ Class Inquiry_model extends CI_Model {
             }
                 
         }
-        $this->db->where('property.status','Active');
+        $this->db->where('property.status', 'Active');
         $query = $this->db->get();
         return $query->result();
     }
@@ -305,6 +305,8 @@ Class Inquiry_model extends CI_Model {
         $this->db->from('user')->order_by('fname', 'ASC');
         $this->db->where('type','2');
         $this->db->where('deleted !=','1');
+        $this->db->where('status','Active');
+        
         if($this->session->userdata('logged_in_agent')){
             $sessionData = $this->session->userdata('logged_in_agent');
             $id = $sessionData['id'];
@@ -415,6 +417,7 @@ Class Inquiry_model extends CI_Model {
             
         );
         $insert = $this->db->insert('inquiry', $new_user_insert_data);
+        $insert = $this->db->insert_id();
         if($insert){
             $inquiry_status = array(
                 'inquiry_id'=> $this->db->insert_id(),
@@ -596,10 +599,11 @@ Class Inquiry_model extends CI_Model {
         return $insert;
     }
 
-    function saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype)
+    function saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype, $inquiryId)
     {   
         $today_date = date('Y-m-d H:i:s');
         $sms_email_data = array(
+            'inquiry_id' =>$inquiryId,
             'text' => $history_text,
             'subject' => $history_subject,
             'type' => $history_type,
@@ -897,6 +901,31 @@ function add_appointment_note($post) {
         }
         return array();
     } 
+    function check_new_client_form_emailexit($post)
+    {
+        if(!empty($post['email'])){
+        $q = $this->db->select("*")
+                ->from('customer')
+                ->where('email',$post['email'])
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+        }
+    }
+    function check_new_client_form_mobileexit($post)
+    {
+        $q = $this->db->select("*")
+                ->from('customer')
+                ->where('mobile_no',$post['mobile_no'])
+                ->where('coutry_code',$post['county_code'])
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
+    }
     function get_property_detail($id) {
         $q = $this->db->select("*")
                 ->from('property')
@@ -1014,7 +1043,7 @@ function add_appointment_note($post) {
                     $update = $this->db->where('id', $inquiry_id)->update('inquiry', $new_inquiry_update_data);
                 }
                 if($update){
-                    $inquiry = $this->db->select('*')->from('inquiry')->where('id',$insert)->get()->result();
+                    $inquiry = $this->db->select('*')->from('inquiry')->where('id',$inquiry_id)->get()->result();
                     $inquiry_status = array(
                         'inquiry_id'=> $inquiry[0]->id,
                         'agent_id'=>$inquiry[0]->agent_id,
@@ -1108,6 +1137,18 @@ function add_appointment_note($post) {
         }
         return array();
     }
+    function get_sms_email_text_report($id)
+    {
+        $q = $this->db->select("sms_email_history.text,sms_email_history.type")
+                ->from('sms_email_history')
+                ->join('inquiry_history', 'inquiry_history.id = sms_email_history.inquiry_id','left')
+                ->where('sms_email_history.inquiry_id',$id)
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        }
+        return array();
+    }
 
     function updateInquiryStatus($id,$data){
         $update = $this->db->where('id',$id)->update('inquiry', $data);
@@ -1120,6 +1161,24 @@ function add_appointment_note($post) {
                 'comments'=>$_POST['comments'],
             );
             $this->db->insert('inquiry_status_history',$inquiry_status);
+           // echo'<pre>';print_r($data['status']);exit;
+            
+            /*property inactive code start*/
+            if($data['status']=='5'){
+            $this->db->select('property_id');
+            $this->db->from('inquiry');
+            $this->db->where('id',$id);
+            $query = $this->db->get();
+            $recorde=$query->result();
+            
+            if(!empty($recorde)){
+                $property_status = array(
+                'status'=> 'Inactive',
+             );
+                $this->db->where('id',$recorde[0]->property_id)->update('property', $property_status);
+            }
+        }
+            /*property inactive code end*/
         }
         return $update;
     }
@@ -1241,7 +1300,7 @@ function add_appointment_note($post) {
         }
         return array();
     }
-    
+
     function check_inquiry_client_record($clientId){
         $q = $this->db->select("*")
                 ->from('customer')
@@ -1266,6 +1325,7 @@ function add_appointment_note($post) {
         }
         return array();
     }
+    
 
 
 }

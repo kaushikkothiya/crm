@@ -13,7 +13,10 @@ if (isset($user[0])) {
 	$status_name = $user[0]->status;
 	$type = $user[0]->type;
 	$county_code = $user[0]->coutry_code;
-	
+	$image = $user[0]->image;
+	$experience =$user[0]->experience;
+	$diplomas =$user[0]->Diplomas;
+	$languages =$user[0]->Languages;
 } else {
     $id = $this->input->post('id');
     $fname = $this->input->post('fname');
@@ -25,7 +28,10 @@ if (isset($user[0])) {
 	$county_code = $this->input->post('county_code');
 	//$contry_id = $this->input->post('contry_id');
 	//$status_name = $this->input->post('status');
-    
+	$image = $this->input->post('image');
+    $experience = $this->input->post('experience');
+    $diplomas = $this->input->post('diplomas');
+    $languages = $this->input->post('languages)');
 }
 ?>
  <div class="container-fluid">
@@ -62,7 +68,7 @@ if (isset($user[0])) {
 					 echo form_hidden('type',$type); 
 				?>
 				  <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">First Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">First Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                   <?php
 							$fname = array(
@@ -76,7 +82,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Last Name :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Last Name <span class="star">*</span> :</label>
                     <div class="col-sm-6">
 	                    <?php
 							$lname = array(
@@ -90,7 +96,7 @@ if (isset($user[0])) {
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label">Email :</label>
+                    <label class="col-md-3 col-sm-4 control-label">Email <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                       	<?php
 							$email = array(
@@ -122,7 +128,7 @@ if (isset($user[0])) {
                     </div>
                   </div>-->
                   <div class="form-group">
-                    <label class="col-md-3 col-sm-4 control-label"> City :</label>
+                    <label class="col-md-3 col-sm-4 control-label"> City <span class="star">*</span> :</label>
                     <div class="col-sm-6">
                     	<?php
 							$citydata =$this->user->getallcity();
@@ -137,7 +143,7 @@ if (isset($user[0])) {
                       </div>
                   </div>
                    <div class="form-group">
-                        <label class="col-md-3 col-sm-4 control-label">Mobile :</label>
+                        <label class="col-md-3 col-sm-4 control-label">Mobile <span class="star">*</span> :</label>
                         <div class="col-sm-2 col-md-2">
                         <?php
 							$country =$this->user->getall_countrycode();
@@ -167,7 +173,53 @@ if (isset($user[0])) {
                           <small>(example: 97888555)</small>
                     	</div>
                     </div>
-                    
+                    <?php if($this->session->userdata('logged_in_agent')){ ?>
+                    <!-- image code start -->
+                  	<div class="control-group">
+                  	<label class="col-md-3 col-sm-4 control-label">Image :</label>
+					<div class="controls">
+					<input type="file" name="image" id="image" class="file"></br></br>
+					<?php if(!empty($image)){
+						  if (isset($user[0])) {
+					      echo form_hidden('old_img', $image); 
+					?>
+						
+						<label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
+						<a><img src="<?php echo base_url().'upload/agent/100x100/'.$image; ?>" width="100" height="100"></a>
+						
+					<?php } }else{ 
+						echo form_hidden('old_img', "noimage.jpg");
+					?>
+						<label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
+						<a><img src="<?php echo base_url().'upload/agent/100x100/noimage.jpg'.$image; ?>" width="100" height="100"></a>
+					
+					<?php } ?>
+					</div>
+					</div>
+					<br>
+					<!--image code end -->
+					
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label">General experience :</label>
+                    <div class="col-sm-8">
+	                   <textarea id="experience" class="form-control ckeditor" rows="3" name="experience" value="<?php echo $experience;?>"><?php echo $experience;?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label">Diplomas :</label>
+                    <div class="col-sm-8">
+	                    <textarea id="diplomas" class="form-control ckeditor" rows="3" name="diplomas" value="<?php echo $diplomas;?>"><?php echo $diplomas;?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label">Languages :</label>
+                    <div class="col-sm-8">
+	                    <textarea id="languages" class="form-control ckeditor" rows="3" name="languages" value="<?php echo $languages;?>"><?php echo $languages;?></textarea>
+                    </div>
+                  </div>
+                    <?php } ?>
+
+                  <?php if ($this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) { ?>  
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">Status :</label>
                     <div class="col-sm-6">
@@ -195,7 +247,7 @@ if (isset($user[0])) {
                       
                     </div>
                   </div>
-                  
+                  <?php } ?>
 	              <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
                     <div class="col-sm-6">
@@ -215,6 +267,7 @@ if (isset($user[0])) {
 <?php
 $this->load->view('footer');
 ?>
+<script src="//cdn.ckeditor.com/4.4.7/full/ckeditor.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/edit_profile.js"></script>
 <script type="text/javascript">
 </script>

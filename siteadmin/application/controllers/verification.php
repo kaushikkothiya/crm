@@ -165,6 +165,7 @@ class Verification extends CI_Controller {
                         $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
                         $history_reciever_id_sms    = $query;
                         $history_reciever_usertype_sms ="1";
+                        $history_inquiryid= $insert_customer_inquiry;
                         // $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }
@@ -199,7 +200,7 @@ class Verification extends CI_Controller {
                     $history_reciever   = $email;
                     $history_reciever_id    = $query;
                     $history_reciever_usertype ="1";
-
+                    $history_inquiryid= $insert_customer_inquiry;
                     // $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                     //  $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
                 }
@@ -209,10 +210,10 @@ class Verification extends CI_Controller {
                     $history_type       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms,$history_inquiryid);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype,$history_inquiryid);
 
                     $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
                 redirect('/inquiry/property', 'refresh');
@@ -221,7 +222,7 @@ class Verification extends CI_Controller {
                 {
                     
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms,$history_inquiryid);
 
                     $this->session->set_flashdata('success', 'SMS sent successfull Please check Your SMS.');
                     redirect('/inquiry/property', 'refresh');
@@ -229,7 +230,7 @@ class Verification extends CI_Controller {
                 elseif ($sendEmailFlag == "E-mail")
                 {
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype,$history_inquiryid);
 
                     $this->session->set_flashdata('success', 'Mail sent successfull Please check Your Email.');
                     redirect('/inquiry/property', 'refresh');
@@ -242,7 +243,7 @@ class Verification extends CI_Controller {
             } else {
                 $this->load->view('add_new_client', array('error' => ''));
             }
-            } 
+        } 
         }
     function unic_num() {
         $num = rand(10000000,99999999);
@@ -261,10 +262,54 @@ class Verification extends CI_Controller {
            //echo'<pre>';print_r($_POST);exit;
         $id = $this->input->post('id');
         
+        $image_path = APPPATH . '../upload/agent/';
+        $config['upload_path'] = $image_path;
+        $config['allowed_types'] = 'gif|jpg|png';
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+        $error['upload_data'] = '';
+        $old_img = $this->input->post('old_img');
+        if (!$this->upload->do_upload('image')) {
+            if($id=="") {
+                $error = array('msg' => $this->upload->display_errors());
+                $imageName = '';
+            } else { 
+                $error = array('msg' => "Upload success!");
+                $imageName = $old_img;
+            }
+        } else {
+
+           $error = array('msg' => "Upload success!");
+           $error['upload_data'] = $this->upload->data();
+           $imageName = $error['upload_data']['file_name'];
+            $configSize1['image_library']   = 'gd2';
+            $configSize1['source_image']    = APPPATH . '../upload/agent/'.$imageName;
+            //$configSize1['create_thumb']    = TRUE;
+            $configSize1['maintain_ratio']  = false;
+            $configSize1['width']           = 100;
+            $configSize1['height']          = 100;
+            $configSize1['new_image']       = APPPATH . '../upload/agent/100x100/';
+
+            $this->image_lib->initialize($configSize1);
+            $this->image_lib->resize();
+            $this->image_lib->clear();
+
+            $configSize1['image_library']   = 'gd2';
+            $configSize1['source_image']    = APPPATH . '../upload/agent/'.$imageName;
+            //$configSize1['create_thumb']    = TRUE;
+            $configSize1['maintain_ratio']  = false;
+            $configSize1['width']           = 200;
+            $configSize1['height']          = 200;
+            $configSize1['new_image']       = APPPATH . '../upload/agent/200x200/';
+            $this->image_lib->initialize($configSize1);
+            $this->image_lib->resize();
+            $this->image_lib->clear();
+        }
+       
        
             if($id=="") {
                 
-                if ($query = $this->user->agent_insert()) {
+                if ($query = $this->user->agent_insert($imageName)) {
                     $fname = $this->input->post('fname');
                     $lname = $this->input->post('lname');
                     $email = $this->input->post('email');
@@ -298,7 +343,7 @@ class Verification extends CI_Controller {
                 }
             } else { 
             
-                if ($query = $this->user->agent_update($id)) {
+                if ($query = $this->user->agent_update($id,$imageName)) {
                     $this->session->set_flashdata('success', 'Agent updated successfully.');
                     $url = "/home/agent_manage/";
                     redirect($url, 'refresh');
@@ -311,12 +356,17 @@ class Verification extends CI_Controller {
     function create_customer() {
            
         $id = $this->input->post('id');
-        
+        $aquired = $this->input->post('aquired');
         
             if($id=="") {
                 $unic =$this->unic_num();
 
                 if ($query = $this->user->customer_insert($unic)) {
+                $this->session->set_userdata('customer_property_buy_sale', $aquired);
+                $inquiry_num =$this->unic_inquiry_num();
+                $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
+                $insert_customer_inquiry = $this->inquiry_model->new_customer_inquiry_insert($query,$inquiry_num,$property_buy_sale);
+                
                 $id = $unic;
                 $email  = $this->input->post('email');
                 $fname  = $this->input->post('fname');  
@@ -384,6 +434,7 @@ class Verification extends CI_Controller {
                         $history_reciever_sms   = $mobile_code.$_POST['mobile_no'];
                         $history_reciever_id_sms    = $query;
                         $history_reciever_usertype_sms="1";
+                        $history_inquiryid= $insert_customer_inquiry;
                         //$this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms);
                     }
                 }   
@@ -415,7 +466,7 @@ class Verification extends CI_Controller {
                         $history_reciever   = $email;
                         $history_reciever_id    = $query;
                         $history_reciever_usertype ="1";
-
+                        $history_inquiryid= $insert_customer_inquiry;
                         //$this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
                     }   
                 if($sendSMSFlag == "SMS" && $sendEmailFlag == "E-mail")
@@ -424,10 +475,10 @@ class Verification extends CI_Controller {
                     $history_type       = "SMS/E-mail";
 
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms,$history_inquiryid);
                     
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype,$history_inquiryid);
                     $this->session->set_flashdata('success', 'Client added successfull. check your E-mail or SMS');
                     redirect('/home/customer_manage', 'refresh');
                 }
@@ -435,7 +486,7 @@ class Verification extends CI_Controller {
                 {
                     
                     // SMS
-                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever_sms, $history_reciever_id_sms,$history_reciever_usertype_sms,$history_inquiryid);
                     
                     $this->session->set_flashdata('success', 'Client added successfull. check SMS');
                     redirect('/home/customer_manage', 'refresh');
@@ -443,7 +494,7 @@ class Verification extends CI_Controller {
                 elseif ($sendEmailFlag == "E-mail")
                 {
                     // Email
-                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype);
+                    $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype,$history_inquiryid);
                     
                     $this->session->set_flashdata('success', 'Client added successfull. check your E-mail');
                     redirect('/home/customer_manage', 'refresh');      
@@ -471,10 +522,10 @@ class Verification extends CI_Controller {
     function create_employee() {
            
         $id = $this->input->post('id');
-        
+        $imageName="";
             if($id=="") {
                 
-                if ($query = $this->user->agent_insert()) {
+                if ($query = $this->user->agent_insert($imageName)) {
                     $fname = $this->input->post('fname');
                     $lname = $this->input->post('lname');
                     $email = $this->input->post('email');
@@ -507,7 +558,7 @@ class Verification extends CI_Controller {
                 }
             } else { 
             
-                if ($query = $this->user->agent_update($id)) {
+                if ($query = $this->user->agent_update($id,$imageName)) {
                     $this->session->set_flashdata('success', 'Employee updated successfull.');
                     $url = "/home/employee_manage/";
                     redirect($url, 'refresh');
@@ -722,18 +773,12 @@ class Verification extends CI_Controller {
                 $new_pass = $this->input->post('new_password');
                 $email = $this->input->post('email');
                 $password ='monopolion'.rand(100,999);
-                $query = $this->user->change_password(MD5($password), $email);
+                $user_type=$this->user->get_user_type($email);
+                
+                if(!empty($user_type)){
+                $query = $this->user->forgote_password(MD5($password), $email);
                 $this->load->library('email');
-                /*$this->email->initialize(array(
-                  'protocol' => 'smtp',
-                  'smtp_host' => 'smtp.sendgrid.net',
-                  'smtp_user' => 'sendgridusername',
-                  'smtp_pass' => 'sendgridpassword',
-                  'smtp_port' => 587,
-                  'crlf' => "\r\n",
-                  'newline' => "\r\n"
-                ));*/
-
+                
                 $this->email->from('info@monopolion.com', 'monopolion');
                 $this->email->to($email);
                 $this->email->cc('info@monopolion.com');
@@ -749,12 +794,17 @@ class Verification extends CI_Controller {
                 $history_type       = "Email";
                 $history_reciever   = $email;
                 $history_reciever_id    = $query;
+                $history_reciever_usertype= $user_type[0]->type;
+                $history_inquiry_id    = 0;
 
-                $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id);
+                $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever, $history_reciever_id,$history_reciever_usertype, $history_inquiry_id );
                            
                     $this->session->set_flashdata('success', 'your new password send in your email successfull.');
                     redirect('home/forgote_pass', 'refresh');
-        
+            }else{
+               $this->session->set_flashdata('success', 'your email is not exist.');
+                    redirect('home/forgote_pass', 'refresh'); 
+            }
         
         //     if($new_pass!="") {
         //         if ($query = $this->user->forgote_password($email, $new_pass)) {

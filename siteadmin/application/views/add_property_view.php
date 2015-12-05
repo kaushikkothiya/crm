@@ -1,5 +1,5 @@
 <link href="<?php echo base_url(); ?>css/style_photos.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url(); ?>css/loader/demo.css" rel="stylesheet">
+<!-- <link href="<?php echo base_url(); ?>css/loader/demo.css" rel="stylesheet"> -->
 <?php
 $this->load->view('header');
 $this->load->view('leftmenu');
@@ -206,7 +206,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="col-md-4 col-sm-4 control-label">First Name :</label>
+                        <label class="col-md-4 col-sm-4 control-label">First Name <span class="star">*</span> :</label>
                         <div class="col-md-8 col-sm-8 ">
                           <?php
 							$fname = array(
@@ -221,7 +221,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-md-4 col-sm-4 control-label">Last Name :</label>
+                        <label class="col-md-4 col-sm-4 control-label">Last Name <span class="star">*</span> :</label>
                         <div class="col-md-8 col-sm-8">
                         	<?php
 								$lname = array(
@@ -267,7 +267,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-md-4 col-sm-4 control-label">Mobile :</label>
+                        <label class="col-md-4 col-sm-4 control-label">Mobile <span class="star">*</span> :</label>
                         <div class="col-sm-2 col-md-3">
                           <?php
 							$country =$this->user->getall_countrycode();
@@ -304,7 +304,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                   <div class="row">
                   <div class="col-md-6">
                   	  <div class="form-group">
-                        <label class="col-md-4 col-sm-4 control-label">Reference No :</label>
+                        <label class="col-md-4 col-sm-4 control-label">Reference No <span class="star">*</span> :</label>
                         <div class="col-md-8 col-sm-8">
                           <?php
 								$reference_no = array(
@@ -325,7 +325,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
                       </div> -->
                       <div class="form-group">
-                        <label class="col-md-4 col-sm-4 control-label">Agent :</label>
+                        <label class="col-md-4 col-sm-4 control-label">Agent <span class="star">*</span> :</label>
                         <div class="col-md-8 col-sm-8">
                         	<?php
 								$citydata =$this->user->getAllAgent_name();
@@ -347,7 +347,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                   <div class="row"><!-- row -->
                         <div class="col-md-6">
                             <div class="form-group">
-                              <label class="col-md-4 col-sm-4 control-label">Type:</label>
+                              <label class="col-md-4 col-sm-4 control-label">Type <span class="star">*</span> :</label>
                               <div class="col-md-8 col-sm-8">
                               	<?php
 									$citydata = array('0' =>'Select Type','1'=>'Sale','2' =>'Rent','3' =>'Both');
@@ -365,7 +365,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         <div class="col-md-6">
                           <div id="rent_div">
                             <div class="form-group">
-                              <label class="col-md-4 col-sm-4 control-label">Rent Price (&euro;) :</label>
+                              <label class="col-md-4 col-sm-4 control-label">Rent Price (&euro;) <span class="star">*</span> :</label>
                               <div class="col-md-8 col-sm-8">
                                   <?php
 									$rent_price = array(
@@ -410,7 +410,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                            <div  id="sale_div">
                             <div class="form-group">
-                              <label class="col-md-4 col-sm-4 control-label">Selling Price (&euro;) :</label>
+                              <label class="col-md-4 col-sm-4 control-label">Selling Price (&euro;) <span class="star">*</span> :</label>
                               <div class="col-md-8 col-sm-8">
                               	<?php
 									$sale_price = array(
@@ -478,7 +478,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 										    );
 
 										echo form_checkbox($data);
-									?>Title Deeds / Planning Permission / Building Permission
+									?>Title Deeds / Planning Permission / Building Permission <span class="star">*</span>
                                   </label>
                                 </div>
                               </div>
@@ -497,7 +497,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 										    'checked'     => $checked,
 										    );
 										echo form_checkbox($data);
-										?>Signed Commission Agreement
+										?>Signed Commission Agreement <span class="star">*</span>
                                   </label>
                                 </div>
                               </div>
@@ -513,7 +513,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">Country :</label>
+                          <label class="col-md-4 col-sm-4 control-label">Country <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                               <?php
 								$countrydata =array(0 => 'Select country',1 => 'Cyprus');
@@ -529,7 +529,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
 
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">City :</label>
+                          <label class="col-md-4 col-sm-4 control-label">City <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                               <?php
 								$citydata =$this->user->getallcity();
@@ -545,7 +545,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
 
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">City area:</label>
+                          <label class="col-md-4 col-sm-4 control-label">City area <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                               <?php
 								$city_area_rec = array( '0'=>'Select city area');//$this->user->getallcity_area();
@@ -559,7 +559,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">Address:</label>
+                          <label class="col-md-4 col-sm-4 control-label">Address <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                               <textarea id="address" class="form-control" rows="3" name="address" value="<?php echo $address;?>"><?php echo $address; ?></textarea>
                           </div>
@@ -583,7 +583,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">&nbsp;</label>
+                          <label class="col-md-4 col-sm-4 control-label">Property Type <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                               <?php
 								$property_category = array('0' =>' Select Property Category','1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
@@ -653,7 +653,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
 
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">Bedroom(s):</label>
+                          <label class="col-md-4 col-sm-4 control-label">Bedroom(s) <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                           	<?php
 							$bedroom_val = array(
@@ -671,7 +671,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         </div>
 
                         <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">Bathroom(s):</label>
+                          <label class="col-md-4 col-sm-4 control-label">Bathroom(s) <span class="star">*</span>:</label>
                           <div class="col-md-8 col-sm-8">
                           	<?php
 								$citydata = array('0' =>'Select Bathrooms','1'=>'1','2' =>'2','3' =>'3','4' =>'4','5' =>'5','6' =>'6','7' =>'7');
@@ -710,7 +710,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                     <div class="col-md-6">
                        <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">Furnished Type :</label>
+                          <label class="col-md-4 col-sm-4 control-label">Furnished Type <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                             <?php
 								$citydata = array('0' =>'Select Furmished Type','1'=>'Furnished','2' =>'Semi-Furnished','3' =>'Un-Furnished');
@@ -957,7 +957,7 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
 
                     <div class="col-md-6">
                        <div class="form-group">
-                          <label class="col-md-4 col-sm-4 control-label">URL Link(1) :</label>
+                          <label class="col-md-4 col-sm-4 control-label">URL Link(1) <span class="star">*</span> :</label>
                           <div class="col-md-8 col-sm-8">
                           	<?php
 								$link = array(

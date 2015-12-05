@@ -47,6 +47,7 @@
                                                         <div class="col-sm-4">
                                                             <select class="form-control " name="agent_user_id" id="agent_user_id" >
                                                                 <option value="">Select</option>
+                                                                <option <?php echo ( isset($_REQUEST['user_type']) && $_REQUEST['user_type'] == 2 && isset($_REQUEST['agent_user_id']) && !empty($_REQUEST['agent_user_id']) && $_REQUEST['agent_user_id'] == 'all' ) ? ' selected="selected" ' : ''; ?> value="all">All</option>
                                                                 <?php foreach ($agents as $key => $agent) { ?>
                                                                     <option <?php echo ( isset($_REQUEST['user_type']) && $_REQUEST['user_type'] == 2 && isset($_REQUEST['agent_user_id']) && !empty($_REQUEST['agent_user_id']) && $_REQUEST['agent_user_id'] == $agent->id ) ? ' selected="selected" ' : ''; ?> value="<?php echo $agent->id; ?>" ><?php echo $agent->fname . ' ' . $agent->lname; ?></option>
                                                                 <?php } ?>
@@ -59,9 +60,10 @@
                                                 <label for="" class="col-sm-2 control-label">Select Employee : </label>
                                                 <div class="col-sm-10">
                                                     <div class="row">
-                                                        <div class="col-xs-4">
+                                                        <div class="col-sm-4">
                                                             <select class="form-control" name="employee_user_id" id="employee_user_id" >
                                                                 <option value="">Select</option>
+                                                                <option <?php echo ( (isset($_REQUEST['user_type']) && $_REQUEST['user_type'] == 3) && isset($_REQUEST['employee_user_id']) && $_REQUEST['employee_user_id'] == 'all' ) ? ' selected="selected" ' : ''; ?> value="all">All</option>
                                                                 <?php foreach ($employees as $employee) { ?>
                                                                     <option <?php echo ( (isset($_REQUEST['user_type']) && $_REQUEST['user_type'] == 3) && isset($_REQUEST['employee_user_id']) && $_REQUEST['employee_user_id'] == $employee->id ) ? ' selected="selected" ' : ''; ?> value="<?php echo $employee->id; ?>"><?php echo $employee->fname . ' ' . $employee->lname; ?></option>
                                                                 <?php } ?> 
@@ -159,6 +161,7 @@
                                                             <th>Created by</th>
                                                             <th>Date Created</th>
                                                             <th>Status</th>
+                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -171,7 +174,14 @@
                                                                     <td data-th="Agent Name"><div><?php echo ucfirst($inquiry->a_fname . ' ' . $inquiry->a_lname); ?></div></td>
                                                                     <td data-th="Created by"><div><?php echo ucfirst($inquiry->u_fname . ' ' . $inquiry->u_lname); ?></div></td>
                                                                     <td data-th="Date Created"><div><?php echo date("d-M-Y", strtotime($inquiry->created_date)); ?></div></td>
+                                                                    <?php if($inquiry->status=='2'){ ?>
+                                                                    <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><?php echo $Action[$inquiry->status]; ?></div></td> 
+                                                                    <?php } else{ ?>
                                                                     <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?><?php if (!empty($inquiry->diff_ass_conf) && $inquiry->diff_ass_conf != 0) { ?>&nbsp;&nbsp;<span class="badge"><?php echo $inquiry->diff_ass_conf; ?></span><?php } ?></div></td> 
+                                                                    <?php } ?>
+                                                                    <td data-th="Actions">
+                                                                        <div><a data-toggle="modal" data-target="#myModal" class="btn btn-default btn-xs action-btn" onclick="setInquiryId(<?php echo $inquiry->id; ?>)" rel="tooltip" title="View Inquiry"><i class="fa fa-eye"></i></a></div>
+                                                                    </td>
                                                                 </tr>
                                                             <?php } ?>
                                                         <?php } else { ?>
@@ -192,6 +202,7 @@
                                                                 <th>Created by</th>
                                                                 <th>Date Created</th>
                                                                 <th>Status</th>
+                                                                
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -204,11 +215,17 @@
                                                                         <td data-th="Agent Name"><div><?php echo ucfirst($inquiry->a_fname . ' ' . $inquiry->a_lname); ?></div></td>
                                                                         <td data-th="Created by"><div><?php echo ucfirst($inquiry->u_fname . ' ' . $inquiry->u_lname); ?></div></td>
                                                                         <td data-th="Date Created"><div><?php echo date("d-M-Y", strtotime($inquiry->created_date)); ?></div></td>
+                                                                        <?php if($inquiry->status=='2'){ ?>
+                                                                        <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><?php echo $Action[$inquiry->status]; ?></div></td> 
+                                                                        <?php }else{ ?>
                                                                         <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?> <?php echo ($inquiry->status==4)?'('.$Agent_Action[$inquiry->inquiry_agent_status].')':''; ?> <?php if (!empty($inquiry->diff_ass_conf) && !empty($inquiry->diff_ass_conf)) {
                                                                             $dtF = new DateTime("@0");
                                                                             $dtT = new DateTime("@".$inquiry->diff_ass_conf);
                                                                             $diff = $dtF->diff($dtT)->format('%a days, %h hours, %i minutes and %s seconds');
-                                                                            ?>&nbsp;&nbsp;<span class="badge"><?php echo $diff; ?></span><?php } ?></div></td> 
+                                                                            ?>&nbsp;&nbsp;<span class="badge"><?php echo $diff; ?></span><?php } ?></div>
+                                                                        </td>
+                                                                        <?php } ?>
+                                                                         
                                                                     </tr>
                                                                 <?php } ?>
                                                             <?php } else { ?>
@@ -229,6 +246,49 @@
             </div>
         </div>
     </div>
+</div>
+   <!-- Modal -->
+<div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">View Inquiry Detail</h4>
+      </div>
+      <div class="modal-body">
+        <div id="inquiry_datail_popup">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+   <!-- Modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"  id="type"></h4>
+      </div>
+      <div class="modal-body" id="set_text">
+       <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>/index.php/Excelread/inquire_export" enctype="multipart/form-data">
+                <fieldset>
+                    <!-- <div id="set_text">
+
+                    </div> -->
+                </fieldset>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
 </div>
 <?php $this->load->view('footer'); ?>
 <script type="text/javascript">
@@ -267,11 +327,11 @@
             if($("#from").val()!=$("#to").val()){
                 dt = new Date();
             }else{
-                dt = new Date(phpdate.split("/")[2],phpdate.split("/")[0],phpdate.split("/")[1]);
+                dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
             }
             
             dt = dt.addDays(-1);
-            m = dt.getMonth().toString();
+            m = (dt.getMonth()+1).toString();
             m = (m.length<2)?('0'+m):m;
             d = dt.getDate().toString();
             d = (d.length<2)?('0'+d):d;
@@ -286,11 +346,11 @@
             if($("#from").val()!=$("#to").val()){
                 dt = new Date();
             }else{
-                dt = new Date(phpdate.split("/")[2],phpdate.split("/")[0],phpdate.split("/")[1]);
+                dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
             }
             
             dt = dt.addDays(1);
-            m = dt.getMonth().toString();
+            m = (dt.getMonth()+1).toString();
             m = (m.length<2)?('0'+m):m;
             d = dt.getDate().toString();
             d = (d.length<2)?('0'+d):d;
@@ -318,4 +378,34 @@
             }
         });
     });
+function setInquiryId(inquiryId)
+{
+
+   $.ajax({
+        type: "post",
+        url:baseurl+"index.php/inquiry/get_inquiry_recored",
+        data: 'inquiry_id='+inquiryId,
+        success: function(msg){
+            $("#inquiry_datail_popup").html(msg);
+        }
+    });
+ 
+}
+function viewmessage(id)
+{
+    $.ajax({
+        type: "post",
+        url:baseurl+"index.php/inquiry/get_sms_email_text_report",
+        data: 'id='+id,
+        success: function(msg){
+            var obj = jQuery.parseJSON(msg);
+          
+            $("#set_text").html(obj[0]);
+             $("#type").html(obj[1]);
+        }
+    });
+          
+        
+   
+}
 </script>

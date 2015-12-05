@@ -252,6 +252,7 @@ $this->load->view('leftmenu');
                                         <th>Property Status</th>
                                         <th>Price(€)</th>
                                         <th>image</th>
+                                        <th style="width: 55px">Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -261,7 +262,7 @@ $this->load->view('leftmenu');
                                     ?>
                                         <tr>
                                             <?php if(isset($search_detail[$i]->short_decs) && !empty($search_detail[$i]->short_decs)){ ?>
-                                            <td data-th='Property Description'><div><?php echo substr($search_detail[$i]->short_decs, 0, 20) ?></div></td>
+                                            <td data-th='Property Description'><div><?php echo substr(strip_tags($search_detail[$i]->short_decs), 0, 20) ?></div></td>
                                             <?php }else{
                                             echo "<td data-th='Property Description'><div></div> </td>";  
                                             } ?>
@@ -323,6 +324,16 @@ $this->load->view('leftmenu');
                                                 echo '<img src="'.base_url().'upload/property/100x100/noimage.jpg" width="75" height="75">';
                                                 echo "</div></td>";                                                  
                                              } ?>
+                                             <td data-th="Status">
+                                    <div>
+                                        <div class="sep"></div><div class="sep"></div><div class="sep"></div>
+                                        <?php if ($search_detail[$i]->status == 'Active') { ?>
+                                            <span style="width:10px;height:10px;display:inline-block;background:#5cb85c;"></span> Active
+                                        <?php } else { ?>
+                                            <span style="width:10px;height:10px;display:inline-block;background:#d9534f;"></span> Inactive
+                                        <?php } ?>
+                                    </div>    
+                                </td>
                                             <td data-th='Action'><div>
                                                 <?php
                                                 if($inquiry_flag == "1")

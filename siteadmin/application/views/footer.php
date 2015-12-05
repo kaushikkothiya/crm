@@ -1,15 +1,16 @@
 <!--Footer-->
+
   <div class="sep clearfix"></div>
-  <footer class="text-center app-footer"> <small class="text-muted">&copy; 2015 Monopolion - Real Estate.</small> </footer>
+  <footer class="text-center app-footer"> <small class="text-muted">&copy; <?php echo date('Y'); ?> Monopolion - Real Estate.</small> </footer>
   <!--Footer end--> 
 </div>
 <script type="text/javascript">var baseurl = '<?php echo base_url(); ?>';</script>
 <script type="text/javascript" src="<?php echo base_url(); ?>new/js/jquery.min.js"></script> 
+<script type="text/javascript" src="<?php echo base_url(); ?>js/datetimepicker/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.queryloader2.js"></script>
-<script type="text/javascript" src="<?php echo base_url(); ?>new/js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="<?php echo base_url(); ?>new/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>new/js/custom.js"></script>
 
-<script type="text/javascript" src="<?php echo base_url(); ?>js/datetimepicker/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/datetimepicker/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/datetimepicker/jquery-ui-timepicker-addon-i18n.min.js"></script>
 
@@ -54,12 +55,24 @@
             
             $('#example').DataTable({
               "lengthMenu": [ 15, 30, 45, 60, 75 ],
-                "order": [[ 0, "desc" ]]
+                "order": [[ 0, "desc" ]],
+		"columnDefs": [
+            	{
+                "targets": [ 0 ],
+                "visible": false
+            	}
+        	]	
              });
              
              $('#inquiry_list').DataTable({
               "lengthMenu": [ 15, 30, 45, 60, 75 ],
-                "order": [[ 7, "desc" ]]
+                "order": [[ 7, "desc" ]],
+		"columnDefs": [
+            	{
+                "targets": [ 0 ],
+                "visible": false
+            	}
+        	]	
              });
              $('#inquiry_list')
             .removeClass( 'display' )
@@ -70,9 +83,7 @@
             .removeClass( 'display' )
             .addClass('table table-striped table-bordered responsive-table');
             
-            
-            
-        } );
+        });
 
 function myOrientResizeFunction() {
     //$.cleditor.refresh();
