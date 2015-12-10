@@ -94,48 +94,50 @@ class MY_Controller extends CI_Controller {
             return false;
         }
     }
-
-
-    public function notifyUser($user,$subject,$message,$sms,$inquiry_id=0){
+   
+    public function notifyUser($user,$subject,$message,$sms,$inquiry_id=0,$mail_only=0){
                 
         $email_sent = false;
         $sms_sent = false;
-        if (!empty($user->email)) {
-            $email_sent = $this->sendEmail($user->email,$subject,$message);
-            // save Agent history
-            $history_text = $message;
-            $history_subject = $subject;
-            $history_type = "E-mail";
-            $history_reciever_email = $user->email;
-            $history_reciever_id = $user->id;
-            if(!empty($user->type)){
-                $history_reciever_usertype = "2";
-            }else{
-                $history_reciever_usertype = "1";
-            }
-            $history_inquiryid = $inquiry_id;
-        }
-        
-        if (!empty($user->mobile_no)) {
-            $this->load->model('user');
-            
-            $country_code = $this->user->get_contry_code($user->coutry_code);
-            if (!empty($country_code)) {
-                $mcode = substr($country_code[0]->prefix_code, 1);
-                $mobile_code = "00" . $mcode;
-                $sms_sent = $this->sendSMS($user, $mobile_code,$sms);
-                
-                $history_text_sms = $sms;
-                $history_subject_sms = $subject;
-                $history_type_sms = "SMS";
-                $history_reciever = $mobile_code . $user->mobile_no;
+        if($mail_only !=2) {
+            if (!empty($user->email)) {
+                $email_sent = $this->sendEmail($user->email,$subject,$message);
+                // save Agent history
+                $history_text = $message;
+                $history_subject = $subject;
+                $history_type = "E-mail";
+                $history_reciever_email = $user->email;
                 $history_reciever_id = $user->id;
-                if(!empty($user->type)){
+                if(!empty($user->type)) {
                     $history_reciever_usertype = "2";
                 }else{
                     $history_reciever_usertype = "1";
                 }
                 $history_inquiryid = $inquiry_id;
+            }
+        }
+        if($mail_only !=1) {
+            if (!empty($user->mobile_no)) {
+                $this->load->model('user');
+                
+                $country_code = $this->user->get_contry_code($user->coutry_code);
+                if (!empty($country_code)) {
+                    $mcode = substr($country_code[0]->prefix_code, 1);
+                    $mobile_code = "00" . $mcode;
+                    $sms_sent = $this->sendSMS($user, $mobile_code,$sms);
+                    
+                    $history_text_sms = $sms;
+                    $history_subject_sms = $subject;
+                    $history_type_sms = "SMS";
+                    $history_reciever = $mobile_code . $user->mobile_no;
+                    $history_reciever_id = $user->id;
+                    if(!empty($user->type)){
+                        $history_reciever_usertype = "2";
+                    }else{
+                        $history_reciever_usertype = "1";
+                    }
+                    $history_inquiryid = $inquiry_id;
+                }
             }
         }
         
@@ -146,13 +148,31 @@ class MY_Controller extends CI_Controller {
             $history_type = "SMS/E-mail";
         }
         
-        if($sms_sent){
+        if($sms_sent) {
            $this->inquiry_model->saveSmsEmailHistory($history_text_sms, $history_subject_sms, $history_type_sms, $history_reciever, $history_reciever_id, $history_reciever_usertype, $history_inquiryid); 
         }
         
-        if($email_sent){
+        if($email_sent) {
             $this->inquiry_model->saveSmsEmailHistory($history_text, $history_subject, $history_type, $history_reciever_email, $history_reciever_id, $history_reciever_usertype, $history_inquiryid);
         }
-        
-    }    
+    }
+    
+    function get_propertytypeby_id($id) {
+        $data['property_type'] = array('1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
+        return $data['property_type'][$id];
+    }
+    
+    function get_architectural_design($id) {
+        $data['get_architectural_design'] = array('1'=>'Contemporary','2' =>'Modern','3' =>'Classic');
+        return $data['get_architectural_design'][$id];
+    }
+    function get_room_size_id($id) {
+        $data['get_room_size_id'] = array('1'=>'Small','2' =>'Medium','3' =>'Large');
+        return $data['get_room_size_id'][$id];
+    }
+    
+    function property_aquired_type($id) {
+        $data['aquired_type'] = array('1'=>'Sale','2' =>'Rent','3' =>'Both(Sale/Rent)');
+        return $data['aquired_type'][$id];
+    }
 }
