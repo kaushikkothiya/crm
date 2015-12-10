@@ -32,25 +32,25 @@
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php if(isset($confirm_employee) && !empty($confirm_employee)){ ?>
+                                        <?php if($type=="Confirm Appointment"){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $confirm_employee['employee_name'];?></b>,</p>
-                                            <p>for the property with Reference No <?php echo $confirm_employee['property_ref_no']; ?> will be confirmed by our agent: <?php echo $confirm_employee['agent_name']?></p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
+                                            <p>for the property with Reference No <?php echo $property_ref_no; ?> will be confirmed by our agent: <?php echo $agent_name?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                           </td>   
-                                        <?php }elseif (isset($cancle_employee) && !empty($cancle_employee)) { ?>
+                                        <?php }if($type=="Submit"){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $cancle_employee['employee_name'];?></b>,</p>
-                                            <p>for the property with Reference No <?php echo $cancle_employee['property_ref_no']; ?> will be cancle by our agent: <?php echo $cancle_employee['agent_name']?></p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
+                                            <p>for the property with Reference No <?php echo $property_ref_no; ?> will be cancle by our agent: <?php echo $agent_name?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>
-                                         <?php   }elseif (isset($reschedule_employee) && !empty($reschedule_employee)) {  ?>
+                                        <?php }elseif ($type=="reschedule") {  ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $reschedule_employee['employee_name'];?></b>,</p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
                                             <p>Your appointment has been reschedule</p>
-                                            <p>for the property with Reference No <?php echo $reschedule_employee['property_ref_no']; ?> will be reschedule by our agent: <?php echo $reschedule_employee['agent_name']?></p>
+                                            <p>for the property with Reference No <?php echo $property_ref_no; ?> will be reschedule by our agent: <?php echo $agent_name?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>

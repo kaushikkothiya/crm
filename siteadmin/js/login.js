@@ -7,8 +7,8 @@ $('#manage_form').validate({
                         password:{required:true},
                         },
                 messages:{
-                         username:{required:"Username must not be  empty"},     
-                         password:{required:"Password must not be  empty"},
+                         username:{required:"Username can not be blank"},     
+                         password:{required:"Password can not be blank"},
                          
                         },
                  showErrors:function(errorMap, errorList){

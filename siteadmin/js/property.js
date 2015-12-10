@@ -52,6 +52,7 @@ $('#manage_form').validate({
                  rules:{
                         fname:{
                           //required:true
+                          noHTML: true,
                            required: function (element) {
                        
                                  if($('#lname').val() !=''){
@@ -64,6 +65,9 @@ $('#manage_form').validate({
                                  }  
                               },
                         }, 
+                        lname:{
+                          noHTML: true,
+                        },
                         // email:{
                         //   required:true,
                         //   email:true,
@@ -130,21 +134,6 @@ $('#manage_form').validate({
                         //       check_bedrooms:true
                         //       },
                         bathrooms:{
-                              // required: function (element) {
-                       
-                              //    if($('#property_category').val() =='11' || $('#property_category').val() =='9'){
-                              //        return '';                            
-                              //    }
-                              //    else
-                              //    {
-                              //       if($('#bathrooms').val() =='0'){
-                              //         return true;
-                              //       }else{
-                              //         return '';
-                              //       }
-                                    
-                              //    }  
-                              // },
                               check_bathrooms:true
                               },
                         link_url:{
@@ -169,6 +158,7 @@ $('#manage_form').validate({
                               url: true,
                               },      
                         reference_no:{
+                          noHTML: true,
                           required:true,
                           remote: {
                                 url:baseurl+"index.php/home/property_ref_check",

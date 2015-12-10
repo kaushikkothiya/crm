@@ -24,7 +24,7 @@ $(document).ready(function(){
         },
         messages: {
             'password' : {
-                required : 'Please enter current passwords.',
+                required : 'Please enter current password.',
                 remote: 'Your current passwords password is wrong'
             },
             'new_password' : {

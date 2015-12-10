@@ -7,8 +7,8 @@ $('#manage_form').validate({
                     },    
                 messages:{
                          agent:{required:"Please select agent"},     
-                         start_date:{required:"Start date must not be  empty"},
-                         end_date:{required:"End date must not be  empty"},
+                         start_date:{required:"Start date can not be blank"},
+                         end_date:{required:"End date can not be blank"},
                          
                         },
                        

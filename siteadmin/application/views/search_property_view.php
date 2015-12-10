@@ -228,9 +228,7 @@ $this->load->view('leftmenu');
                 </div>
                 </form>
                 
-                <?php
-                if(!empty($search_detail)){
-                ?> 
+                 
                 <hr>
                  <div id="property_search_result">
                 <div class="row">   
@@ -247,17 +245,21 @@ $this->load->view('leftmenu');
                                     <tr>
                                         <th>Property Description</th>
                                         <th>Reference No</th>
+                                        <th style="width: 125px">Title</th>
                                         <th>Property Area</th>
                                         <th>Address</th>
-                                        <th>Property Status</th>
+                                        <!-- <th>Property Status</th> -->
                                         <th>Price(€)</th>
                                         <th>image</th>
-                                        <th style="width: 55px">Status</th>
+                                        <!-- <th style="width: 55px">Status</th> -->
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                     <tbody>
-                                    <?php for ($i = 0; $i < count($search_detail); $i++) {
+
+                                    <?php 
+                                    $my_con= new MY_Controller; 
+                                    for ($i = 0; $i < count($search_detail); $i++) {
                                         //$short_decs   = substr($search_detail[$i]->short_decs, 0, 20);
                                     ?>
                                         <tr>
@@ -272,7 +274,7 @@ $this->load->view('leftmenu');
                                             <?php }else{
                                             echo "<td data-th='Reference No'><div></div> </td>";  
                                             } ?>
-                                            
+                                           <td data-th='Title'><div><?php if(!empty($search_detail[$i]->bedroom) && $search_detail[$i]->bedroom !=0){ echo $search_detail[$i]->bedroom.' Bedroom '; }else{ echo ' '; } ?><?php if(!empty($search_detail[$i]->property_type) && $search_detail[$i]->property_type !=0){ echo $my_con->get_propertytypeby_id($search_detail[$i]->property_type); }else{ echo ''; } ?><?php if(!empty($search_detail[$i]->type) && $search_detail[$i]->type !=0){ echo ' for '.$my_con->property_aquired_type($search_detail[$i]->type); }else{ echo ''; } ?></div></td>
                                             <?php if(isset($search_detail[$i]->title) && !empty($search_detail[$i]->title)){ ?>
                                             <td data-th='Property Area'><div><?php echo $search_detail[$i]->title ?></div></td>
                                             <?php }else{
@@ -286,14 +288,14 @@ $this->load->view('leftmenu');
                                             } ?>
                                           
                                           <?php  if($search_detail[$i]->type =='1'){
-                                            echo "<td data-th='Property Status'><div>" .'Sale'. "</div></td>";
+                                           // echo "<td data-th='Property Status'><div>" .'Sale'. "</div></td>";
                                             if (!empty($search_detail[$i]->sale_price)) {
                                                 echo "<td data-th='Price(€)'><div>" .'€'. number_format($search_detail[$i]->sale_price, 0, ".", ","). "</div></td>";
                                             }else{
                                                 echo "<td data-th='Price(€)'><div></div> </td>";    
                                             }
                                         }elseif ($search_detail[$i]->type =='2') {
-                                           echo "<td data-th='Property Status'><div>" .'Rent'. "</div></td>";
+                                           //echo "<td data-th='Property Status'><div>" .'Rent'. "</div></td>";
                                            
                                            if (!empty($search_detail[$i]->rent_price)) {
                                                 echo "<td data-th='Price(€)'><div>" .'€'.number_format($search_detail[$i]->rent_price, 0, ".", ","). "</div></td>";    
@@ -302,21 +304,21 @@ $this->load->view('leftmenu');
                                            }
                                            
                                         }elseif ($search_detail[$i]->type =='3') {
-                                           echo "<td data-th='Property Status'><div>" .'Both(Sale/Rent)'. "</div></td>";
+                                           //echo "<td data-th='Property Status'><div>" .'Both(Sale/Rent)'. "</div></td>";
                                            if (!empty($search_detail[$i]->sale_price) || !empty($search_detail[$i]->rent_price)) {
                                                 echo "<td data-th='Price(€)'><div> SP. €".number_format($search_detail[$i]->sale_price, 0, ".", ",")." / RP. €".number_format($search_detail[$i]->rent_price, 0, ".", ","). "</div></td>";
                                             }else{
                                                 echo "<td data-th='Price(€)'><div></div> </td>";    
                                             }                                      
                                         }else{
-                                            echo "<td data-th='Property Status'><div></div> </td>";
+                                           // echo "<td data-th='Property Status'><div></div> </td>";
                                             echo "<td data-th='Price(€)'><div></div></td>";
                                         }?>
                                             <!-- <td>€<?php echo $search_detail[$i]->rent_price ?></td> -->
-                                         <?php if(isset($search_detail[$i]->image) && !empty($search_detail[$i]->image)){ ?>   
+                                         <?php if(isset($search_detail[$i]->extra_image) && !empty($search_detail[$i]->extra_image)){ ?>   
                                             <td data-th='image'>
                                                 <div>
-                                                    <img src="<?php echo base_url().'upload/property/'.$search_detail[$i]->image; ?>" width="75" height="75">
+                                                    <img src="<?php echo base_url().'img_prop/100x100/'.$search_detail[$i]->extra_image; ?>" width="75" height="75">
                                                 </div>
                                             </td>
                                             <?php }else{ 
@@ -324,7 +326,7 @@ $this->load->view('leftmenu');
                                                 echo '<img src="'.base_url().'upload/property/100x100/noimage.jpg" width="75" height="75">';
                                                 echo "</div></td>";                                                  
                                              } ?>
-                                             <td data-th="Status">
+                                             <!-- <td data-th="Status">
                                     <div>
                                         <div class="sep"></div><div class="sep"></div><div class="sep"></div>
                                         <?php if ($search_detail[$i]->status == 'Active') { ?>
@@ -333,7 +335,7 @@ $this->load->view('leftmenu');
                                             <span style="width:10px;height:10px;display:inline-block;background:#d9534f;"></span> Inactive
                                         <?php } ?>
                                     </div>    
-                                </td>
+                                </td> -->
                                             <td data-th='Action'><div>
                                                 <?php
                                                 if($inquiry_flag == "1")
@@ -360,6 +362,9 @@ $this->load->view('leftmenu');
                                     <?php } ?>
                                     </tbody>
                                 </table>
+                                 <?php
+                                  if(!empty($search_detail)){
+                                  ?>
                                  <ul  class="sendBox">
                                         <center>
                                         <input type="hidden" id="reference_number" name="reference_number">
@@ -411,12 +416,15 @@ $this->load->view('leftmenu');
                                             ?>       
                                         </center>
                                     </ul>
+                                     <?php        
+                                            }
+                                            ?>
                                  </form>
                             </div>
                         </div>
                     </div>
                     </div>
-                    <?php } ?>
+                    <?php //} ?>
                 </div>
             </div>
           </div>

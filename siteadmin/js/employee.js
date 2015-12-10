@@ -1,5 +1,6 @@
 $(document).ready(function(){
 //alert($("#country_id").val());
+
  $.validator.addMethod('check_country', function (value,element) { 
      return this.optional(element) || value != 0;   
     }, "Please select country");
@@ -12,6 +13,7 @@ $('#manage_form').validate({
                  rules:{
                         fname:{
                           //required:true
+                          noHTML: true,
                           required: function (element) {
                        
                                  if($('#lname').val() !=''){
@@ -24,7 +26,7 @@ $('#manage_form').validate({
                                  }  
                               },
                         }, 
-                        //lname:{required:true},
+                        lname:{noHTML: true},
                         email:{
                           required:true,
                           email:true,
@@ -72,11 +74,11 @@ $('#manage_form').validate({
                        // email:{required:true},
                         },
                 messages:{
-                         fname:{required:"First name or last name must not be  empty"},     
+                         fname:{required:"First name and last name can not be blank"},     
                          //lname:{required:"last name must not be  empty"},
-                         email:{required:"Email must not be  empty",email:"Enter valid email",remote: 'your email is already exits'},
-                         password:{required:"Password must not be  empty"},
-                         mobile_no:{required:"Mobile number must not be empty",number:"Mobile number must contain only digits",remote: 'your Mobile number is already exit'},     
+                         email:{required:"Email address can not be blank",email:"Enter valid email address",remote: 'your email address is already exits'},
+                         password:{required:"Password can not be blank"},
+                         mobile_no:{required:"Mobile number can not be blank",number:"Mobile number enter only digits",remote: 'your Mobile number is already exit'},     
                          //country_id:{required:"Please Select Country"},                          
                          
                         },

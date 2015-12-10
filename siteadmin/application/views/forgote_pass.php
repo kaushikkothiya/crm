@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <link rel="icon" href="<?php echo base_url(); ?>images/favicon.ico">
-        <title><?php echo $this->config->item('TITLE'); ?>- Real Estate</title>
+        <title>Monopolion - Real Estate</title>
         <!-- Bootstrap core CSS -->
         <link href="<?php echo base_url(); ?>new/css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom styles for this template -->
@@ -27,7 +27,11 @@
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-                        <?php echo form_open('verification/forgote_password'); ?>
+            <?php  if($this->session->flashdata('danger')){ ?>
+            <div class="text-center alert alert-danger"><?php echo $this->session->flashdata('danger'); ?></div>
+            <div class="sep"></div>
+            <?php  } ?>
+                        <?php echo form_open('home/forgote_password'); ?>
                         <h3 class="form-signin-heading">Forgot password?</h3>
                         <label for="inputEmail" class="sr-only">Email address</label>
                         <?php $pass_arr = array(
@@ -38,7 +42,7 @@
                             'value' => '',
                             'size' => '30',
                             'class' => 'form-control input-lg',
-                            'placeholder' => 'Password',
+                            'placeholder' => 'Please enter email',
                             'required'=>'required',
                         );
                         echo form_input($pass_arr);

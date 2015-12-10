@@ -10,8 +10,25 @@ $(document).ready(function(){
 
 $('#manage_form').validate({
                  rules:{
-                        fname:{required:true}, 
-                        lname:{required:true},
+                       // fname:{required:true,noHTML: true},
+                        fname:{
+                          //required:true
+                          noHTML: true,
+                          required: function (element) {
+                       
+                                 if($('#lname').val() !=''){
+                                  return '';                               
+                                 }
+                                 else
+                                 {
+                                    return true;
+                                    
+                                 }  
+                              },
+                        }, 
+                        lname:{
+                          noHTML: true
+                        },
                         email:{
                           required:true,
                           email:true,
@@ -54,10 +71,11 @@ $('#manage_form').validate({
                        // email:{required:true},
                         },
                 messages:{
-                         fname:{required:"First name must not be  empty"},     
-                         lname:{required:"last name must not be  empty"},
-                         email:{required:"Email must not be  empty",email:"Enter valid email",remote: 'your Email is already exit'},
-                         mobile_no:{required:"Mobile number must not be empty",number:"Mobile number must contain only digits",remote: 'your Mobile number is already exit'},     
+                         fname:{required:"First name and last name can not be blank"}, 
+                         //fname:{required:"First name can not be blank"},     
+                         //lname:{required:"last name can not be blank"},
+                         email:{required:"Email address can not be blank",email:"Enter valid email address",remote: 'Your email address is already exit'},
+                         mobile_no:{required:"Mobile number can not be blank",number:"Mobile number enter only digits",remote: 'your Mobile number is already exit'},     
                          //country_id:{required:"Please Select Country"},                          
                          
                         },

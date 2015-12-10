@@ -4,7 +4,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 require_once FCPATH  ."application/third_party/Classes/PHPExcel.php";
 //require_once FCPATH  .'application/third_party/Classes/PHPExcel/IOFactory.php';
 
-class Excelread extends CI_Controller {
+class Excelread extends MY_Controller {
 
 	public function __construct() {
         parent::__construct();
@@ -160,7 +160,8 @@ class Excelread extends CI_Controller {
          				'coutry_code'=> $country_id1,
          				'mobile'=> $value['AG'],
          				'email'=>$value['AH'],
-         				'created_date'=>date('Y-m-d H:i:s')
+         				'created_date'=>date('Y-m-d H:i:s'),
+         				'updated_date'=>date('Y-m-d H:i:s')
          				);
 						
 						$property_id = $this->Blog_model->propertyinsert_entry($data_prop);
@@ -396,6 +397,7 @@ class Excelread extends CI_Controller {
 	         			 	'property_id' => $propid,
 	         			 	'agent_id' => $agent_id, 
 	         				'created_date' => $value['A'],
+	         				'updated_date' => $value['A'],
 	         				'created_by' => $created_id
 	         				);
 							

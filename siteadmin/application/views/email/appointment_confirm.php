@@ -32,24 +32,24 @@
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php if(isset($confirm) && !empty($confirm)){ ?>
+                                        <?php if($type=="Confirm Appointment"){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $confirm['customer_name'];?></b>,</p>
-                                            <p>Your appointment for the property with Reference No :<?php echo $confirm['property_ref_no']; ?>, has been confirmed on <?php echo $confirm['appointment_start'].' to '.$confirm['appointment_end'] ; ?>. For any further info kindly contact our Agent: <?php echo $confirm['agent_name'].', Mobile Number: +'.$confirm['agent_mobile']; ?> or 8000 7000</p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
+                                            <p>Your appointment for the property with Reference No :<?php echo $property_ref_no; ?>, has been confirmed on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                           </td>   
-                                        <?php }elseif (isset($cancle) && !empty($cancle)) { ?>
+                                        <?php }if($type=="Submit"){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $cancle['customer_name'];?></b>,</p>
-                                            <p>your appointment for the property with Reference No :<?php echo $cancle['property_ref_no']; ?>, has been cancelled on <?php echo $cancle['appointment_start'].' to '.$cancle['appointment_end'] ; ?>. For any further info kindly contact our Agent: <?php echo $cancle['agent_name'].', Mobile Number: +'.$cancle['agent_mobile']; ?> or 8000 7000</p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
+                                            <p>your appointment for the property with Reference No :<?php echo $data['property_ref_no']; ?>, has been cancelled on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>
-                                         <?php   }elseif (isset($reschedule) && !empty($reschedule)) {  ?>
+                                        <?php }elseif ($type=="reschedule") {  ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $reschedule['customer_name'];?></b>,</p>
-                                            <p>your appointment for the property with Reference No :<?php echo $reschedule['property_ref_no']; ?>, has been rescheduled on <?php echo $reschedule['appointment_start'].' to '.$reschedule['appointment_end'] ; ?>. For any further info kindly contact our Agent: <?php echo $reschedule['agent_name'].', Mobile Number: +'.$reschedule['agent_mobile']; ?> or 8000 7000</p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
+                                            <p>your appointment for the property with Reference No :<?php echo $property_ref_no; ?>, has been rescheduled on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>

@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class NewsLetter extends CI_Controller {
+class NewsLetter extends MY_Controller {
 
     function __construct() {
         parent::__construct();
@@ -132,6 +132,13 @@ class NewsLetter extends CI_Controller {
                     "value" => $sale_range
                 );
             }
+            
+            $group_id = '16581';
+            $segment['conditions'][] = array(
+                "field" => 'interests-' . $group_id,
+                "op" => "none",
+                "value" => array('0')
+            );
            
             
 //            $segment_id = $mc->lists->segmentAdd( $list_id,
@@ -248,7 +255,6 @@ class NewsLetter extends CI_Controller {
                 $sale_group = $grp['groups'];
             }
         }
-        
         
         $data = array('rent_group'=>$rent_group,'sale_group'=>$sale_group);
         $this->load->view('newsletter/email', $data);

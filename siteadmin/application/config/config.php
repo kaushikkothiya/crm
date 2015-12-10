@@ -18,7 +18,7 @@ if (!defined('BASEPATH'))
   |
  */
 $config['base_url'] = "http://localhost/crm/siteadmin";
-
+$config['TITLE'] = "Monopolion";
 /*
   |--------------------------------------------------------------------------
   | Index File
@@ -381,4 +381,6 @@ $config['user_list'] =array('1'=>'Rent Users','2'=>'Sale Users','3'=>'Rent/Sale 
 $config['kitchen_list'] =array('0'=>'Please Select','1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5');
 /* End of file config.php */
 /* Location: ./application/config/config.php */
-date_default_timezone_set('Asia/Calcutta');
+date_default_timezone_set('Europe/Nicosia');
+$config['email_from'] = "info@monopolion.com";
+$config['title'] = "Monopolion";

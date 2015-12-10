@@ -20,11 +20,12 @@
 </head>
 
 <body class="property-detail-page">
-	
+	<?php if(!empty($data)){ ?>
 <div class="property-detail-container">
      <header class="header-top">
           <a href="javascript:;" class="logo"><img src="<?php echo base_url(); ?>images/logo.png" alt="" /></a>
      </header>
+     
      <section class="showcase"> <!-- showcase -->
      <h1 class="property-name-titel"><?php if(!empty($data[0]->bedroom)){echo $data[0]->bedroom.' Bedroom';}else{ echo " "; } ?> <?php  if(!empty($property_type)){echo $property_type.' for'; }else{ echo " ";} ?> <?php if($data[0]->type ==1){ echo "Sale"; }else if($data[0]->type ==2){ echo "Rent"; }elseif($data[0]->type ==3) { echo "Sale/Rent"; }else{ echo "";} ?></h1>
        <div id="jssor_1" style="position: relative; margin: 0 auto; top: 0px; left: 0px; width: 800px; height: 456px; overflow: hidden; visibility: hidden; background-color: #24262e;">
@@ -38,13 +39,13 @@
             if(!empty($image)){
             foreach ($image as $key => $value) { ?>
 	        <div data-p="144.50" style="display: none;">
-	          <img data-u="image" src='<?php echo base_url() ?>img_prop/<?php echo trim($value->image); ?>'>
+            <img data-u="image" src='<?php echo base_url() ?>img_prop/<?php echo trim($value->image); ?>'>
 	          <img data-u="thumb" src='<?php echo base_url() ?>img_prop/<?php echo trim($value->image); ?>'>
 	        </div>
 	        <?php } }else{ ?>
 	        <div data-p="144.50" style="display: none;">
-	          <img data-u="image" src="<?php echo base_url().'upload/property/100x100/noimage.jpg'; ?>" />
-	          <img data-u="thumb" src="<?php echo base_url().'upload/property/100x100/noimage.jpg'; ?>" />
+	          <img data-u="image" src="<?php echo base_url().'upload/property/noimage.png'; ?>" />
+	          <img data-u="thumb" src="<?php echo base_url().'upload/property/noimage.png'; ?>" />
 	        </div>
 	        <?php } ?>
           </div>
@@ -361,6 +362,47 @@
             </ul>
          </div>
          <?php } ?>
+      
+      <?php if(!empty($data[0]->url_link)){
+        $url= explode(',', $data[0]->url_link);
+      ?>
+         <h4>Other Links</h4>
+         <div class="pro-block otherlinks-block"><!-- pro-block -->
+            <?php if(!empty($url[0])){ ?>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="url-links-row">
+                    <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
+                    <a href="javascript:;"><?php echo $url[0]; ?> </a>
+                  </div>
+                </div>
+            </div>
+            <?php } ?>
+
+            <?php if(!empty($url[1])){ ?>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="url-links-row">
+                    <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
+                    <a href="javascript:;"><?php echo $url[1]; ?> </a>
+                  </div>
+                </div>
+            </div>
+            <?php } ?>
+
+            <?php if(!empty($url[2])){ ?>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="url-links-row">
+                    <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
+                    <a href="javascript:;"><?php echo $url[2]; ?> </a>
+                  </div>
+                </div>
+            </div>
+            <?php } ?>
+
+         </div><!-- /pro-block -->
+         <?php } ?>
          <h4>Map </h4>
             <input type="text" name="search_address" readonly id="search_address" value="<?php echo (empty($data[0]->map_adress)) ? 'limassol, cyprus' :$data[0]->map_adress ?>" onblur="showAddress(this.value);">
           	<div class="clear"></div>
@@ -378,7 +420,12 @@
      </div>
      </section>
 </div>
-<footer class="footer">&copy; 2015 Monopolion - Real Estate.</footer>
+ <?php }else{ ?>
+ <center>
+ <h3>Ooops! The requested page does not found.! </h3>
+</center>
+ <?php } ?>
+<footer class="footer">&copy; <?php echo date('Y'); ?> Monopolion - Real Estate.</footer>
 
 <script type="text/javascript" src="<?php echo base_url(); ?>new/js/jquery.min.js"></script> 
 <script type="text/javascript" src="<?php echo base_url(); ?>new/js/bootstrap.min.js"></script>
@@ -391,8 +438,8 @@
        $(document).ready(function () {
 
           var map;
-      var addressField;
-      var geocoder;
+          var addressField;
+          var geocoder;
 
         
               //var geocoder = new google.maps.Geocoder();
@@ -434,94 +481,94 @@
               geocoder = new google.maps.Geocoder();
 
               // Init searchbox
-              initSearchBox();
+              //initSearchBox();
               }       
            });
             
 
-       function initSearchBox() {
-          // Add searchbox
-          var searchControlDiv = document.createElement('div');
-          var searchControl = new SearchControl(searchControlDiv, map);
+      //  function initSearchBox() {
+      //     // Add searchbox
+      //     var searchControlDiv = document.createElement('div');
+      //     var searchControl = new SearchControl(searchControlDiv, map);
 
-          searchControlDiv.index = 1;
-          map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchControlDiv);
-      }
+      //     searchControlDiv.index = 1;
+      //     map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchControlDiv);
+      // }
       
 
-    function SearchControl(controlDiv, map) {
-         controlDiv.style.padding = '5px';
+    // function SearchControl(controlDiv, map) {
+    //      controlDiv.style.padding = '5px';
 
-          var controlUI = document.createElement('div');
-          controlUI.style.backgroundColor = 'white';
-          controlUI.style.borderStyle = 'solid';
-          controlUI.style.borderWidth = '2px';
-          controlUI.style.cursor = 'pointer';
-          controlUI.style.textAlign = 'center';
-          controlUI.title = 'Sök ex: gatunamn, stad';
-          controlDiv.appendChild(controlUI);
+    //       var controlUI = document.createElement('div');
+    //       controlUI.style.backgroundColor = 'white';
+    //       controlUI.style.borderStyle = 'solid';
+    //       controlUI.style.borderWidth = '2px';
+    //       controlUI.style.cursor = 'pointer';
+    //       controlUI.style.textAlign = 'center';
+    //       controlUI.title = 'Sök ex: gatunamn, stad';
+    //       controlDiv.appendChild(controlUI);
 
-          // Create the search box
-          var controlSearchBox = document.getElementById("search_address"); //document.createElement('input');
+    //       // Create the search box
+    //       var controlSearchBox = document.getElementById("search_address"); //document.createElement('input');
          
-          // Initiat autocomplete
-          $(function () {
-              $(controlSearchBox).autocomplete({
-                  source: function (request, response) {
+    //       // Initiat autocomplete
+    //       $(function () {
+    //           $(controlSearchBox).autocomplete({
+    //               source: function (request, response) {
 
-                      if (geocoder == null) {
-                          geocoder = new google.maps.Geocoder();
-                      }
+    //                   if (geocoder == null) {
+    //                       geocoder = new google.maps.Geocoder();
+    //                   }
 
-                      geocoder.geocode({
-                          'address': request.term
-                      }, function (results, status) {
-                          if (status == google.maps.GeocoderStatus.OK) {
-                              var searchLoc = results[0].geometry.location;
-                              var lat = results[0].geometry.location.lat();
-                              var lng = results[0].geometry.location.lng();
-                              var latlng = new google.maps.LatLng(lat, lng);
-                              var bounds = results[0].geometry.bounds;
+    //                   geocoder.geocode({
+    //                       'address': request.term
+    //                   }, function (results, status) {
+    //                       if (status == google.maps.GeocoderStatus.OK) {
+    //                           var searchLoc = results[0].geometry.location;
+    //                           var lat = results[0].geometry.location.lat();
+    //                           var lng = results[0].geometry.location.lng();
+    //                           var latlng = new google.maps.LatLng(lat, lng);
+    //                           var bounds = results[0].geometry.bounds;
 
-                              geocoder.geocode({
-                                  'latLng': latlng
-                              }, function (results1, status1) {
-                                  if (status1 == google.maps.GeocoderStatus.OK) {
-                                      if (results1[1]) {
-                                          response($.map(results1, function (loc) {
-                                              return {
-                                                  label: loc.formatted_address,
-                                                  value: loc.formatted_address,
-                                                  bounds: loc.geometry.bounds
-                                              }
-                                          }));
-                                      }
-                                  }
-                              });
-                          }
-                      });
-                  },
-                  select: function (event, ui) {
-                      var pos = ui.item.position;
-                      var lct = ui.item.locType;
-                      var bounds = ui.item.bounds;
+    //                           geocoder.geocode({
+    //                               'latLng': latlng
+    //                           }, function (results1, status1) {
+    //                               if (status1 == google.maps.GeocoderStatus.OK) {
+    //                                   if (results1[1]) {
+    //                                       response($.map(results1, function (loc) {
+    //                                           return {
+    //                                               label: loc.formatted_address,
+    //                                               value: loc.formatted_address,
+    //                                               bounds: loc.geometry.bounds
+    //                                           }
+    //                                       }));
+    //                                   }
+    //                               }
+    //                           });
+    //                       }
+    //                   });
+    //               },
+    //               select: function (event, ui) {
+    //                   var pos = ui.item.position;
+    //                   var lct = ui.item.locType;
+    //                   var bounds = ui.item.bounds;
 
-                      if (bounds) {
-                          map.fitBounds(bounds);
-                      }
-                  }
-              });
-          });
+    //                   if (bounds) {
+    //                       map.fitBounds(bounds);
+    //                   }
+    //               }
+    //           });
+    //       });
 
-          // Set CSS for the control interior.
-          var controlText = document.createElement('div');
-          controlText.style.fontFamily = 'Arial,sans-serif';
-          controlText.style.fontSize = '12px !important';
-          controlText.style.paddingLeft = '4px !important';
-          controlText.style.paddingRight = '4px !important';
-          controlText.appendChild(controlSearchBox);
-          controlUI.appendChild(controlText);
-      }
+    //       // Set CSS for the control interior.
+    //       var controlText = document.createElement('div');
+    //       controlText.style.fontFamily = 'Arial,sans-serif';
+    //       controlText.style.fontSize = '12px !important';
+    //       controlText.style.paddingLeft = '4px !important';
+    //       controlText.style.paddingRight = '4px !important';
+    //       controlText.appendChild(controlSearchBox);
+    //       controlUI.appendChild(controlText);
+    //   }
     });
 </script>
 <script>

@@ -21,7 +21,7 @@ $('#manage_form').validate({
           },
           messages: {
         
-          'email':{required:"Email must not be  empty",email:"Enter valid email",remote: 'Your email is not exits'},
+          'email':{required:"Email address can not be blank",email:"Enter valid email address",remote: 'Your email address is not exits'},
             
             'new_password' : {
                 required: 'Please enter New password.',

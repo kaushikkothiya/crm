@@ -213,48 +213,53 @@ $this->load->view('leftmenu');
                                 <tr>
                                     <th hidden>Id</th>
                                     <th>Reference No</th>
+                                    <th>Title</th>
                                     <th>Agent Name</th>
                                     <th>Property Area</th>
-                                    <th style="max-width: 70px">Property Status</th>
-                                    <th style="text-align: center; max-width: 80px">Price(€)</th>
-                                    <th style="min-width: 60px">Furnish Type</th>
+                                    <!-- <th>Property Status</th> -->
+                                    <th>Price(€)</th>
+                                    <th>Furnish Type</th>
                                     <th>Image</th>
-                                    <th style="width: 55px">Status</th>
-                                    <th style="min-width: 135px">Action</th>
+                                    <th>Status</th>
+                                    <th style="min-width: 70px">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="property_search_result">
                                 <?php
+                                $my_con= new MY_Controller; 
                                 for ($i = 0; $i < count($user); $i++) {
                                     echo "<tr>";
                                     echo "<td data-th='id.' hidden><div>" . $user[$i]->id . "</div></td>";
                                     echo "<td data-th='Reference No.'><div>" . $user[$i]->reference_no . '</br></br>Created on ' . date("d-M-Y", strtotime($user[$i]->created_date)) . '</br></br>Updated on  ' . date("d-M-Y", strtotime($user[$i]->updated_date)) . "</div></td>";
+                                    ?>
+                                    <td data-th='Title'><div><?php if(!empty($user[$i]->bedroom) && $user[$i]->bedroom !=0){ echo $user[$i]->bedroom.' Bedroom '; }else{ echo ' '; } ?><?php if(!empty($user[$i]->property_type) && $user[$i]->property_type !=0){ echo $my_con->get_propertytypeby_id($user[$i]->property_type); }else{ echo ' '; } ?><?php if(!empty($user[$i]->type) && $user[$i]->type !=0){ echo ' for '.$my_con->property_aquired_type($user[$i]->type); }else{ echo ''; } ?></div></td>
+                                    <?php 
                                     echo "<td data-th='Agent Name'><div>" . $user[$i]->fname . ' ' . $user[$i]->lname . "</div></td>";
                                     echo "<td data-th='Property Area'><div>" . $user[$i]->title . "</div></td>";
 
                                     if ($user[$i]->type == '1') {
-                                        echo "<td data-th='Property Status'><div>" . 'Sale' . "</div></td>";
+                                        //echo "<td data-th='Property Status'><div>" . 'Sale' . "</div></td>";
                                         if (!empty($user[$i]->sale_price)) {
                                             echo '<td data-th="Price(€)" style="text-align: right"><div>' . '€ ' . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
                                         } else {
                                             echo "<td data-th='Price(€)'><div></div> </td>";
                                         }
                                     } elseif ($user[$i]->type == '2') {
-                                        echo "<td data-th='Property Status'><div>" . 'Rent' . "</div></td>";
+                                        //echo "<td data-th='Property Status'><div>" . 'Rent' . "</div></td>";
                                         if (!empty($user[$i]->rent_price)) {
                                             echo '<td data-th="Price(€)" style="text-align: right"><div>' . '€ ' . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
                                         } else {
                                             echo "<td data-th='Price(€)'><div></div> </td>";
                                         }
                                     } elseif ($user[$i]->type == '3') {
-                                        echo "<td data-th='Property Status'><div>" . 'Both(Sale/Rent)' . "</div></td>";
+                                        //echo "<td data-th='Property Status'><div>" . 'Both(Sale/Rent)' . "</div></td>";
                                         if (!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)) {
                                             echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € ' . number_format($user[$i]->sale_price, 0, ".", ",") . " <br /> RP. € " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
                                         } else {
                                             echo "<td data-th='Price(€)'><div></div> </td>";
                                         }
                                     } else {
-                                        echo "<td data-th='Property Status'><div></div> </td>";
+                                        //echo "<td data-th='Property Status'><div></div> </td>";
                                         echo "<td data-th='Price(€)'><div> </div></td>";
                                     }
                                     echo '<td data-th="Furnish Type" style="min-width:60px"><div>';
@@ -518,7 +523,7 @@ function search_result() {
     var max_price = $("#max_price").val();
     $.ajax({
         type: "post",
-        url: baseurl + "index.php/home/property_search_result",
+        url: baseurl + "index.php/inquiry/property_search_result",
         data: {city: city, selectItemcity_area: city_area_id, property_category: property_category_id, property_type: property_type, reference_no: reference_no, country_id: country_id, bedroom: bedroom, bathroom: bathroom, furnished_type: furnished_type, min_price: min_price, max_price: max_price},
         //dataType:'json',
         success: function (msg) {

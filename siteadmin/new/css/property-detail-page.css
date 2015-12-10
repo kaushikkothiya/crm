@@ -185,3 +185,9 @@ ul.pro-faciltiy-list li > div > span{display:block; overflow: hidden;  white-spa
         font-size:12px;
         border-top:1px solid #eee;
       }
+       /*-- Other Links --*/
+    .otherlinks-block > .row{ border-bottom:1px solid #e8e8e8;}
+    .otherlinks-block a{ color:#af7a2c;}
+    .url-links-row{position:relative; padding-left:60px; margin-bottom:15px;}
+    .link-icon{display:inline-block; margin-left:-40px; position:absolute;}
+    .link-icon img{width:24px;}

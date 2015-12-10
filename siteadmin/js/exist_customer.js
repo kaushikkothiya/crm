@@ -14,7 +14,7 @@ $(document).ready(function(){
             email_mobile:{required:true},                 
         },    
         messages:{
-            email_mobile:{required:"Please enter email or mobile phone of client"},     
+            email_mobile:{required:"Please enter email address or mobile phone of client"},     
         },
         showErrors:function(errorMap, errorList){
             $("div.overlay").hide();
@@ -38,7 +38,7 @@ $(document).ready(function(){
             $.ajax({
                 type: "post",
                 url:baseurl+"index.php/inquiry/check_customer_exist",
-                data: 'email_mobile=' +$("#email_mobile").val(),
+                data: 'email_mobile=' +$("#email_mobile").val()+'&aquired=' +$("#aquired").val(),
                 success: function(msg){
                     if(msg =='false'){
                         alert('Customer Not Exist');

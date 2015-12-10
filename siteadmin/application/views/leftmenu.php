@@ -34,7 +34,7 @@ $id = $sessionData['id'];
                 $username_profile = $name['fname'] . ' ' . $name['lname'];
             }
             ?>
-            <li><a href="<?php echo base_url(); ?>home/edit_profile/<?php echo $id; ?>"><i class="fa fa-user"></i> <?php echo $username_profile; ?></a></li>
+            <li><a href="<?php echo base_url(); ?>home/edit_profile/<?php echo $id; ?>"><i class="fa fa-user"></i> <?php echo strtoupper($username_profile); ?></a></li>
             <li><a href="<?php echo base_url(); ?>home/change_password"><i class="fa fa-lock"></i> Change Password</a></li>
             <li><a href="<?php echo base_url(); ?>index.php/home/logout<?php echo ($sessionData['user_type'] != 'super') ? '_' . $sessionData['user_type'] : ''; ?>"><i class="fa fa-power-off"></i> Logout</a></li>
         </ul>

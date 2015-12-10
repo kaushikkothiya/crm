@@ -67,7 +67,7 @@
                             'type'=>'submit'
                         )); ?>
                         <div>&nbsp;</div>
-                        <div class="text-center"><a href="<?php base_url(); ?>home/forgote_pass">Forgot Password?</a></div>
+                        <div class="text-center"><a href="<?php base_url(); ?>home/forgote_password">Forgot Password?</a></div>
                         <div>&nbsp;</div>
                         <?php echo form_close(); ?>
                         <div class="text-center"><small class="text-muted">&copy; 2015 <?php echo $this->config->item('TITLE'); ?>- Real Estate.</small></div>

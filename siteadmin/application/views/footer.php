@@ -82,6 +82,10 @@
             $('#example')
             .removeClass( 'display' )
             .addClass('table table-striped table-bordered responsive-table');
+
+             jQuery.validator.addMethod("noHTML", function(value, element) {
+                return this.optional(element) || /^([A-Za-z0-9]+)$/.test(value);
+            }, "Please enter valid text!");
             
         });
 

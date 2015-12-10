@@ -8,7 +8,7 @@ if (!defined('BASEPATH'))
 
 
 
-class VerifyLogin extends CI_Controller {
+class VerifyLogin extends MY_Controller {
 
 
 

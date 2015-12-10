@@ -1131,28 +1131,28 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                        <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Supermarket :</label>
                           <div class="col-md-8 col-sm-8">
-                              <input name="from_supermarket" id="from_supermarket" value="<?php echo $from_supermarket ?>" type="text" class="form-control" />
+                              <input name="from_supermarket" id="from_supermarket" value="<?php echo $from_supermarket ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Bus Station :</label>
                           <div class="col-md-8 col-sm-8">
-                              <input name="from_bus_station" id="from_bus_station" value="<?php echo $from_bus_station ?>" type="text" class="form-control" />
+                              <input name="from_bus_station" id="from_bus_station" value="<?php echo $from_bus_station ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From School :</label>
                           <div class="col-md-8 col-sm-8">
-                          	<input name="from_school" id="from_school" value="<?php echo $from_school ?>" type="text" class="form-control" />
+                          	<input name="from_school" id="from_school" value="<?php echo $from_school ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From High-Way :</label>
                           <div class="col-md-8 col-sm-8">
-                          	<input name="from_high_way" id="from_high_way" value="<?php echo $from_high_way ?>" type="text" class="form-control" />
+                          	<input name="from_high_way" id="from_high_way" value="<?php echo $from_high_way ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
                     <!-- </div>
@@ -1161,28 +1161,28 @@ h3.drop-text{color:#999;text-align:center;font-size:2em;}
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Playground :</label>
                           <div class="col-md-8 col-sm-8">
-                          	<input name="from_playground" id="from_playground" value="<?php echo $from_playground ?>" type="text" class="form-control" />
+                          	<input name="from_playground" id="from_playground" value="<?php echo $from_playground ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Sea :</label>
                           <div class="col-md-8 col-sm-8">
-                          	<input name="from_sea" id="from_sea" value="<?php echo $from_sea ?>" type="text" class="form-control" />
+                          	<input name="from_sea" id="from_sea" value="<?php echo $from_sea ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Cafeteria :</label>
                           <div class="col-md-8 col-sm-8">
-                          	<input name="from_cafeteria" id="from_cafeteria" value="<?php echo $from_cafeteria ?>" type="text" class="form-control" />	
+                          	<input name="from_cafeteria" id="from_cafeteria" value="<?php echo $from_cafeteria ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />	
                           </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-md-4 col-sm-4 control-label">From Restaurant :</label>
                           <div class="col-md-8 col-sm-8">
-                              <input name="from_restaurant" id="from_restaurant" value="<?php echo $from_restaurent ?>" type="text" class="form-control" />
+                              <input name="from_restaurant" id="from_restaurant" value="<?php echo $from_restaurent ?>" type="text" onkeypress="return numbersonly(event)" class="form-control" />
                           </div>
                         </div>
 

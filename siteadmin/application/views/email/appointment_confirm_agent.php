@@ -32,24 +32,26 @@
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php if(isset($confirm_agent) && !empty($confirm_agent)){ ?>
+                                        <?php 
+                                       
+                                        if($type=="Confirm Appointment"){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $confirm_agent['agent_name'];?></b>,</p>
-                                            <p>Your appointment on: <?php echo $confirm_agent['appointment_start'].' to '.$confirm_agent['appointment_end'] ; ?>. for the property with Reference No: <?php echo $confirm_agent['property_ref_no']; ?> has been confirmed, Inquiry from: <?php echo $confirm_agent['customer_name'].', Mobile Number: +'.$confirm_agent['customer_mobile']; ?></p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $agent_name;?></b>,</p>
+                                            <p>Your appointment on: <?php echo $appointment_start.' to '.$appointment_end ; ?>. for the property with Reference No: <?php echo $property_ref_no; ?> has been confirmed, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                           </td>   
-                                        <?php }elseif (isset($cancle_agent) && !empty($cancle_agent)) { ?>
+                                        <?php }if($type=="Submit"){ ?>
                                           <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $cancle_agent['agent_name'];?></b>,</p>
-                                            <p>your appointment on <?php echo $cancle_agent['appointment_start'].' to '.$cancle_agent['appointment_end'] ; ?> for the property with Reference No <?php echo $cancle_agent['property_ref_no']; ?> has been cancelled, Inquiry from: <?php echo $cancle_agent['customer_name'].', Mobile Number: +'.$cancle_agent['customer_mobile']; ?></p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $data['agent_name'];?></b>,</p>
+                                            <p>your appointment on <?php echo $appointment_start.' to '.$appointment_end ; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been cancelled, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>
-                                         <?php   }elseif (isset($reschedule_agent) && !empty($reschedule_agent)) {  ?>
+                                         <?php   }elseif ($type=="reschedule") {  ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $reschedule_agent['agent_name'];?></b>,</p>
-                                            <p>your appointment on <?php echo $reschedule_agent['appointment_start'].' to '.$reschedule_agent['appointment_end'] ; ?> for the property with Reference No <?php echo $reschedule_agent['property_ref_no']; ?> has been rescheduled, Inquiry from: <?php echo $reschedule_agent['customer_name'].', Mobile Number: +'.$reschedule_agent['customer_mobile']; ?></p>
+                                            <p style="margin: 0px;" >Dear <b><?php echo $agent_name;?></b>,</p>
+                                            <p>your appointment on <?php echo $appointment_start.' to '.$appointment_end ; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been rescheduled, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>

@@ -1,4 +1,3 @@
-
 <?php $this->load->view('header'); ?>
 <?php $this->load->view('leftmenu'); ?>
 <?php $Action = array('1' => 'Register', '2' => 'Text-Send', '3' => 'Follow-Up', '4' => 'Appointment', '5' => 'Complete'); ?>
@@ -175,7 +174,7 @@
                                                                     <td data-th="Created by"><div><?php echo ucfirst($inquiry->u_fname . ' ' . $inquiry->u_lname); ?></div></td>
                                                                     <td data-th="Date Created"><div><?php echo date("d-M-Y", strtotime($inquiry->created_date)); ?></div></td>
                                                                     <?php if($inquiry->status=='2'){ ?>
-                                                                    <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><?php echo $Action[$inquiry->status]; ?></div></td> 
+                                                                    <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><a><?php echo $Action[$inquiry->status]; ?></a></div></td> 
                                                                     <?php } else{ ?>
                                                                     <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?><?php if (!empty($inquiry->diff_ass_conf) && $inquiry->diff_ass_conf != 0) { ?>&nbsp;&nbsp;<span class="badge"><?php echo $inquiry->diff_ass_conf; ?></span><?php } ?></div></td> 
                                                                     <?php } ?>
@@ -216,7 +215,7 @@
                                                                         <td data-th="Created by"><div><?php echo ucfirst($inquiry->u_fname . ' ' . $inquiry->u_lname); ?></div></td>
                                                                         <td data-th="Date Created"><div><?php echo date("d-M-Y", strtotime($inquiry->created_date)); ?></div></td>
                                                                         <?php if($inquiry->status=='2'){ ?>
-                                                                        <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><?php echo $Action[$inquiry->status]; ?></div></td> 
+                                                                        <td data-th="Status"><div data-toggle="modal" data-target="#myModal1" onClick="viewmessage(<?php echo $inquiry->id; ?>)" ><a><?php echo $Action[$inquiry->status]; ?></a></div></td> 
                                                                         <?php }else{ ?>
                                                                         <td data-th="Status"><div><?php echo $Action[$inquiry->status]; ?> <?php echo ($inquiry->status==4)?'('.$Agent_Action[$inquiry->inquiry_agent_status].')':''; ?> <?php if (!empty($inquiry->diff_ass_conf) && !empty($inquiry->diff_ass_conf)) {
                                                                             $dtF = new DateTime("@0");
