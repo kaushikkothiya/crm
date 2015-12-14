@@ -15,6 +15,27 @@ class MY_Controller extends CI_Controller {
         }
     }
     
+    public function generatePassword(){
+        $length = rand(6,10);
+        $str = '';
+        $chr_range = array(
+            array(48,57),
+            array(65,90),
+            array(97,122),
+            array(33,47),
+            array(58,64),
+            array(91,96),
+            array(123,126)
+        );
+        
+        for($i=0;$i<=$length;$i++){
+            $range = $chr_range[rand(0,6)];
+            $new_char = chr(rand($range[0],$range[1]));
+            $str.= $new_char;
+        }
+        return $str;
+    }
+    
     public function mailChimpSubscribe($cust_id,$type=1) {
         
         require_once APPPATH . 'third_party/Classes/Mailchimp.php';

@@ -34,7 +34,7 @@ $id = $sessionData['id'];
                 $username_profile = $name['fname'] . ' ' . $name['lname'];
             }
             ?>
-            <li><a href="<?php echo base_url(); ?>home/edit_profile/<?php echo $id; ?>"><i class="fa fa-user"></i> <?php echo strtoupper($username_profile); ?></a></li>
+            <li><a href="<?php echo base_url(); ?>home/edit_profile/<?php echo $id; ?>"><i class="fa fa-user"></i> <?php echo ucwords($username_profile); ?></a></li>
             <li><a href="<?php echo base_url(); ?>home/change_password"><i class="fa fa-lock"></i> Change Password</a></li>
             <li><a href="<?php echo base_url(); ?>index.php/home/logout<?php echo ($sessionData['user_type'] != 'super') ? '_' . $sessionData['user_type'] : ''; ?>"><i class="fa fa-power-off"></i> Logout</a></li>
         </ul>
@@ -67,7 +67,7 @@ $id = $sessionData['id'];
                             <li class="<?php echo ($controller == 'home' && $action == 'sms_email_history') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>home/sms_email_history'>Individual SMS / Email History</a></li>
                         </ul>
                     </li>
-                    <li class="<?php echo (in_array($controller, array('inquiry')) && in_array($action, array('calendar'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>inquiry/calendar'><i class="fa fa-calendar"></i> Calendar</a></li>
+                    <li class="<?php echo (in_array($controller, array('calendar')) && in_array($action, array('index'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>calendar/index'><i class="fa fa-calendar"></i> Calendar</a></li>
                     <li class="<?php echo (in_array($controller, array('reports')) && in_array($action, array('index','property','client'))) ? " active " : ""; ?>"><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Reports <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-down text"></i></span></a>
                         <ul class="nav collapse <?php echo (in_array($controller, array('reports')) && in_array($action, array('index', 'property', 'client'))) ? " in " : ""; ?>" id="submenu4" role="menu">
                             <li class="<?php echo ($controller == 'reports' && $action == 'index') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>reports/index'>Reports</a></li>
@@ -101,7 +101,7 @@ $id = $sessionData['id'];
                             <li class="<?php echo ($controller == 'inquiry' && $action == 'cancel_inquiries') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>inquiry/cancel_inquiries'>Appointment (Cancel)</a></li> 
                         </ul>
                     </li>
-                    <li class="<?php echo (in_array($controller, array('inquiry')) && in_array($action, array('calendar'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>inquiry/calendar'><i class="fa fa-calendar"></i> Calendar</a></li>
+                    <li class="<?php echo (in_array($controller, array('calendar')) && in_array($action, array('index'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>calendar/index'><i class="fa fa-calendar"></i> Calendar</a></li>
                     <li class="<?php echo (in_array($controller, array('reports')) && in_array($action, array('index','property','client'))) ? " active " : ""; ?>"><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Reports <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-down text"></i></span></a>
                         <ul class="nav collapse <?php echo (in_array($controller, array('reports')) && in_array($action, array('index', 'property', 'client'))) ? " in " : ""; ?>" id="submenu4" role="menu">
                             <li class="<?php echo ($controller == 'reports' && $action == 'index') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>reports/index'>Reports</a></li>
@@ -134,7 +134,7 @@ $id = $sessionData['id'];
                             <li class="<?php echo ($controller == 'inquiry' && $action == 'cancel_inquiries') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>inquiry/cancel_inquiries'>Appointment (Cancel)</a></li> 
                         </ul>
                     </li>
-                    <li class="<?php echo (in_array($controller, array('inquiry')) && in_array($action, array('calendar'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>inquiry/calendar'><i class="fa fa-calendar"></i> Calendar</a></li>
+                    <li class="<?php echo (in_array($controller, array('calendar')) && in_array($action, array('index'))) ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>calendar/index'><i class="fa fa-calendar"></i> Calendar</a></li>
                     <li class="<?php echo (in_array($controller, array('reports')) && in_array($action, array('index','property','client'))) ? " active " : ""; ?>"><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Reports <span class="pull-right text-muted"><i class="fa fa-fw fa-angle-down text"></i></span></a>
                         <ul class="nav collapse <?php echo (in_array($controller, array('reports')) && in_array($action, array('index', 'property', 'client'))) ? " in " : ""; ?>" id="submenu4" role="menu">
                             <li class="<?php echo ($controller == 'reports' && $action == 'index') ? " active " : ""; ?>"><a href='<?php echo base_url(); ?>reports/index'>Reports</a></li>

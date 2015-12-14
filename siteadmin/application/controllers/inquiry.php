@@ -63,21 +63,9 @@ class Inquiry extends MY_Controller {
             $property_id = $this->session->userdata('selected_property_id');
             $property_detail = $this->inquiry_model->get_property_detail($property_id);
             $property_link = array();
-            $property_link_url = array();
             $property_link_path = base_url() . "home/view_property";
 
-            $url = explode(',', $property_detail[0]->url_link);
-            if (!empty($url[0])) {
-                $url_link = $url[0];
-            } elseif (!empty($url[1])) {
-                $url_link = $url[1];
-            } elseif (!empty($url[2])) {
-                $url_link = $url[2];
-            } else {
-                $url_link = "";
-            }
             array_push($property_link, $property_link_path . $property_detail[0]->id);
-            array_push($property_link_url, $url_link);
             $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
             $data_inqury = $this->inquiry_model->insert_inquiry($_POST, $property_id, $inquiry_num, $property_buy_sale, $property_detail);
 
@@ -115,7 +103,7 @@ class Inquiry extends MY_Controller {
                 'property_ref_no' => $property_detail[0]->reference_no,
                 'start_date' => $_POST['start_date'],
                 'end_date' => $_POST['end_date'],
-                'property_link_url' => $property_link_url[0],
+                //'property_link_url' => $property_link_url[0],
                 'property_link' => $property_link[0],
                 'agent_property_link_path' => $agent_property_link_path
             );
@@ -144,7 +132,7 @@ class Inquiry extends MY_Controller {
             $sms = "Dear " . $agent->fname . " " . $agent->lname . ", new request for appointment on " . $_POST['start_date'] . " to " . $_POST['end_date'];
             $sms .= " for the property with Reference No: " . $property_detail[0]->reference_no . ",";
             $sms .= " Inquiry from: " . $customer->fname . " " . $customer->lname . ", Mobile Number: +" . $customer->coutry_code . $customer->mobile_no . ",";
-            $sms .= " Confirmation link: " . $property_link[0];
+            $sms .= " Confirmation link: " . $agent_property_link_path;
 
             $this->notifyUser($agent, $subject, $message, $sms, $data_inqury);
 
@@ -153,8 +141,67 @@ class Inquiry extends MY_Controller {
             $this->session->unset_userdata('customer_property_id');
             redirect('inquiry/inquiry_manage');
         }
-        //echo $_GET['view'];EXIT;
-        if (empty($_GET['view'])) {
+        
+        
+        $data = array();
+        $this->load->model('calendar_model');
+        $user = $this->cur_user;
+        $data['user'] = $user;
+
+        $config = $this->config->item('pagination');
+        $config['per_page'] = 10;
+        
+        $page = 1;
+        if($this->uri->segment(3)){
+            $page = $this->uri->segment(3);
+        }
+
+        if(isset($_REQUEST['per_page']) && !empty($_REQUEST['per_page'])){
+            $config['per_page'] = $_REQUEST['per_page'];
+        }
+        
+        $calendar = array();
+        if(isset($_REQUEST['calendar']) && !empty($_REQUEST['calendar'])){
+            $calendar = $_REQUEST['calendar'];
+        }
+        
+        
+        $inquiry_for = (!empty($calendar) && isset($calendar['view']) && !empty($calendar['view']))?$calendar['view']:'';
+        $inquiry_client = (!empty($calendar) && isset($calendar['view_client']) && !empty($calendar['view_client']))?$calendar['view_client']:'';
+        
+        
+        $selected_user = (!empty($calendar) && isset($calendar['user_id']) && !empty($calendar['user_id']))?$calendar['user_id']:array();
+        if(!empty($selected_user)){
+            $selected_user = $this->calendar_model->getUserByID($selected_user);
+        }
+        $total_rows = $this->calendar_model->getAllinquiryCount($user,false,$selected_user,'','',$inquiry_for,$inquiry_client);
+
+        $this->load->library('pagination');
+        $config['base_url'] = base_url().'inquiry/inquiry_manage';
+        $config['total_rows'] = $total_rows;
+
+        $this->pagination->initialize($config);
+
+        $offset = ($page * $config['per_page']) - $config['per_page'];
+
+        $data['inquiries'] = $this->calendar_model->getAllinquiryPage($user,$config['per_page'],$offset,false,$selected_user,'','',$inquiry_for,$inquiry_client);
+        
+        $data['start'] = 0;
+                
+        if($total_rows > 0) {
+            $data['start'] = $offset + 1;
+        }
+        
+        $data['end'] = $offset  + $config['per_page'];
+        if($data['end']>$total_rows){
+           $data['end'] = $total_rows;
+        }
+        $data['calendar'] = $calendar;
+        $data['total_rows'] = $total_rows;
+        $data['pagination'] = $this->pagination->create_links();
+        $data['all_users'] = $this->calendar_model->getAllUsers();
+
+        /*if (empty($_GET['view'])) {
             if (!empty($_GET['view_client'])) {
                 $inc_view = $_GET['view_client'];
                 $client = '1';
@@ -166,12 +213,11 @@ class Inquiry extends MY_Controller {
             $inc_view = $_GET['view'];
             $client = '';
         }
-        $data['user'] = $this->inquiry_model->getAllinquiry($inc_view, $client);
+         $data['user'] = $this->inquiry_model->getAllinquiry($inc_view, $client);
 
         foreach ($data['user'] as $z => $val) {
             $data['user'][$z]->agent_name = $this->inquiry_model->get_inc_agent($val->agent_id);
-        }
-        //echo'<pre>';print_r($data);exit;
+        } */
         $data['all_client'] = $this->user->getallclient();
 
         $this->load->view('inquiry_list_view', $data);
@@ -288,14 +334,7 @@ class Inquiry extends MY_Controller {
                         $data['inquiry_flag'] = "0";
                     }
                     $data['post_property_data'] = $_POST;
-
-
                     $data['search_detail'] = $this->inquiry_model->getrelated_property($_POST);
-
-                    foreach ($data['search_detail'] as $key => $value) {
-                        $data['search_detail'][$key]->extra_image = $this->user->getAllproperty_image($value->id);
-                    }
-
 
                     $this->load->view('search_property_view', $data);
                 } else {
@@ -417,29 +456,17 @@ class Inquiry extends MY_Controller {
 
                     $customerId = $this->session->userdata('customer_property_id');
                     $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
+                    
                     $property_link = array();
-                    $property_link_url = array();
                     $property_title = array();
                     $property_link_path = base_url() . "index.php/home/view_property/";
                     foreach ($getSelectedPropertyDetails as $inqKey => $inqValue) {
-
-                        $url = explode(',', $inqValue->url_link);
-                        if (!empty($url[0])) {
-                            $url_link = $url[0];
-                        } elseif (!empty($url[1])) {
-                            $url_link = $url[1];
-                        } elseif (!empty($url[2])) {
-                            $url_link = $url[2];
-                        } else {
-                            $url_link = "";
-                        }
 
                         // Get Unique Inquiry Reference Number
                         $inquiry_num = $this->unic_inquiry_num();
                         if ($inquiryid = $this->inquiry_model->saveClientInquiry($customerId, $inqValue->id, $inqValue->reference_no, $inquiry_num, $property_buy_sale)) {
                             $this->inquiry_model->saveClientInquiry_history($_POST, $inquiryid);
                             array_push($property_link, $property_link_path . $inqValue->id);
-                            array_push($property_link_url, $url_link);
 
                             if (!empty($inqValue->property_type)) {
                                 $property_category = $this->get_propertytypeby_id($inqValue->property_type);
@@ -473,8 +500,7 @@ class Inquiry extends MY_Controller {
                             'customer_name' => $customer->fname . ' ' . $customer->lname,
                             'property_links' => $property_link,
                             'property_title' => $property_title,
-                            'property_link_url' => $property_link_url
-
+                            'property_link' => $property_link
                                 //'bedroom'=>$bedroom_detail,
                                 //'property_category'=>$property_category,
                                 //'property_type'=>$property_type
@@ -490,7 +516,7 @@ class Inquiry extends MY_Controller {
                         $this->session->unset_userdata('customer_property_id');
                         $this->session->set_flashdata('success', 'Success! Inquiry for the Property sent successfully. Email send successfull.!');
                         redirect('inquiry/inquiry_manage');
-                    } elseif ($_POST['sendInquiryBy'] == "sendSms") {
+                    } else if ($_POST['sendInquiryBy'] == "sendSms") {
                         $cust_id = $this->session->userdata('customer_property_id');
                         /* code for notificatin to agent and customer */
                         $this->load->model('customer_model');
@@ -507,21 +533,11 @@ class Inquiry extends MY_Controller {
                                 $property_title[$key] = "Reference No: " . $value;
                             }
                         }
-                        if (!empty($property_link_url)) {
-                            foreach ($property_link_url as $key => $value) {
-                                $property_link_url[$key] = $value;
-                            }
-                        }
                         if (!empty($property_link)) {
                             foreach ($property_link as $key => $value) {
                                 $sms .=$property_title[$key] . ' : ';
-                                if (!empty($property_link_url[$key]) && trim($property_link_url[$key]) != "") {
-                                    $sms .= $property_link_url[$key];
-                                    $sms .=", \n";
-                                } else {
-                                    $sms .= $value;
-                                    $sms .=", \n";
-                                }
+                                $sms .= $value;
+                                $sms .=", \n";
                             }
                         }
                         $sms .= " For any further information please call: 8000 7000";
@@ -543,7 +559,7 @@ class Inquiry extends MY_Controller {
                             'customer_name' => $customer->fname . ' ' . $customer->lname,
                             'property_links' => $property_link,
                             'property_title' => $property_title,
-                            'property_link_url' => $property_link_url
+                            'property_link' => $property_link
                                 // 'bedroom'=>$bedroom_detail,
                                 // 'property_category'=>$property_category,
                                 // 'property_type'=>$propety_type
@@ -559,21 +575,11 @@ class Inquiry extends MY_Controller {
                                 $property_title[$key] = "Reference No: " . $value;
                             }
                         }
-                        if (!empty($property_link_url)) {
-                            foreach ($property_link_url as $key => $value) {
-                                $property_link_url[$key] = $value;
-                            }
-                        }
                         if (!empty($property_link)) {
                             foreach ($property_link as $key => $value) {
                                 $sms .=$property_title[$key] . " : ";
-                                if (!empty($property_link_url[$key]) && trim($property_link_url[$key]) != "") {
-                                    $sms .= $property_link_url[$key];
-                                    $sms .=", \n";
-                                } else {
-                                    $sms .= $value;
-                                    $sms .=", \n";
-                                }
+                                $sms .= $value;
+                                $sms .=", \n";
                             }
                         }
                         $sms .= " For any further information please call: 8000 7000";
@@ -610,7 +616,7 @@ class Inquiry extends MY_Controller {
                 $this->session->set_userdata('appointment_selected', "1");
                 redirect('/inquiry/property', 'refresh');
             } else {
-            //elseif($inquiryDetail[0]->appoint_start_date == "0000-00-00 00:00:00" && $inquiryDetail[0]->appoint_end_date == "0000-00-00 00:00:00")
+                //elseif($inquiryDetail[0]->appoint_start_date == "0000-00-00 00:00:00" && $inquiryDetail[0]->appoint_end_date == "0000-00-00 00:00:00")
                 $this->session->unset_userdata('selected_property_id');
                 $this->session->set_userdata('selected_property_id', $inquiryDetail[0]->property_id);
                 $this->session->set_userdata('customer_property_id', $inquiryDetail[0]->customer_id);
@@ -1007,13 +1013,100 @@ class Inquiry extends MY_Controller {
 
         $response = array('status' => false, 'msg' => '', 'agent_status' => $agent_status, 'id' => $id);
         if ($this->inquiry_model->changeAgentStatus($id, $data)) {
+
+            $inquiry = $this->inquiry_model->get_inquiry_data($id);
+            $employee_record = $this->inquiry_model->get_employee_record($id);
+            $aget_record = $this->inquiry_model->get_aget_record($agent_id);
+            $inquiry_and_customer_record = $this->inquiry_model->get_inquiry_data($id);
+
+            if (!empty($employee_record)) {
+                $employee_record = $employee_record[0];
+                $employeecountry_code = $this->user->get_contry_code($employee_record->coutry_code);
+                $mcode_employee = substr($employeecountry_code[0]->prefix_code, 1);
+                $mobile_code_employee = "00" . $mcode_employee;
+                $employee_name = $employee_record->fname . " " . $employee_record->lname;
+            } else {
+                $mobile_code_employee = "0000";
+                $employee_name = " ";
+            }
+
+            if (!empty($inquiry_and_customer_record)) {
+                $inquiry_and_customer_record = $inquiry_and_customer_record[0];
+                $customercountry_code = $this->user->get_contry_code($inquiry_and_customer_record->coutry_code);
+                $mcode_customer = substr($customercountry_code[0]->prefix_code, 1);
+                $mobile_code_customer = "00" . $mcode_customer;
+            } else {
+                $mobile_code_customer = "0000";
+            }
+
+
+            $data = array(
+                'employee_name' => $employee_name,
+                'customer_name' => $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname,
+                'appointment_start' => $inquiry_and_customer_record->appoint_start_date,
+                'appointment_end' => $inquiry_and_customer_record->appoint_end_date,
+                'property_ref_no' => $inquiry_and_customer_record->property_ref_no,
+                'agent_name' => $aget_record->fname . ' ' . $aget_record->lname,
+                'agent_mobile' => $mobile_code_agent . $aget_record->mobile_no,
+                'customer_mobile' => $mobile_code_customer . $inquiry_and_customer_record->mobile_no,
+                'type' => $inquiry[0]->agent_status
+            );
+
+
             $response['status'] = true;
             if ($agent_status == 1) {
-                $response['msg'] = "Appointment Confirmed";
+
+                $subject = $response['msg'] = "Appointment Confirmed";
+                $message = $this->load->view("email/appointment_confirm", $data, TRUE);
+
+                $sms = "Dear " . $inquiry_and_customer_record->fname . " " . $inquiry_and_customer_record->lname . ",";
+                $sms .=" Your appointment for the property with Reference No: " . $inquiry_and_customer_record->property_ref_no . ", ";
+                $sms .= " has been confirmed on:" . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date . ".";
+                $sms .= " For any further information please kindly contact";
+                $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", Mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+
+                $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
+
+                $sms = "Dear " . $employee_name . ",";
+                $sms .= " You  that your  appointment on." . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date;
+                $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
+                $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
+                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
             } else if ($agent_status == 2) {
-                $response['msg'] = "Appointment has been sent for rescheduling.";
+                $subject = $response['msg'] = "Appointment has been sent for rescheduling.";
+                $message = $this->load->view("email/appointment_confirm", $data, TRUE);
+
+                $sms = "Dear " . $inquiry_and_customer_record->fname . " " . $inquiry_and_customer_record->lname . ",";
+                $sms .=" Your appointment for the property with Reference No: " . $inquiry_and_customer_record->property_ref_no . ", ";
+                $sms .= " has been rescheduled on:" . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date . ".";
+                $sms .= " For any further information please kindly contact";
+                $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+
+                $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
+                $sms = "Dear " . $employee_name . ",";
+                $sms .= " Your appointment has been Rescheduled";
+                $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
+                $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
+                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
             } else if ($agent_status == 3) {
-                $response['msg'] = "Appointment request has been cancel.";
+                $subject = $response['msg'] = "Appointment request has been cancel.";
+                $message = $this->load->view("email/appointment_confirm", $data, TRUE);
+
+                $sms = "Dear " . $inquiry_and_customer_record->fname . " " . $inquiry_and_customer_record->lname . ",";
+                $sms .= " Your appointment on: " . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date . ".";
+                $sms .=" for the property with Reference No: " . $inquiry_and_customer_record->property_ref_no . ", has been cancelled";
+                $sms .= " For any further information please kindly contact";
+                $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+
+                $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
+                $sms = "Dear " . $employee_name . ",";
+                $sms .= " Your appointment has been cancel";
+                $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
+                $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
+                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
             }
         }
         echo json_encode($response);
@@ -1028,6 +1121,9 @@ class Inquiry extends MY_Controller {
         if ($this->inquiry_model->appointmentchangeAgentStatus($id, $data)) {
             $response['status'] = true;
             if ($agent_status == 1) {
+
+
+
                 $response['msg'] = "Appointment has been confirmed";
             } else if ($agent_status == 2) {
                 $response['msg'] = "Inquiry has been sent for rescheduling.";

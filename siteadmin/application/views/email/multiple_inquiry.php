@@ -44,24 +44,13 @@
                                                      $property_title[$key] = $value;
                                                 }   
                                             }
-                                            if (!empty($property_link_url))
-                                            {
-                                                foreach ($property_link_url as $key => $value) 
-                                                {
-                                                     $property_link_url[$key] = $value;
-                                                }   
-                                            }
                                             if(!empty($property_links))
                                             {
                                                 foreach ($property_links as $key => $value) {
                                                 ?>
                                                         <p><?php echo "Reference No: ".$property_title[$key]; ?></p>
-                                                    <?php if(!empty($property_link_url[$key]) && trim($property_link_url[$key]) !=""){ ?>
-                                                        <a href="<?php echo $property_link_url[$key]; ?>"><?php echo $property_link_url[$key]; ?></a><br><br>
-                                                    <?php }else{ ?>
                                                         <a href="<?php echo $value; ?>"><?php echo $value; ?></a><br><br>
-                                                    <?php }
-                                                }
+                                            <?php }
                                             }
                                             ?>
                                             <p>For any further information please call: 8000 7000</p>

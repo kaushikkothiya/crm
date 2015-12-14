@@ -410,9 +410,11 @@ button.ms-choice {border: 0;}
 
 /*-------19-11-2015---------*/
 .action-btn {
-	font-size:15px;
-	padding: 1px 8px;
-	line-height:normal;	
+    font-size:15px;
+    padding: 1px 8px;
+    line-height:normal;	
+    min-width: 33px;
+    margin-top: 5px;
 }
 .seppart{
 	padding: 15px 0px 7px 0px;
@@ -496,4 +498,90 @@ span.loader{
 @media (max-width: 599px) {
     .fluid-btn { clear: both; float: none!important; margin-bottom: 5px; display: inline-block; margin-left: 0!important;}
     h1.page-header span { display: block; padding-bottom: 10px;}
+}
+
+/* 2015-12-06 Calendar Changes */
+
+.appointment-table-fix{
+  display: block;
+  clear: both;
+  height: 240px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.calendar-block{
+  display: block;
+  clear: both;
+  height: 350px;
+  margin-bottom: 20px;
+  background-color: rgba(0,0,0,0.05);
+}
+.pageHeadInfo{
+  display: block;
+  clear: both;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+.pageHeadInfo .nav-tabs,
+.pageHeadInfo .nav{
+  border-bottom: none;
+}
+.listHeader-left div{
+  width: auto;
+  display: inline-block;
+  margin-bottom: 4px;
+  margin-top: 3px;
+  vertical-align: top;
+  line-height: 30px;
+}
+.date-display,
+.date-display a,
+.date-display a i{
+  line-height: 22px;
+}
+.date-today{
+  margin: 0 7px;
+}
+.show-completed label{
+  margin: 0px;
+  font-weight: normal;
+}
+.user-select{
+  padding-right: 40px;
+  position: relative;
+  margin: 0px !important;
+}
+.user-select select{
+  min-width: 220px;
+  height: 30px;
+}
+
+.user-select a.all{
+  display: inline-block;
+  float: right;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  line-height: 30px;
+}
+.padding-O{
+  padding: 0px;
+}
+
+/* 2015-12-08 Calendar Status Color code start */
+
+.calendar-status-pending {width:15px;height:15px;margin-right:5px;display:inline-block;background:#00bfff;}
+.calendar-status-confirm {width:15px;height:15px;margin-right:5px;margin-left:5px;display:inline-block;background:#EBAF22;}
+.calendar-status-reschedule {width:15px;height:15px;margin-right:5px;margin-left:5px;display:inline-block;background:#FFCCFF;}
+.calendar-status-cancel {width:15px;height:15px;margin-right:5px;display:inline-block;background:#d9534f;}
+/* 2015-12-08 Calendar Status Color code end */
+
+.inquiry_status_span { width:10px;height:10px;display:inline-block; }
+
+@media (max-width: 768px){
+ .pageHeadInfo .nav-tabs{
+   margin-top: 15px;
+ }
+
 }

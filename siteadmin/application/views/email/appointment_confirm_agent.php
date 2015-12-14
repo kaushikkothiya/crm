@@ -1,4 +1,4 @@
-<?php //echo'<pre>';print_r($data);exit;  ?>
+<?php //echo'<pre>';print_r($data);exit;   ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -13,78 +13,72 @@
                     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin-top:20px; display:block;">
                         <!--Email header start-->
                         <tbody>
-                        <tr>
-                            <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
-                                <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td height="20" align="center" valign="middle" bgcolor="#ffffff"></td>
-                        </tr>
-                        <!--Email header end-->
+                            <tr>
+                                <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
+                                    <img src="<?php echo base_url(); ?>img/cmr.png" height="24" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt=""/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20" align="center" valign="middle" bgcolor="#ffffff"></td>
+                            </tr>
+                            <!--Email header end-->
 
-
-
-
-
-                         <!--Email body start-->
-                        <tr>
-                            <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                       <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php 
-                                       
-                                        if($type=="Confirm Appointment"){ ?>
+                            <!--Email body start-->
+                            <tr>
+                                <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $agent_name;?></b>,</p>
-                                            <p>Your appointment on: <?php echo $appointment_start.' to '.$appointment_end ; ?>. for the property with Reference No: <?php echo $property_ref_no; ?> has been confirmed, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
-                                          </td>   
-                                        <?php }if($type=="Submit"){ ?>
-                                          <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $data['agent_name'];?></b>,</p>
-                                            <p>your appointment on <?php echo $appointment_start.' to '.$appointment_end ; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been cancelled, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
+                                                <?php if ($type == "Confirm Appointment" || $type==1) { ?>
+                                                    <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
+                                                        <p style="margin: 0px;" >Dear <b><?php echo $agent_name; ?></b>,</p>
+                                                        <p>Your appointment on: <?php echo $appointment_start . ' to ' . $appointment_end; ?>. for the property with Reference No: <?php echo $property_ref_no; ?> has been confirmed, Inquiry from: <?php echo $customer_name . ', Mobile Number: +' . $customer_mobile; ?></p>
+                                                        <p>Thanks & Regards</p>
+                                                        <p>Monopolion Team</p>
+                                                    </td>   
+<?php }else if($type == "Submit" || $type==3) { ?>
+                                                    <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
+                                                        <p style="margin: 0px;" >Dear <b><?php echo $data['agent_name']; ?></b>,</p>
+                                                        <p>your appointment on <?php echo $appointment_start . ' to ' . $appointment_end; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been cancelled, Inquiry from: <?php echo $customer_name . ', Mobile Number: +' . $customer_mobile; ?></p>
+                                                        <p>Thanks & Regards</p>
+                                                        <p>Monopolion Team</p>
+                                                    </td>
+<?php } else if($type == "reschedule" || $type==2) { ?>
+                                                    <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
+                                                        <p style="margin: 0px;" >Dear <b><?php echo $agent_name; ?></b>,</p>
+                                                        <p>your appointment on <?php echo $appointment_start . ' to ' . $appointment_end; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been rescheduled, Inquiry from: <?php echo $customer_name . ', Mobile Number: +' . $customer_mobile; ?></p>
+                                                        <p>Thanks & Regards</p>
+                                                        <p>Monopolion Team</p>
+                                                    </td>
+<?php } ?>
+
                                             </td>
-                                         <?php   }elseif ($type=="reschedule") {  ?>
-                                            <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $agent_name;?></b>,</p>
-                                            <p>your appointment on <?php echo $appointment_start.' to '.$appointment_end ; ?> for the property with Reference No <?php echo $property_ref_no; ?> has been rescheduled, Inquiry from: <?php echo $customer_name.', Mobile Number: +'.$customer_mobile; ?></p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
-                                            </td>
-                                           <?php } ?>
-                                             
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="left" height="30">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                        <td align="left" height="50">&nbsp;</td>
-                                    </tr>
-                                </table></td>
-                        </tr>
-                        <!--Email body end-->
+                                        </tr>
+                                        <tr>
+                                            <td align="left" height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="left" height="50">&nbsp;</td>
+                                        </tr>
+                                    </table></td>
+                            </tr>
+                            <!--Email body end-->
 
 
-                        <!--Email footer Start-->
-                        <tr>
-                            <td align="left" bgcolor="#f6f8f8" style="border-bottom:solid 1px #fff; padding:10px 15px; line-height:16px; font-family:Arial, Helvetica, sans-serif; font-size:11px;">
+                            <!--Email footer Start-->
+                            <tr>
+                                <td align="left" bgcolor="#f6f8f8" style="border-bottom:solid 1px #fff; padding:10px 15px; line-height:16px; font-family:Arial, Helvetica, sans-serif; font-size:11px;">
 
-                                <div style="padding-bottom: 5px;">For help, please send an email to <a href="#" style="color:#f8941e; text-decoration:none;">info@monopolion.com</a>.</div>
-                                <a href="#" style="color:#f8941e;  text-decoration:none;"><!-- Terms and Conditions --></a><!--  | --> <a href="#" style="color:#f8941e; text-decoration:none;" ><!-- Privacy Policy --></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center" height="26" bgcolor="#dddddd" style="color:#333333; font-family:Arial, Helvetica, sans-serif;">
-                                <p style="margin: 0px; line-height: 26px; font-size: 11px;" >Copyright &copy; 2015 Monopolion, Inc., All rights reserved.</p>
-                            </td>
-                        </tr>
-                        <!--Email footer end-->
-                    </tbody>
+                                    <div style="padding-bottom: 5px;">For help, please send an email to <a href="#" style="color:#f8941e; text-decoration:none;">info@monopolion.com</a>.</div>
+                                    <a href="#" style="color:#f8941e;  text-decoration:none;"><!-- Terms and Conditions --></a><!--  | --> <a href="#" style="color:#f8941e; text-decoration:none;" ><!-- Privacy Policy --></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" height="26" bgcolor="#dddddd" style="color:#333333; font-family:Arial, Helvetica, sans-serif;">
+                                    <p style="margin: 0px; line-height: 26px; font-size: 11px;" >Copyright &copy; 2015 Monopolion, Inc., All rights reserved.</p>
+                                </td>
+                            </tr>
+                            <!--Email footer end-->
+                        </tbody>
                     </table>
 
                 </td>

@@ -19,6 +19,43 @@ if (!defined('BASEPATH'))
  */
 $config['base_url'] = "http://localhost/crm/siteadmin";
 $config['TITLE'] = "Monopolion";
+$config['email_from'] = "info@monopolion.com";
+$config['title'] = "Monopolion";
+
+
+$config['property_type'] = array('1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
+
+//pagination array
+$config['pagination'] = array();
+$config['pagination']['per_page'] = 10;
+$config['pagination']['uri_segment'] = 3;
+$config['pagination']['num_links'] = 2;
+//$config['pagination']['page_query_string'] = TRUE;
+
+
+if (count($_REQUEST) > 0) $config['pagination']['suffix'] = '?' . http_build_query($_REQUEST, '', "&");
+$config['pagination']['reuse_query_string'] = FALSE;
+$config['pagination']['use_page_numbers'] = TRUE;
+$config['pagination']['full_tag_open'] = '<nav class="col-sm-6 text-right text-center-sm"><ul class="pagination pagination-sm">';
+$config['pagination']['full_tag_close'] = '</ul></nav>';
+$config['pagination']['first_link'] = '<span aria-hidden="true">First</span>';
+$config['pagination']['last_link'] = '<span aria-hidden="true">Last</span>';
+$config['pagination']['first_tag_open'] = '<li>';
+$config['pagination']['first_tag_close'] = '</li>';
+$config['pagination']['last_tag_open'] = '<li>';
+$config['pagination']['last_tag_close'] = '</li>';
+$config['pagination']['next_link'] = '&gt;';
+$config['pagination']['next_tag_open'] = '<li>';
+$config['pagination']['next_tag_close'] = '</li>';
+$config['pagination']['prev_link'] = '&lt;';
+$config['pagination']['prev_tag_open'] = '<li>';
+$config['pagination']['prev_tag_close'] = '</li>';
+
+$config['pagination']['cur_tag_open'] = '<li class="active"><a href="#">';
+$config['pagination']['cur_tag_close'] = '</a></li>';
+$config['pagination']['num_tag_open'] = '<li>';
+$config['pagination']['num_tag_close'] = '</li>';
+
 /*
   |--------------------------------------------------------------------------
   | Index File

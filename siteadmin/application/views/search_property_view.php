@@ -240,7 +240,7 @@ $this->load->view('leftmenu');
                         else
                             echo form_open_multipart('inquiry/agent_calendar', array('name'=>'agentCalendar','class' => 'form-horizontal'));
                         ?>
-                            <table id="example">
+                            <table id="search-property-list">
                                 <thead>
                                     <tr>
                                         <th>Property Description</th>
@@ -348,7 +348,7 @@ $this->load->view('leftmenu');
                                                 //echo "<i class='icon-zoom-in'></i>&nbsp;" . anchor('home/view_property/'.$search_detail[$i]->id, 'View',$arrayName )."  ";
                                                    
                                                 }else{?>
-                                                    <input type="radio" id="property_id" name="property_id" checked value="<?php echo trim($search_detail[$i]->id); ?>" />
+                                                 <input type="radio" id="property_id" name="property_id" class="property_result" checked value="<?php echo trim($search_detail[$i]->id); ?>" />
                                                     <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
                                                     <!-- <a href="<?php echo base_url(); ?>home/view_property/<?php echo $search_detail[$i]->id; ?>" target='_blank' class="btn btn-info btn-xs">View</a> -->
                                                     <?php
@@ -399,7 +399,7 @@ $this->load->view('leftmenu');
                                                  <div class="form-group">
                                                   <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
                                                   <div class="col-sm-6">
-                                                  <br><input type="submit" class="btn btn-sm btn-primary" id="Proceed" name="Proceed" value="Proceed" onclick="getAllPropertyIds();">
+                                                  <br><input type="submit" class="btn btn-sm btn-primary" id="Proceed" name="Proceed" value="Proceed" onclick="getAllPropertyIds(event);">
                                                   </div>
                                                   </div>     
                                             <?php
@@ -408,7 +408,7 @@ $this->load->view('leftmenu');
                                                 <div class="form-group">
                                                 <label class="col-md-3 col-sm-4 control-label">&nbsp;</label>
                                                 <div class="col-sm-6">
-                                                 <input type="submit" id="next" name="next" class="btn btn-sm btn-primary" value="Next" onclick="handleChange2();">
+                                                 <input type="submit" id="next" name="next" class="btn btn-sm btn-primary" value="Next" onclick="handleChange2(event);">
                                                 </div>
                                                 </div>
                                             <?php        
@@ -565,8 +565,16 @@ function get_city_area() {
 
 //          });
 //  }
-function getAllPropertyIds()
+function getAllPropertyIds(event)
 {
+  var totle_count= $('input[name=pro_checkbox]:checked').length;
+  
+  if(totle_count==0){
+      alert('Please select at least one property!.');
+      //return false;
+      event.preventDefault();
+  }
+
     var allVals = [];
     $('.propertyIdArr:checked').each(function() {
        allVals.push($(this).val());
@@ -585,12 +593,19 @@ function getAllPropertyIds()
     $("#bedroom_no").val($('#bedroom').val());
     $("#bathroom_no").val($('#bathroom').val());
     $("#time_section_id").val($('input:radio[name=time_section]:checked').val());
-} 
-function handleChange2()
-{   
+}
+
+
+function handleChange2(event){   
     //alert($('#property_id:checked').val());
+    var selected = $(".property_result:checked");
+    if(!selected.val()){
+        alert('Please select property!.');
+        event.preventDefault();
+    }
     $("#property_name").val($('#property_id:checked').val());
 }
+
 window.onload = function() {
                         
 };

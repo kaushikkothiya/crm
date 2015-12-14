@@ -50,6 +50,40 @@
                     return moment( d, format, locale, true ).unix();
                 };
             };
+       
+       
+            function replaceAll(str, find, replace) {
+                return str.replace(new RegExp(find, 'g'), replace);
+            }
+       
+            function getPrice(name) {
+                var rankNumber;
+                
+                rankNumber = replaceAll(name,"<div>","");
+                rankNumber = replaceAll(rankNumber,"</div>","");
+                rankNumber = replaceAll(rankNumber,"€","");
+                rankNumber = replaceAll(rankNumber,",","");
+                rankNumber = replaceAll(rankNumber,"SP.","");
+                rankNumber = replaceAll(rankNumber,"RP.","");
+                rankNumber = replaceAll(rankNumber,"<br>","");
+                rankNumber = replaceAll(rankNumber," ","");
+                rankNumber = replaceAll(rankNumber,"/","");
+                
+                if(!isNaN(rankNumber) && rankNumber!=""){
+                    rankNumber = parseInt(rankNumber);
+                }else{
+                    rankNumber = 0;
+                }
+                return rankNumber;
+            }
+       
+            jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
+                return getPrice(x) < getPrice(y);
+            };
+
+            jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
+                return getPrice(x) > getPrice(y);
+            }
             
             $.fn.dataTable.moment('D-MMM-YYYY');
             
@@ -63,6 +97,28 @@
             	}
         	]	
              });
+             
+            $('#property-list').DataTable({
+                "lengthMenu": [ 15, 30, 45, 60, 75 ],
+                "aoColumnDefs": [{ "sType": 'price', "aTargets": [5] }],
+                "order": [[ 0, "desc" ]],
+                "columnDefs": [{
+                    "targets": [ 0 ],
+                    "visible": false
+                }]
+            });
+            
+            $('#search-property-list').DataTable({
+                "lengthMenu": [ 15, 30, 45, 60, 75 ],
+                "aoColumnDefs": [{ "sType": 'price', "aTargets": [5] }],
+                "order": [[ 0, "desc" ]],
+                "columnDefs": [{
+                    "targets": [ 0 ],
+                    "visible": false
+                }]
+            });
+             
+             
              
              $('#inquiry_list').DataTable({
               "lengthMenu": [ 15, 30, 45, 60, 75 ],
@@ -78,8 +134,19 @@
             .removeClass( 'display' )
             .addClass('table table-striped table-bordered responsive-table');
             
+            $('#inquiry_list')
+            .removeClass( 'display' )
+            .addClass('table table-striped table-bordered responsive-table');
             
             $('#example')
+            .removeClass( 'display' )
+            .addClass('table table-striped table-bordered responsive-table');
+            
+            $('#property-list')
+            .removeClass( 'display' )
+            .addClass('table table-striped table-bordered responsive-table');
+    
+            $('#search-property-list')
             .removeClass( 'display' )
             .addClass('table table-striped table-bordered responsive-table');
 

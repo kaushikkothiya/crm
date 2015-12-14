@@ -57,6 +57,7 @@ Class Inquiry_model extends CI_Model {
                     $this->db->from('inquiry');
                     $this->db->join('user', 'user.id =inquiry.created_by');
                     $this->db->where('inquiry.customer_id', $inc_view);
+                    $this->db->where('inquiry.status !=',1);
                     //$this->db->where('inquiry.created_by',$created_id);
                     $this->db->where("(inquiry.created_by = '" . $created_id . "' OR inquiry.agent_id = '" . $created_id . "')");
                     $this->db->order_by('inquiry.created_date', 'DESC');
@@ -74,6 +75,7 @@ Class Inquiry_model extends CI_Model {
                         //$this->db->where("(inquiry.created_by = '".$created_id."' OR inquiry.agent_id = '".$created_id."')");
                     }
                     $this->db->where("(inquiry.created_by = '" . $created_id . "' OR inquiry.agent_id = '" . $created_id . "')");
+                    $this->db->where('inquiry.status !=',1);
                     $this->db->join('user', 'user.id =inquiry.created_by');
                     $this->db->order_by('inquiry.created_date', 'DESC');
                     $query = $this->db->get();
@@ -84,6 +86,7 @@ Class Inquiry_model extends CI_Model {
                         ->from('inquiry')
                         ->join('user', 'user.id =inquiry.created_by')
                         ->where("(inquiry.created_by = '" . $created_id . "' OR inquiry.agent_id = '" . $created_id . "')")
+                        ->where('inquiry.status !=',1)
                         ->order_by('inquiry.created_date', 'DESC')
                         ->get();
                 if ($q->num_rows() > 0) {
@@ -98,6 +101,7 @@ Class Inquiry_model extends CI_Model {
                     $this->db->from('inquiry');
                     $this->db->join('user', 'user.id =inquiry.created_by');
                     $this->db->where('inquiry.customer_id', $inc_view);
+                    $this->db->where('inquiry.status !=',1);
                     $this->db->order_by('inquiry.created_date', 'DESC');
                     $query = $this->db->get();
                     return $query->result();
@@ -111,6 +115,7 @@ Class Inquiry_model extends CI_Model {
                     } else {
                         $this->db->order_by('inquiry.created_date', 'DESC');
                     }
+                    $this->db->where('inquiry.status !=',1);
                     $this->db->join('user', 'user.id =inquiry.created_by');
                     $query = $this->db->get();
                     return $query->result();
@@ -119,6 +124,7 @@ Class Inquiry_model extends CI_Model {
                 $q = $this->db->select('inquiry.*,user.fname,user.lname')
                         ->from('inquiry')
                         ->join('user', 'user.id =inquiry.created_by')
+                        ->where('inquiry.status !=',1)
                         ->order_by('inquiry.created_date', 'DESC')
                         ->get();
                 if ($q->num_rows() > 0) {
@@ -613,6 +619,8 @@ Class Inquiry_model extends CI_Model {
     }
 
     function saveClientInquiry($customerId, $property_id, $property_ref_no, $inquiry_ref_no, $property_buy_sale) {
+        
+        
 
         $this->db->select('*');
         $this->db->from('inquiry');
@@ -1301,6 +1309,21 @@ Class Inquiry_model extends CI_Model {
         }
         return array();
     }
+    
+//    function getInquiryDetails($id){
+//        $q = $this->db->select("inquiry.*,property.type as property_sale_type,property.address as property.address,property.property_type,property.furnished_type,property.country_id,property.city_id,property.city_area,property.rent_price,property.rent_val,property.sale_price,property..sale_val,property.bedroom,property.bathroom,property.reference_no,property.url_link,agent.fname as agent_first_name,agent.lname as agent_lastname,agent.email as agent_email,agent.mobile_no")
+//                ->from('inquiry')
+//                ->join('property',"property.id=inquiry.property_id","left")
+//                ->join('user as agent',"agent.id=inquiry.agent_id","left")
+//                ->join('customer',"customer.id=inquiry.customer_id","left")
+//                ->join('user as employee',"employee.id=inquiry.created_by","left")
+//                ->where('inquiry.id',$id)
+//                ->get();
+//        if ($q->num_rows() > 0) {
+//            return $q->row();
+//        }
+//        return array();
+//    }
 
 }
 

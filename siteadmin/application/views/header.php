@@ -26,7 +26,30 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>css/datetimepicker/jquery-ui-timepicker-addon.css">
 
 <!-- Custom styles for this template -->
+<?php
+$controller = $this->router->fetch_class();
+$action = $this->router->fetch_method();
+?>
 
+<link href="<?php echo base_url(); ?>css/fullcalendar.css" rel="stylesheet">
+
+<style type="text/css">
+<?php if($controller=="calendar" && $action=="index"){ ?>
+    .fc{
+        width: 100% !important;
+    }
+    .fc-today-button, .fc-prev-button, .fc-next-button, .fc-month-button, .fc-agendaWeek-button, .fc-agendaDay-button, .fc-popover{
+        width:auto !important;
+    }
+    .resize {
+        width: auto !important;
+        margin: 0 auto;
+    }
+    .fc-time{
+        display : none;
+    }
+<?php } ?>
+</style>
 </head>
 <body>
     <div class="overlay"><span class="loader">&nbsp;</span></div>

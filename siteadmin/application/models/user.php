@@ -849,7 +849,7 @@ Class User extends CI_Model {
             $checkval = "0";
         }
         // $name_array[]=array('0'=>$_POST['link_url'],'1'=>$_POST['link_url1'],'2'=>$_POST['link_url2'])
-        $url_mul = array('0' => $_POST['link_url'], '1' => $_POST['link_url1'], '2' => $_POST['link_url']);
+        $url_mul = array('0' => $_POST['link_url'], '1' => $_POST['link_url1'], '2' => $_POST['link_url2']);
         $url_link = implode(',', $url_mul);
         //echo $url_link;exit;
         $today_date = date('Y-m-d H:i:s');

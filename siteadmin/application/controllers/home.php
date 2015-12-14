@@ -543,20 +543,9 @@ class Home extends MY_Controller {
         $property_buy_sale = $_POST['aquired'];
         $property_link = array();
         $property_title = array();
-        $property_link_url = array();
         $property_link_path = base_url() . "index.php/home/view_property/";
-        $url = explode(',', $getSelectedPropertyDetails[0]->url_link);
-        if (!empty($url[0])) {
-            $url_link = $url[0];
-        } elseif (!empty($url[1])) {
-            $url_link = $url[1];
-        } elseif (!empty($url[2])) {
-            $url_link = $url[2];
-        } else {
-            $url_link = "";
-        }
+        
         array_push($property_link, $property_link_path . $getSelectedPropertyDetails[0]->id);
-        array_push($property_link_url, $url_link);
         if (!empty($getSelectedPropertyDetails[0]->bedroom)) {
             $bedroom_detail = $getSelectedPropertyDetails[0]->bedroom;
         } else {
@@ -597,7 +586,6 @@ class Home extends MY_Controller {
             'customer_email' => $get_exist_customer_Id[0]->email,
             'customer_name' => $get_exist_customer_Id[0]->fname . ' ' . $get_exist_customer_Id[0]->lname,
             'property_links' => $property_link,
-            'property_link_url' => $property_link_url,
             //'bedroom'=>$bedroom_detail,
             //'property_category'=>$property_category,
             //'property_type'=>$propety_type
@@ -626,11 +614,7 @@ class Home extends MY_Controller {
         } else {
             $sms .= "- \n";
         }
-        if (!empty($property_link_url[0]) && trim($property_link_url[0]) != "") {
-            $sms .= $property_link_url[0];
-        } else {
-            $sms .= $property_link[0];
-        }
+        $sms .= $property_link[0];
         $sms .= " For any further information please call: 8000 7000";
         $sms .= " Thanks,";
         $sms .= " Monopolion Team";
@@ -658,25 +642,13 @@ class Home extends MY_Controller {
                     $property_buy_sale = $_POST['aquired'];
                     $property_link = array();
                     $property_title = array();
-                    $property_link_url = array();
                     $property_link_path = base_url() . "index.php/home/view_property/";
                     foreach ($getSelectedPropertyDetails as $inqKey => $inqValue) {
-                        $url = explode(',', $inqValue->url_link);
-                        if (!empty($url[0])) {
-                            $url_link = $url[0];
-                        } elseif (!empty($url[1])) {
-                            $url_link = $url[1];
-                        } elseif (!empty($url[2])) {
-                            $url_link = $url[2];
-                        } else {
-                            $url_link = "";
-                        }
                         // Get Unique Inquiry Reference Number
                         $inquiry_num = $this->unic_inquiry_num();
 
                         if ($insert_customer_inquiry = $this->inquiry_model->saveClientInquiry($customerId, $inqValue->id, $inqValue->reference_no, $inquiry_num, $property_buy_sale)) {
                             array_push($property_link, $property_link_path . $inqValue->id);
-                            array_push($property_link_url, $url_link);
                             if (!empty($inqValue->property_type)) {
                                 $property_category = $this->get_propertytypeby_id($inqValue->property_type);
                             } else {
@@ -720,7 +692,7 @@ class Home extends MY_Controller {
                         'customer_name' => $_POST['fname'] . '' . $_POST['lname'],
                         'property_links' => $property_link,
                         'property_title' => $property_title,
-                        'property_link_url' => $property_link_url
+                        'property_link' => $property_link
                             //'bedroom'=>$bedroom_detail,
                             //'property_category'=>$property_category,
                             //'property_type'=>$propety_type
@@ -747,11 +719,7 @@ class Home extends MY_Controller {
                     } else {
                         $sms .= "- \n";
                     }
-                    if (!empty($property_link_url[0]) && trim($property_link_url[0]) != "") {
-                        $sms .= $property_link_url[0];
-                    } else {
-                        $sms .= $property_link[0];
-                    }
+                    $sms .= $property_link[0];
                     $sms .= " For any further information please call: 8000 7000";
                     $sms .= " Thanks,";
                     $sms .= " Monopolion Team";

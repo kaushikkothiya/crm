@@ -174,32 +174,61 @@ function get_inquirecustomer($value)
         return $customerid;
 
     }
-    function get_inquireuser($value,$date)
-    {
-        $namevalue = $this->db->escape_like_str($value);
-
+    
+    
+    function getAgent($agent){
+        foreach($agent as $key=>$value){
+            $agent[$key] = $this->db->escape_like_str($value);
+        }
+        
         $this->db->select('id');
         $this->db->from('user');
-        $this->db->where("CONCAT(fname, ' ', lname) LIKE '%".$namevalue."%'", NULL, FALSE);
+        $this->db->where("email LIKE '%".$agent['email']."%' OR  email LIKE '%".$agent['mobile_no']."%'", NULL, FALSE);
         $this->db->where('type', '2');
         $query=$this->db->get();
-        $data = $query->result();
-    
-        $name = explode(" ",$value);
-        $save_data =  array('fname' => $name[0],'lname' => $name[1],'status'=> 'Active', 'created_date'=> $date, 'type'=> '2');
-        
-        if (empty($data)) {  
-            $this->db->insert('user', $save_data);
-            $id = $this->db->insert_id();
-            //return $this->db->insert_id();
+        $data = $query->row();
+        if(!empty($data)){
+            return $data->id;
         }else{
-           $id = $data[0]->id;            
+            return false;
         }
-        return $id;
-
     }
-    function get_inquire_property($data_prop)
-    {
+    
+    function saveAgent($agent){
+        foreach($agent as $key=>$value){
+            $agent[$key] = $this->db->escape_like_str($value);
+        }
+        $agent['status'] = 'Active';
+        $agent['type'] = '2';
+        $agent['password'] = md5($agent['password']);
+        if($this->db->insert('user', $agent)){
+            return $this->db->insert_id();
+        }
+        return false;
+    }
+    
+    function get_inquireuser($agent) {
+        foreach($agent as $key=>$value){
+            $agent[$key] = $this->db->escape_like_str($value);
+        }
+        
+        $this->db->select('id');
+        $this->db->from('user');
+        $this->db->where("email LIKE '%".$agent['email']."%' OR  email LIKE '%".$agent['mobile_no']."%'", NULL, FALSE);
+        $this->db->where('type', '2');
+        $query=$this->db->get();
+        $data = $query->row();
+        if(!empty($data)){
+            return $data->id;
+        }else{
+            $agent['status'] = 'Active';
+            $agent['type'] = '2';
+            $this->db->insert('user', $agent);
+            return $this->db->insert_id();       
+        }
+    }
+    
+    function get_inquire_property($data_prop) {
        
         $this->db->select('id');
         $this->db->from('property');
@@ -261,6 +290,20 @@ function get_inquirecustomer($value)
         }
 
         return $con_det_id;
+    }
+
+    function property_export_data() {
+        
+        $q = $this->db->select("property.*,user.fname as user_fname,user.lname as user_lname,city_area.title,city.title as city_title")
+                ->from('property')
+                ->join('user', 'user.id =property.agent_id', 'left')
+                ->join('city', 'city.id =property.city_id', 'left')
+                ->join('city_area', 'city_area.id =property.city_area', 'left')
+                ->get();
+        if ($q->num_rows() > 0) {
+            return $q->result();
+        }
+        return array();
     }
 }
 ?>

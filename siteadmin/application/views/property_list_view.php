@@ -24,6 +24,7 @@ $this->load->view('leftmenu');
             <h1 class="page-header clearfix"><span>Property List</span>
                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
                     <button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Import Excel File</button>
+                    <a href="<?php echo base_url(); ?>Excelread/export_data"><button class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Export Property</button></a>
                 <?php } ?>
                 <button class="btn btn-sm btn-info pull-right fluid-btn" type="button" style="margin-left:5px;" onClick="window.location.href = 'add_property';">Create Property</button>
                <button class="btn btn-sm btn-danger pull-right property_next fluid-btn"  type="button">Search</button>
@@ -208,7 +209,7 @@ $this->load->view('leftmenu');
 
                 <div class="col-sm-12">
                     <div>
-                        <table id="example">
+                        <table id="property-list">
                             <thead>
                                 <tr>
                                     <th hidden>Id</th>

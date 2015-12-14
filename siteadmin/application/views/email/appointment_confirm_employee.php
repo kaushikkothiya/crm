@@ -32,21 +32,21 @@
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php if($type=="Confirm Appointment"){ ?>
+                                        <?php if($type=="Confirm Appointment" || $type==1){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
                                             <p>for the property with Reference No <?php echo $property_ref_no; ?> will be confirmed by our agent: <?php echo $agent_name?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                           </td>   
-                                        <?php }if($type=="Submit"){ ?>
+                                        <?php }if($type=="Submit" || $type==3){ ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
                                             <p>for the property with Reference No <?php echo $property_ref_no; ?> will be cancle by our agent: <?php echo $agent_name?></p>
                                             <p>Thanks & Regards</p>
                                             <p>Monopolion Team</p>
                                             </td>
-                                        <?php }elseif ($type=="reschedule") {  ?>
+                                        <?php }elseif ($type=="reschedule" || $type==2) {  ?>
                                             <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
                                             <p style="margin: 0px;" >Dear <b><?php echo $employee_name;?></b>,</p>
                                             <p>Your appointment has been reschedule</p>
