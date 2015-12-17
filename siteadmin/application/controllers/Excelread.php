@@ -71,16 +71,18 @@ class Excelread extends MY_Controller {
                 }
 
                 foreach ($data['values'] as $key => $value) {
+                    
+                    if ((empty($value['A']))) {
+                        continue;
+                    }
+                    
                     $city_id = $this->Blog_model->get_city($value['H']);
-
                     $city_area_id = $this->Blog_model->get_city_area($city_id, $value['I']);
-
 
                     $rs_userid = $this->Blog_model->get_adduser($value, $city_id);
 
 
                     $prop_type = array('1' => 'Duplex', '2' => 'Apartment', '3' => 'Penthouse', '4' => 'Garden Apartments', '5' => 'Studio', '6' => 'Townhouse', '7' => 'Villa', '8' => 'Bungalow', '9' => 'Land', '10' => 'Shop', '11' => 'Office', '12' => 'Business', '13' => 'Hotel', '14' => 'Restaurant', '15' => 'Building', '16' => 'Industrial estate', '17' => 'House', '18' => 'Upper-House', '19' => 'Maisonette');
-
                     $propkey = array_search("" . $value['J'] . "", $prop_type);
 
                     $propsell_type = array('1' => 'Sale', '2' => 'Rent', '3' => 'Both');
@@ -576,25 +578,26 @@ class Excelread extends MY_Controller {
         /* SetAuto size index column */
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0);
-        $column_array = array('A', 'B', 'C', 'E', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'X', 'Y', 'Z', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH');
+        $column_array = array('A', 'B', 'C', 'E', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'X', 'Y', 'Z', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH','AI');
         foreach ($column_array as $k => $v) {
             $objPHPExcel->getActiveSheet()->getColumnDimension($v)->setAutoSize(true);
         }
 
         /* Set index[0] or row 1 column name and color */
         $rowCount = 1;
-        $column_index_array = array('A' => 'Reference No', 'B' => 'Agent', 'C' => 'Rent Price €', 'D' => 'Common expenses ( 1 - incl. common expenses, 0- Plus common expenses )', 'E' => 'Selling Price €', 'F' => 'VAT ( 1 - No V.A.T, 0 - Plus V.A.T )', 'G' => 'Address', 'H' => 'City', 'I' => 'City Area', 'J' => 'Property Type', 'K' => 'Property Status (Sale / Rent / Both)', 'L' => 'Furnished Type', 'M' => 'Size of rooms', 'N' => 'Bedrooms', 'O' => 'Bathrooms', 'P' => 'Kitchen', 'Q' => 'URL Link1', 'R' => 'URL Link2', 'S' => 'URL Link3', 'T' => 'Covered area (m²)', 'U' => 'Uncovered area (m²)', 'V' => 'Plot/land area (m²)', 'W' => 'Description', 'X' => 'Pets', 'Y' => 'Architectural Design', 'Z' => 'Make Year', 'AA' => 'General Facility', 'AB' => 'Electronics Faciliteis', 'AC' => 'Owner Name', 'AD' => 'Owner Surname', 'AE' => 'Company Name', 'AF' => 'Country STD code', 'AG' => 'Mobile', 'AH' => 'E-Mail');
+        $column_index_array = array('A' => 'Reference No', 'B' => 'Agent', 'C' => 'Rent Price €', 'D' => 'Common expenses ( 1 - incl. common expenses, 0- Plus common expenses )', 'E' => 'Selling Price €', 'F' => 'VAT ( 1 - No V.A.T, 0 - Plus V.A.T )', 'G' => 'Address', 'H' => 'City', 'I' => 'City Area', 'J' => 'Property Type', 'K' => 'Property Status (Sale / Rent / Both)', 'L' => 'Furnished Type', 'M' => 'Size of rooms', 'N' => 'Bedrooms', 'O' => 'Bathrooms', 'P' => 'Kitchen', 'Q' => 'URL Link1', 'R' => 'URL Link2', 'S' => 'URL Link3', 'T' => 'Covered area (m²)', 'U' => 'Uncovered area (m²)', 'V' => 'Plot/land area (m²)', 'W' => 'Description', 'X' => 'Pets', 'Y' => 'Architectural Design', 'Z' => 'Make Year', 'AA' => 'General Facility', 'AB' => 'Electronics Faciliteis', 'AC' => 'Owner Name', 'AD' => 'Owner Surname', 'AE' => 'Company Name', 'AF' => 'Country STD code', 'AG' => 'Mobile', 'AH' => 'E-Mail', 'AI' => 'Image');
         foreach ($column_index_array as $A => $B) {
             $objPHPExcel->getActiveSheet()->SetCellValue($A . $rowCount, $B);
-            $objPHPExcel->getActiveSheet()->getStyle('A1:AH1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#8D4904');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:AI1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#8D4904');
         }
 
         /* Set row 2  to n column value */
         $Count = 2;
         foreach ($property_result as $key => $value) {
-            /* Set column value left align */
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $Count . ':AH' . $Count)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-
+            /* Set column value left align and font size*/
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $Count . ':AI' . $Count)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $Count . ':AI' . $Count)->getFont()->setSize(9);
+           
             /* Get general facility record perticuler property */
             $genral_facilities = $this->user->get_genral_facilities($value->id);
             $Faciliteis_title = array();
@@ -636,11 +639,15 @@ class Excelread extends MY_Controller {
             if (!empty($value->type) && ($value->type == 1 || $value->type == 3)) {
                 $sale_price = $value->sale_price;
                 $sale_val = $value->sale_val;
+            }else{
+            	$sale_price = "";
+                $sale_val = "";
             }
 
             /* url comma sepreted string to convert array */
             $url = explode(',', $value->url_link);
             $url = array_filter($url);
+            $url=array_unique($url);
             $other_link = array();
             if (!empty($url)) {
                 foreach ($url as $c1 => $d1) {
@@ -656,6 +663,10 @@ class Excelread extends MY_Controller {
             if (count($other_link) == 2) {
                 array_push($other_link, '');
             } elseif (count($other_link) == 1) {
+                array_push($other_link, '');
+                array_push($other_link, '');
+            }elseif (count($other_link) == 0) {
+                array_push($other_link, '');
                 array_push($other_link, '');
                 array_push($other_link, '');
             }
@@ -698,7 +709,7 @@ class Excelread extends MY_Controller {
             } else {
                 $pets = "";
             }
-
+            
             $objPHPExcel->getActiveSheet()->SetCellValue('A' . $Count, $value->reference_no);
             $objPHPExcel->getActiveSheet()->SetCellValue('B' . $Count, $value->user_fname . ' ' . $value->user_lname);
             $objPHPExcel->getActiveSheet()->SetCellValue('C' . $Count, $rent_price);
@@ -721,7 +732,7 @@ class Excelread extends MY_Controller {
             $objPHPExcel->getActiveSheet()->SetCellValue('T' . $Count, $value->cover_area != 0 ? $value->cover_area : '');
             $objPHPExcel->getActiveSheet()->SetCellValue('U' . $Count, $value->uncover_area != 0 ? $value->uncover_area : '');
             $objPHPExcel->getActiveSheet()->SetCellValue('V' . $Count, $value->plot_lan_area != 0 ? $value->plot_lan_area : '');
-            $objPHPExcel->getActiveSheet()->SetCellValue('W' . $Count, $value->short_decs);
+            $objPHPExcel->getActiveSheet()->SetCellValue('W' . $Count, strip_tags($value->short_decs));
             $objPHPExcel->getActiveSheet()->SetCellValue('X' . $Count, $pets);
             $objPHPExcel->getActiveSheet()->SetCellValue('Y' . $Count, $architectural_design);
             $objPHPExcel->getActiveSheet()->SetCellValue('Z' . $Count, $value->make_year != 0 ? $value->make_year : '');
@@ -733,6 +744,7 @@ class Excelread extends MY_Controller {
             $objPHPExcel->getActiveSheet()->SetCellValue('AF' . $Count, $value->coutry_code);
             $objPHPExcel->getActiveSheet()->SetCellValue('AG' . $Count, $value->mobile);
             $objPHPExcel->getActiveSheet()->SetCellValue('AH' . $Count, $value->email);
+            $objPHPExcel->getActiveSheet()->SetCellValue('AI' . $Count, '=HYPERLINK("'.base_url().'Excelread/property_image/'.$value->id.'","'.base_url().'Excelread/property_image/'.$value->id.'")' );
             $Count++;
         }
 
@@ -741,6 +753,27 @@ class Excelread extends MY_Controller {
         header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save('php://output');
+    }
+    
+     function property_image(){
+        $id = $this->uri->segment(3);
+        
+        /*Get all images in perticular property id*/
+        $property_image = $this->Blog_model->get_property_image($id); 
+        
+        /*load zip library*/
+        $this->load->library('zip');
+       
+        foreach ($property_image as $key => $value) {
+            /*get image in storage folder*/
+            $path =  base_url().'img_prop/'.$value->image;
+            
+            /*create zip and store image in images.zip*/
+            $this->zip->add_data('images/' . $value->image, file_get_contents($path));
+        }
+        
+        /*Download images zip fole */
+        $this->zip->download('images.zip'); 
     }
 
 }

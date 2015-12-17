@@ -141,8 +141,8 @@ class Inquiry extends MY_Controller {
             $this->session->unset_userdata('customer_property_id');
             redirect('inquiry/inquiry_manage');
         }
-        
-        
+
+
         $data = array();
         $this->load->model('calendar_model');
         $user = $this->cur_user;
@@ -150,74 +150,81 @@ class Inquiry extends MY_Controller {
 
         $config = $this->config->item('pagination');
         $config['per_page'] = 10;
-        
+
         $page = 1;
-        if($this->uri->segment(3)){
+        if ($this->uri->segment(3)) {
             $page = $this->uri->segment(3);
         }
 
-        if(isset($_REQUEST['per_page']) && !empty($_REQUEST['per_page'])){
+        if (isset($_REQUEST['per_page']) && !empty($_REQUEST['per_page'])) {
             $config['per_page'] = $_REQUEST['per_page'];
         }
-        
+
         $calendar = array();
-        if(isset($_REQUEST['calendar']) && !empty($_REQUEST['calendar'])){
+        if (isset($_REQUEST['calendar']) && !empty($_REQUEST['calendar'])) {
             $calendar = $_REQUEST['calendar'];
         }
-        
-        
-        $inquiry_for = (!empty($calendar) && isset($calendar['view']) && !empty($calendar['view']))?$calendar['view']:'';
-        $inquiry_client = (!empty($calendar) && isset($calendar['view_client']) && !empty($calendar['view_client']))?$calendar['view_client']:'';
-        
-        
-        $selected_user = (!empty($calendar) && isset($calendar['user_id']) && !empty($calendar['user_id']))?$calendar['user_id']:array();
-        if(!empty($selected_user)){
+
+
+        $inquiry_for = (!empty($calendar) && isset($calendar['view']) && !empty($calendar['view'])) ? $calendar['view'] : '';
+        $inquiry_client = (!empty($calendar) && isset($calendar['view_client']) && !empty($calendar['view_client'])) ? $calendar['view_client'] : '';
+
+
+        $selected_user = (!empty($calendar) && isset($calendar['user_id']) && !empty($calendar['user_id'])) ? $calendar['user_id'] : array();
+        if (!empty($selected_user)) {
             $selected_user = $this->calendar_model->getUserByID($selected_user);
         }
-        $total_rows = $this->calendar_model->getAllinquiryCount($user,false,$selected_user,'','',$inquiry_for,$inquiry_client);
+        $total_rows = $this->calendar_model->getAllinquiryCount($user, false, $selected_user, '', '', $inquiry_for, $inquiry_client);
 
         $this->load->library('pagination');
-        $config['base_url'] = base_url().'inquiry/inquiry_manage';
+        $config['base_url'] = base_url() . 'inquiry/inquiry_manage';
         $config['total_rows'] = $total_rows;
 
         $this->pagination->initialize($config);
 
         $offset = ($page * $config['per_page']) - $config['per_page'];
 
-        $data['inquiries'] = $this->calendar_model->getAllinquiryPage($user,$config['per_page'],$offset,false,$selected_user,'','',$inquiry_for,$inquiry_client);
-        
+        $order_by = 'inquiry.created_date';
+        $order_type = 'desc';
+
+        if (isset($calendar['order_by']) && !empty($calendar['order_by'])) {
+            $order_by = $calendar['order_by'];
+            $order_type = (isset($calendar['order_type']) && !empty($calendar['order_type']) ) ? $calendar['order_type'] : 'asc';
+        }
+
+        $data['inquiries'] = $this->calendar_model->getAllinquiryPage($user, $config['per_page'], $offset, false, $selected_user, '', '', $inquiry_for, $inquiry_client, $order_by, $order_type);
+
         $data['start'] = 0;
-                
-        if($total_rows > 0) {
+        if ($total_rows > 0) {
             $data['start'] = $offset + 1;
         }
-        
-        $data['end'] = $offset  + $config['per_page'];
-        if($data['end']>$total_rows){
-           $data['end'] = $total_rows;
+
+        $data['end'] = $offset + $config['per_page'];
+        if ($data['end'] > $total_rows) {
+            $data['end'] = $total_rows;
         }
         $data['calendar'] = $calendar;
         $data['total_rows'] = $total_rows;
         $data['pagination'] = $this->pagination->create_links();
         $data['all_users'] = $this->calendar_model->getAllUsers();
 
-        /*if (empty($_GET['view'])) {
-            if (!empty($_GET['view_client'])) {
-                $inc_view = $_GET['view_client'];
-                $client = '1';
-            } else {
-                $inc_view = "";
-                $client = '';
-            }
-        } else {
-            $inc_view = $_GET['view'];
-            $client = '';
-        }
-         $data['user'] = $this->inquiry_model->getAllinquiry($inc_view, $client);
+        /* if (empty($_GET['view'])) {
+          if (!empty($_GET['view_client'])) {
+          $inc_view = $_GET['view_client'];
+          $client = '1';
+          } else {
+          $inc_view = "";
+          $client = '';
+          }
+          } else {
+          $inc_view = $_GET['view'];
+          $client = '';
+          }
+          $data['user'] = $this->inquiry_model->getAllinquiry($inc_view, $client);
 
-        foreach ($data['user'] as $z => $val) {
-            $data['user'][$z]->agent_name = $this->inquiry_model->get_inc_agent($val->agent_id);
-        } */
+          foreach ($data['user'] as $z => $val) {
+          $data['user'][$z]->agent_name = $this->inquiry_model->get_inc_agent($val->agent_id);
+          } */
         $data['all_client'] = $this->user->getallclient();
 
         $this->load->view('inquiry_list_view', $data);
@@ -268,16 +275,18 @@ class Inquiry extends MY_Controller {
     }
 
     function check_customer_exist() {
-
         $customer_datail = $this->inquiry_model->check_customer_exist($_POST);
-
         if (!empty($customer_datail)) {
-
-            //$this->session->set_userdata('customer_property_status', $_POST['aquired']);
-            $this->session->set_userdata('customer_property_id', $customer_datail[0]->id);
-            $this->session->set_userdata('customer_name_property', $customer_datail[0]->fname . " " . $customer_datail[0]->lname);
-            echo "true";
-            exit;
+            if ($customer_datail[0]->status == 'Inactive') {
+                echo "inactive";
+                exit;
+            } else {
+                //$this->session->set_userdata('customer_property_status', $_POST['aquired']);
+                $this->session->set_userdata('customer_property_id', $customer_datail[0]->id);
+                $this->session->set_userdata('customer_name_property', $customer_datail[0]->fname . " " . $customer_datail[0]->lname);
+                echo "true";
+                exit;
+            }
         } else {
             echo "false";
             exit;
@@ -335,7 +344,8 @@ class Inquiry extends MY_Controller {
                     }
                     $data['post_property_data'] = $_POST;
                     $data['search_detail'] = $this->inquiry_model->getrelated_property($_POST);
-
+                    $data['property_types'] = $this->config->item('property_type');
+                    $data['aquired_types'] = $this->config->item('aquired_type');
                     $this->load->view('search_property_view', $data);
                 } else {
                     $data['post_property_data'] = array();
@@ -352,25 +362,32 @@ class Inquiry extends MY_Controller {
     }
 
     function property_search_result() {
-        $user = $this->inquiry_model->getrelated_property($_POST);
+
+
+        $agent_properties = ($_GET['agent_properties'] == 1) ? true : false;
+
+        $_POST['user_id'] = $this->cur_user['id'];
+
+        $user = $this->inquiry_model->getrelated_property($_POST, $agent_properties);
+
+        $property_types = $this->config->item('property_type');
+        $aquired_types = $this->config->item('aquired_type');
         for ($i = 0; $i < count($user); $i++) {
             echo "<tr>";
             echo '<td data-th="id." hidden><div>' . $user[$i]->id . '</div></td>';
             echo '<td data-th="Reference No."><div>' . $user[$i]->reference_no . "</br></br>Created on " . date("d-M-Y", strtotime($user[$i]->created_date)) . "</br></br>Updated on  " . date("d-M-Y", strtotime($user[$i]->updated_date)) . '</div></td>';
             echo '<td data-th="Title"><div>';
+
             if (!empty($user[$i]->bedroom) && $user[$i]->bedroom != 0) {
                 echo $user[$i]->bedroom . ' Bedroom ';
-            } else {
-                echo ' ';
             }
+
             if (!empty($user[$i]->property_type) && $user[$i]->property_type != 0) {
-                echo $this->get_propertytypeby_id($user[$i]->property_type);
-            } else {
-                echo ' ';
-            }if (!empty($user[$i]->type) && $user[$i]->type != 0) {
-                echo ' for ' . $this->property_aquired_type($user[$i]->type);
-            } else {
-                echo ' ';
+                echo $property_types[$user[$i]->property_type];
+            }
+
+            if (!empty($user[$i]->type) && $user[$i]->type != 0) {
+                echo ' for ' . $aquired_types[$user[$i]->type];
             }
             echo '</div></td>';
             echo '<td data-th="Agent Name"><div>' . $user[$i]->fname . " " . $user[$i]->lname . '</div></td>';
@@ -379,23 +396,32 @@ class Inquiry extends MY_Controller {
             if ($user[$i]->type == '1') {
                 //echo '<td data-th="Property Status"><div>' ."Sale". '</div></td>';
                 if (!empty($user[$i]->sale_price)) {
-                    echo '<td data-th="Price(€)" style="text-align: right"><div>' . "€ " . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
+                    echo '<td data-th="Price(€)" style="text-align: right"><div> ' . "SP. € " . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
                 } else {
                     echo '<td data-th="Price(€)"><div></div> </td>';
                 }
             } elseif ($user[$i]->type == '2') {
                 // echo '<td data-th="Property Status"><div>' ."Rent". '</div></td>';
                 if (!empty($user[$i]->rent_price)) {
-                    echo '<td data-th="Price(€)" style="text-align: right"><div>' . "€ " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
+                    echo '<td data-th="Price(€)" style="text-align: right"><div> ' . "RP. € " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
                 } else {
                     echo '<td data-th="Price(€)"><div></div> </td>';
                 }
             } elseif ($user[$i]->type == '3') {
                 //echo '<td data-th="Property Status"><div>' ."Both(Sale/Rent)". '</div></td>';
-                if (!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)) {
-                    echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € ' . number_format($user[$i]->sale_price, 0, ".", ",") . " <br /> RP. € " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
-                } else {
-                    echo '<td data-th="Price(€)"><div></div> </td>';
+
+                if (isset($_POST['property_type']) && $_POST['property_type'] == 1) {
+                    if (!empty($user[$i]->sale_price)) {
+                        echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € ' . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
+                    } else {
+                        echo '<td data-th="Price(€)"><div></div> </td>';
+                    }
+                } else if (isset($_POST['property_type']) && $_POST['property_type'] == 2) {
+                    if (!empty($user[$i]->rent_price)) {
+                        echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> RP. € ' . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
+                    } else {
+                        echo '<td data-th="Price(€)"><div></div> </td>';
+                    }
                 }
             } else {
                 //echo '<td data-th="Property Status"><div></div> </td>';
@@ -456,7 +482,7 @@ class Inquiry extends MY_Controller {
 
                     $customerId = $this->session->userdata('customer_property_id');
                     $property_buy_sale = $this->session->userdata('customer_property_buy_sale');
-                    
+
                     $property_link = array();
                     $property_title = array();
                     $property_link_path = base_url() . "index.php/home/view_property/";
@@ -947,7 +973,7 @@ class Inquiry extends MY_Controller {
             $data['feedback'] = $comments;
         }
 
-        $response = array('status' => false, 'message' => '', 'id' => $id, 'inq_status' => $status);
+        $response = array('status' => false, 'message' => $comments, 'id' => $id, 'inq_status' => $status);
         if ($this->inquiry_model->updateInquiryStatus($id, $data)) {
             //$this->inquiry_model->updatepropertystatus($property_id);
             $response['status'] = true;
@@ -1015,9 +1041,21 @@ class Inquiry extends MY_Controller {
         if ($this->inquiry_model->changeAgentStatus($id, $data)) {
 
             $inquiry = $this->inquiry_model->get_inquiry_data($id);
+
             $employee_record = $this->inquiry_model->get_employee_record($id);
-            $aget_record = $this->inquiry_model->get_aget_record($agent_id);
+            $aget_record = $this->inquiry_model->get_aget_record($inquiry[0]->agent_id);
+
+
             $inquiry_and_customer_record = $this->inquiry_model->get_inquiry_data($id);
+
+            if (!empty($aget_record)) {
+                $aget_record = $aget_record[0];
+                $agentcountry_code = $this->user->get_contry_code($aget_record->coutry_code);
+                $mcode_agent = substr($agentcountry_code[0]->prefix_code, 1);
+                $mobile_code_agent = "00" . $mcode_agent;
+            } else {
+                $mobile_code_agent = "0000";
+            }
 
             if (!empty($employee_record)) {
                 $employee_record = $employee_record[0];
@@ -1064,7 +1102,7 @@ class Inquiry extends MY_Controller {
                 $sms .= " has been confirmed on:" . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date . ".";
                 $sms .= " For any further information please kindly contact";
                 $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", Mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
-                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $id);
 
                 $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
 
@@ -1072,7 +1110,7 @@ class Inquiry extends MY_Controller {
                 $sms .= " You  that your  appointment on." . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date;
                 $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
                 $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
-                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($employee_record, $subject, $message, $sms, $id);
             } else if ($agent_status == 2) {
                 $subject = $response['msg'] = "Appointment has been sent for rescheduling.";
                 $message = $this->load->view("email/appointment_confirm", $data, TRUE);
@@ -1082,14 +1120,14 @@ class Inquiry extends MY_Controller {
                 $sms .= " has been rescheduled on:" . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date . ".";
                 $sms .= " For any further information please kindly contact";
                 $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
-                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $id);
 
                 $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
                 $sms = "Dear " . $employee_name . ",";
                 $sms .= " Your appointment has been Rescheduled";
                 $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
                 $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
-                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($employee_record, $subject, $message, $sms, $id);
             } else if ($agent_status == 3) {
                 $subject = $response['msg'] = "Appointment request has been cancel.";
                 $message = $this->load->view("email/appointment_confirm", $data, TRUE);
@@ -1099,14 +1137,14 @@ class Inquiry extends MY_Controller {
                 $sms .=" for the property with Reference No: " . $inquiry_and_customer_record->property_ref_no . ", has been cancelled";
                 $sms .= " For any further information please kindly contact";
                 $sms .= " our Agent, " . $aget_record->fname . " " . $aget_record->lname . ", mobile Number: +" . $mobile_code_agent . $aget_record->mobile_no . " or  8000 7000 ";
-                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($inquiry_and_customer_record, $subject, $message, $sms, $id);
 
                 $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
                 $sms = "Dear " . $employee_name . ",";
                 $sms .= " Your appointment has been cancel";
                 $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
                 $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
-                $this->notifyUser($employee_record, $subject, $message, $sms, $inquiry_id);
+                $this->notifyUser($employee_record, $subject, $message, $sms, $id);
             }
         }
         echo json_encode($response);

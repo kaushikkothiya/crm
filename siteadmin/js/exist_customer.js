@@ -40,6 +40,7 @@ $(document).ready(function(){
                 url:baseurl+"index.php/inquiry/check_customer_exist",
                 data: 'email_mobile=' +$("#email_mobile").val()+'&aquired=' +$("#aquired").val(),
                 success: function(msg){
+                   
                     if(msg =='false'){
                         alert('Customer Not Exist');
                         $('.create-new-client').removeClass('hidden');

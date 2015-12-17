@@ -18,10 +18,7 @@
                                 <a href="javascript:;" class="date-today"><?php echo isset($calendar['from_date']) ? $calendar['from_date'] : date('m/d/Y'); ?></a>
                                 <a class="btn btn-default btn-xs action-btn report-next <?php echo (date('m/d/Y') == $calendar['from_date']) ? 'disabled' : ''; ?>" href="javascript:;"><i class="fa fa-chevron-right"></i></a>
                                 <?php } else if ($calendar['calendar_view'] == 'week') { ?>
-                                <a class="btn btn-default btn-xs action-btn report-prev-week" href="javascript:;"><i class="fa fa-chevron-left"></i></a>
-                                <?php $to_date = $calendar['to_date'] > (date('m/d/Y')) ? date('d-M-Y') : date('d-M-Y',strtotime($calendar['to_date'])); ?>
-                                <a href="javascript:;" class="date-today"><?php echo isset($calendar['from_date']) ? date('d-M-Y',  strtotime($calendar['from_date'])).' to '.$to_date : date('d/M/Y'); ?></a>
-                                <a class="btn btn-default btn-xs action-btn report-next-week <?php echo $calendar['to_date'] > (date('m/d/Y')) ? 'disabled' : ''; ?>" href="javascript:;"><i class="fa fa-chevron-right"></i></a>
+                                <!-- Week code -->
                                 <?php } else { ?>
                                 <a class="btn btn-default btn-xs action-btn report-prev-month" href="javascript:;"><i class="fa fa-chevron-left"></i></a>
                                 <a href="javascript:;" class="date-today"><?php echo isset($calendar['from_date']) ? date('F, Y',  strtotime($calendar['from_date'])) : date('F, Y'); ?></a>
@@ -321,7 +318,7 @@
 <script type="text/javascript" src="<?php echo base_url(); ?>js/fullcalendar.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/calender.js"></script>
 <script type="text/javascript">
-var phpdate = '<?php echo $calendar['from_date']; ?>';
+
 Date.prototype.addDays = function(days) {
     var dat = new Date(this.valueOf());
     dat.setDate(dat.getDate() + days);
@@ -338,153 +335,22 @@ function addMonths(dateObj, num) {
     return dateObj;
 }
 
-function setPrevDate(){
+function setPrevWeek(){
     if($("#calendar_from_date").val()!=$("#calendar_to_date").val()){
         var dt = new Date();
     }else{
-       var dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
-       dt = dt.addDays(-1);
+        var dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
     }
-
-    m = (dt.getMonth()+1).toString();
-    m = (m.length<2)?('0'+m):m;
-    d = dt.getDate().toString();
-    d = (d.length<2)?('0'+d):d;
-    y = dt.getFullYear();
-    dt = m+'/'+d+'/'+y;
-    $("#calendar_from_date").val(dt);
-    $("#calendar_to_date").val(dt);
-}
-
-function setNextDate(){
-    if($("#calendar_from_date").val()!=$("#calendar_to_date").val()){
-        dt = new Date();
-    }else{
-        dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
-        dt = dt.addDays(1);
-    }
-
-    m = (dt.getMonth()+1).toString();
-    m = (m.length<2)?('0'+m):m;
-    d = dt.getDate().toString();
-    d = (d.length<2)?('0'+d):d;
-    y = dt.getFullYear();
-    dt = m+'/'+d+'/'+y;
-    $("#calendar_from_date").val(dt);
-    $("#calendar_to_date").val(dt);
-}
-
-function setPrevWeek(){
-    <?php if(isset($calendar['calendar_view']) && ($calendar['calendar_view']=='day') || ($calendar['calendar_view']=='month')){ ?>
-        dt = new Date();
-    <?php } else if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='week') { ?>
-        dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
-        dt = dt.addDays(-7);
-    <?php } ?>
     var first = dt.getDate() - dt.getDay(); // First day is the day of the month - the day of the week
     var last = first + 6; // last day is the first day + 6
     
-    var st_dt = new Date(dt.setDate(first));
-    var end_dt = new Date(dt.setDate(last));
+    var firstday = new Date(dt.setDate(first)).toUTCString();
+    var lastday = new Date(dt.setDate(last)).toUTCString();
     
-    m = (st_dt.getMonth()+1);
-    m = (m.length<2)?('0'+m):m;
-    d = st_dt.getDate();
-    d = (d.length<2)?('0'+d):d;
-    y = st_dt.getFullYear();
-    st_dt = m+'/'+d+'/'+y;
     
-    m = (end_dt.getMonth()+1).toString();
-    m = (m.length<2)?('0'+m):m;
-    d = end_dt.getDate().toString();
-    d = (d.length<2)?('0'+d):d;
-    y = end_dt.getFullYear();
-    end_dt = m+'/'+d+'/'+y;
     
-    $("#calendar_from_date").val(st_dt);
-    $("#calendar_to_date").val(end_dt);
 }
 
-function setNextWeek(){
-    <?php if(isset($calendar['calendar_view']) && ($calendar['calendar_view']=='day') || ($calendar['calendar_view']=='month')){ ?>
-        dt = new Date();
-    <?php } else if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='week') { ?>
-        dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
-        dt = dt.addDays(7);
-    <?php } ?>
-    
-    var first = dt.getDate() - dt.getDay(); // First day is the day of the month - the day of the week
-    var last = first + 6; // last day is the first day + 6
-    
-    var st_dt = new Date(dt.setDate(first));
-    var end_dt = new Date(dt.setDate(last));
-    
-    m = (st_dt.getMonth()+1);
-    m = (m.length<2)?('0'+m):m;
-    d = st_dt.getDate();
-    d = (d.length<2)?('0'+d):d;
-    y = st_dt.getFullYear();
-    st_dt = m+'/'+d+'/'+y;
-    
-    m = (end_dt.getMonth()+1).toString();
-    m = (m.length<2)?('0'+m):m;
-    d = end_dt.getDate().toString();
-    d = (d.length<2)?('0'+d):d;
-    y = end_dt.getFullYear();
-    end_dt = m+'/'+d+'/'+y;
-    $("#calendar_from_date").val(st_dt);
-    $("#calendar_to_date").val(end_dt);
-}
-
-function setPrevMonth(){
-    <?php if(isset($calendar['calendar_view']) && ($calendar['calendar_view']=='day') || ($calendar['calendar_view']=='week')){ ?>
-        dt = new Date();
-    <?php } else if (isset($calendar['calendar_view']) && $calendar['calendar_view']=='month') { ?>
-        dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
-        dt = addMonths(dt,-1);
-    <?php } ?>
-
-    m = (dt.getMonth()+1).toString();
-    m = (m.length < 2) ? ('0' + m) : m;
-    d = dt.getDate().toString();
-    d = (d.length < 2) ? ('0' + d) : d;
-    y = dt.getFullYear();
-    dt = m + '/' + '01' + '/' + y;
-    $("#calendar_from_date").val(dt);
-    dt = new Date(y, parseInt(m) + 1, 0);
-    m = dt.getMonth().toString();
-    m = (m.length < 2) ? ('0' + m) : m;
-    d = dt.getDate().toString();
-    d = (d.length < 2) ? ('0' + d) : d;
-    y = dt.getFullYear();
-    dt = m + '/' + d + '/' + y;
-    $("#calendar_to_date").val(dt);
-}
-
-function setNextMonth(){
-    <?php if(isset($calendar['calendar_view']) && ($calendar['calendar_view']=='day') || ($calendar['calendar_view']=='week') ){ ?>
-        dt = new Date();
-    <?php } else if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='month') { ?>
-        dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
-        dt = addMonths(dt,1);
-    <?php } ?>
-
-    m = (dt.getMonth()+1).toString();
-    m = (m.length < 2) ? ('0' + m) : m;
-    d = dt.getDate().toString();
-    d = (d.length < 2) ? ('0' + d) : d;
-    y = dt.getFullYear();
-    dt = m + '/' + '01' + '/' + y;
-    $("#calendar_from_date").val(dt);
-    dt = new Date(y, parseInt(m), 0);
-    m = (dt.getMonth()+1).toString();
-    m = (m.length < 2) ? ('0' + m) : m;
-    d = dt.getDate().toString();
-    d = (d.length < 2) ? ('0' + d) : d;
-    y = dt.getFullYear();
-    dt = m + '/' + d + '/' + y;
-    $("#calendar_to_date").val(dt);
-}
 $(document).ready(function(){
 
     $("#show_occupied_days").click(function(){
@@ -498,15 +364,6 @@ $(document).ready(function(){
 
     $(".change-view").click(function(){
         $("#calendar_calendar_view").val($(this).data('value'));
-        if($(this).data('value') == 'day') {
-            setNextDate();
-        }
-        if($(this).data('value') == 'week') {
-            setNextWeek();
-        }
-        if($(this).data('value') == 'month') {
-            setNextMonth();
-        }
         $("#calendar-filter-form").submit();
     })
 
@@ -524,34 +381,100 @@ $(document).ready(function(){
         $("#calendar-filter-form").submit();
     });
 
-    
+    var phpdate = '<?php echo $calendar['from_date']; ?>';
         $('.report-prev').click(function(){
-            setPrevDate();
+            if($("#calendar_from_date").val()!=$("#calendar_to_date").val()){
+               var dt = new Date();
+            }else{
+               var dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
+            }
+
+            dt = dt.addDays(-1);
+            m = (dt.getMonth()+1).toString();
+            m = (m.length<2)?('0'+m):m;
+            d = dt.getDate().toString();
+            d = (d.length<2)?('0'+d):d;
+            y = dt.getFullYear();
+            dt = m+'/'+d+'/'+y;
+            $("#calendar_from_date").val(dt);
+            $("#calendar_to_date").val(dt);
             $("#calendar-filter-form").submit();
         });
 
         $('.report-next').click(function(){
-            setNextDate();
-            $("#calendar-filter-form").submit();
-        });
-        
-        $('.report-prev-week').click(function(){
-            setPrevWeek();
-            $("#calendar-filter-form").submit();
-        });
+            if($("#calendar_from_date").val()!=$("#calendar_to_date").val()){
+                dt = new Date();
+            }else{
+                dt = new Date(phpdate.split("/")[2],(phpdate.split("/")[0]-1),phpdate.split("/")[1]);
+            }
 
-        $('.report-next-week').click(function(){
-            setNextWeek();
+            dt = dt.addDays(1);
+            m = (dt.getMonth()+1).toString();
+            m = (m.length<2)?('0'+m):m;
+            d = dt.getDate().toString();
+            d = (d.length<2)?('0'+d):d;
+            y = dt.getFullYear();
+            dt = m+'/'+d+'/'+y;
+            $("#calendar_from_date").val(dt);
+            $("#calendar_to_date").val(dt);
             $("#calendar-filter-form").submit();
         });
 
         $('.report-prev-month').click(function () {
-            setPrevMonth();
+            <?php if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='day'){ ?>
+                dt = new Date();
+            <?php } else if (isset($calendar['calendar_view']) && $calendar['calendar_view']=='month') { ?>
+                dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
+            <?php } ?>
+
+            dt = addMonths(dt,-1);
+            m = (dt.getMonth()+1).toString();
+            m = (m.length < 2) ? ('0' + m) : m;
+            d = dt.getDate().toString();
+            d = (d.length < 2) ? ('0' + d) : d;
+            y = dt.getFullYear();
+            dt = m + '/' + '01' + '/' + y;
+            $("#calendar_from_date").val(dt);
+            console.log(dt);
+
+            dt = new Date(y, parseInt(m) + 1, 0);
+            //console.log(m);
+            m = dt.getMonth().toString();
+            m = (m.length < 2) ? ('0' + m) : m;
+            d = dt.getDate().toString();
+            d = (d.length < 2) ? ('0' + d) : d;
+            y = dt.getFullYear();
+            dt = m + '/' + d + '/' + y;
+            $("#calendar_to_date").val(dt);
+            //console.log(dt);
             $("#calendar-filter-form").submit();
         });
 
         $('.report-next-month').click(function () {
-            setNextMonth();
+            <?php if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='day'){ ?>
+                dt = new Date();
+            <?php } else if(isset($calendar['calendar_view']) && $calendar['calendar_view']=='month') { ?>
+                dt = new Date(phpdate.split("/")[2], (phpdate.split("/")[0]-1), phpdate.split("/")[1]);
+            <?php } ?>
+
+            dt = addMonths(dt,1);
+            m = (dt.getMonth()+1).toString();
+            m = (m.length < 2) ? ('0' + m) : m;
+            d = dt.getDate().toString();
+            d = (d.length < 2) ? ('0' + d) : d;
+            y = dt.getFullYear();
+            dt = m + '/' + '01' + '/' + y;
+            $("#calendar_from_date").val(dt);
+            //console.log(dt);
+            dt = new Date(y, parseInt(m), 0);
+            m = (dt.getMonth()+1).toString();
+            m = (m.length < 2) ? ('0' + m) : m;
+            d = dt.getDate().toString();
+            d = (d.length < 2) ? ('0' + d) : d;
+            y = dt.getFullYear();
+            dt = m + '/' + d + '/' + y;
+            $("#calendar_to_date").val(dt);
+            //console.log(dt);
             $("#calendar-filter-form").submit();
         });
 

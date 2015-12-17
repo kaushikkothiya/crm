@@ -1,15 +1,13 @@
 <?php
+$url_mothod = $this->uri->segment(2);
 $this->load->view('header');
 ?>
 <link href="<?php echo base_url(); ?>css/selectmulcheck/multiple-select.css" rel="stylesheet">
-<?php
-$this->load->view('leftmenu');
-?>
+<?php $this->load->view('leftmenu'); ?>
 <!--<style>
 .ms-drop ul {
     max-height: 230px!important;
 }
-
 </style>-->
 <div class="container-fluid">
     <div class="row">
@@ -20,14 +18,17 @@ $this->load->view('leftmenu');
                     <?php echo $this->session->flashdata('success'); ?>
                 </div>
             <?php } ?>
-            
-            <h1 class="page-header clearfix"><span>Property List</span>
+            <h1 class="page-header clearfix"><span><?php
+                    echo ($url_mothod == 'property_manage') ? "Property List" : "Registed Property";
+                    ?></span>
                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
                     <button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Import Excel File</button>
                     <a href="<?php echo base_url(); ?>Excelread/export_data"><button class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Export Property</button></a>
                 <?php } ?>
+                    <?php if ($url_mothod == 'property_manage') { ?>
                 <button class="btn btn-sm btn-info pull-right fluid-btn" type="button" style="margin-left:5px;" onClick="window.location.href = 'add_property';">Create Property</button>
-               <button class="btn btn-sm btn-danger pull-right property_next fluid-btn"  type="button">Search</button>
+                    <?php } ?>
+                <button class="btn btn-sm btn-danger pull-right property_next fluid-btn"  type="button">Search</button>
             </h1>
             <!-- property search code start -->
             <div class="panel-body" id="property_search" style="display:none;">
@@ -117,8 +118,10 @@ $this->load->view('leftmenu');
                                                             <input type="checkbox" class="checkboxall"  <?php echo $selected; ?> value="<?php echo $key; ?>" name="property_category[]"  id="property_category"><?php echo $value; ?><br>
                                                         </label>
                                                     </div>
-                                                    <?php $count++;
-                                                } ?>
+                                                    <?php
+                                                    $count++;
+                                                }
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
@@ -142,7 +145,7 @@ $this->load->view('leftmenu');
                                             <option value="">Please select</option>
                                             <?php foreach ($bathroom as $key => $value) { ?>
                                                 <option value="<?php echo $key; ?>"><?php echo $value; ?></option>
-                                            <?php } ?>
+<?php } ?>
                                         </select>
 
                                     </div>
@@ -192,19 +195,25 @@ $this->load->view('leftmenu');
             <!-- property search code end-->
             <div class="row"> 
                 <div class="col-md-6">
-                    <span>View Property By :  &nbsp;&nbsp;
-                        <select name="view_inc"  id="view_inc" class="form-control" style="width:200px" onchange="view_property_agent(this.value);">
-                            <option value="" <?php if (empty($_GET['view'])) {
-                                                echo "selected";
-                                            } ?>>All</option>
-                            <?php foreach ($agent as $key => $value) { ?>
-                                <option value="<?php echo $value->id; ?>" <?php if (!empty($_GET['view_agent']) && $_GET['view_agent'] == $value->id) {
-                                echo "selected";
-                            } ?> ><?php echo $value->fname . ' ' . $value->lname; ?></option>
+                    <?php if ($url_mothod == 'property_manage') { ?>
+                        <span>View Property By :  &nbsp;&nbsp;
+                            <select name="view_inc"  id="view_inc" class="form-control" style="width:200px" onchange="view_property_agent(this.value);">
+                                <option value="" <?php
+                                if (empty($_GET['view'])) {
+                                    echo "selected";
+                                }
+                                ?>>All</option>
+                                <?php foreach ($agent as $key => $value) { ?>
+                                    <option value="<?php echo $value->id; ?>" <?php
+                                    if (!empty($_GET['view_agent']) && $_GET['view_agent'] == $value->id) {
+                                        echo "selected";
+                                    }
+                                    ?> ><?php echo $value->fname . ' ' . $value->lname; ?></option>
+    <?php } ?>
+                            </select>
+                        </span> 
 <?php } ?>
-                        </select>
-                    </span> 
-                    <div class="sep"></div> <div class="clearfix"></div> 
+                    <div class="sep"></div> <div class="clearfix"></div>
                 </div>
 
                 <div class="col-sm-12">
@@ -227,90 +236,99 @@ $this->load->view('leftmenu');
                             </thead>
                             <tbody id="property_search_result">
                                 <?php
-                                $my_con= new MY_Controller; 
                                 for ($i = 0; $i < count($user); $i++) {
                                     echo "<tr>";
                                     echo "<td data-th='id.' hidden><div>" . $user[$i]->id . "</div></td>";
                                     echo "<td data-th='Reference No.'><div>" . $user[$i]->reference_no . '</br></br>Created on ' . date("d-M-Y", strtotime($user[$i]->created_date)) . '</br></br>Updated on  ' . date("d-M-Y", strtotime($user[$i]->updated_date)) . "</div></td>";
                                     ?>
-                                    <td data-th='Title'><div><?php if(!empty($user[$i]->bedroom) && $user[$i]->bedroom !=0){ echo $user[$i]->bedroom.' Bedroom '; }else{ echo ' '; } ?><?php if(!empty($user[$i]->property_type) && $user[$i]->property_type !=0){ echo $my_con->get_propertytypeby_id($user[$i]->property_type); }else{ echo ' '; } ?><?php if(!empty($user[$i]->type) && $user[$i]->type !=0){ echo ' for '.$my_con->property_aquired_type($user[$i]->type); }else{ echo ''; } ?></div></td>
-                                    <?php 
-                                    echo "<td data-th='Agent Name'><div>" . $user[$i]->fname . ' ' . $user[$i]->lname . "</div></td>";
-                                    echo "<td data-th='Property Area'><div>" . $user[$i]->title . "</div></td>";
+                                <td data-th='Title'><div><?php
+                                        if (!empty($user[$i]->bedroom) && $user[$i]->bedroom != 0) {
+                                            echo $user[$i]->bedroom . ' Bedroom ';
+                                        }
+                                        if (!empty($user[$i]->property_type) && $user[$i]->property_type != 0) {
+                                            echo $property_types[$user[$i]->property_type];
+                                        }
+                                        if (!empty($user[$i]->type) && $user[$i]->type != 0) {
+                                            echo ' for ' . $aquired_types[$user[$i]->type];
+                                        }
+                                        ?></div></td>
+                                <?php
+                                echo "<td data-th='Agent Name'><div>" . $user[$i]->fname . ' ' . $user[$i]->lname . "</div></td>";
+                                echo "<td data-th='Property Area'><div>" . $user[$i]->title . "</div></td>";
 
-                                    if ($user[$i]->type == '1') {
-                                        //echo "<td data-th='Property Status'><div>" . 'Sale' . "</div></td>";
-                                        if (!empty($user[$i]->sale_price)) {
-                                            echo '<td data-th="Price(€)" style="text-align: right"><div>' . '€ ' . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
-                                        } else {
-                                            echo "<td data-th='Price(€)'><div></div> </td>";
-                                        }
-                                    } elseif ($user[$i]->type == '2') {
-                                        //echo "<td data-th='Property Status'><div>" . 'Rent' . "</div></td>";
-                                        if (!empty($user[$i]->rent_price)) {
-                                            echo '<td data-th="Price(€)" style="text-align: right"><div>' . '€ ' . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
-                                        } else {
-                                            echo "<td data-th='Price(€)'><div></div> </td>";
-                                        }
-                                    } elseif ($user[$i]->type == '3') {
-                                        //echo "<td data-th='Property Status'><div>" . 'Both(Sale/Rent)' . "</div></td>";
-                                        if (!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)) {
-                                            echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € ' . number_format($user[$i]->sale_price, 0, ".", ",") . " <br /> RP. € " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
-                                        } else {
-                                            echo "<td data-th='Price(€)'><div></div> </td>";
-                                        }
+                                if ($user[$i]->type == '1') {
+                                    //echo "<td data-th='Property Status'><div>" . 'Sale' . "</div></td>";
+                                    if (!empty($user[$i]->sale_price)) {
+                                        echo '<td data-th="Price(€)" style="text-align: right"><div> SP. ' . '€ ' . number_format($user[$i]->sale_price, 0, ".", ",") . '</div></td>';
                                     } else {
-                                        //echo "<td data-th='Property Status'><div></div> </td>";
-                                        echo "<td data-th='Price(€)'><div> </div></td>";
+                                        echo "<td data-th='Price(€)'><div></div> </td>";
                                     }
-                                    echo '<td data-th="Furnish Type" style="min-width:60px"><div>';
-                                    if ($user[$i]->furnished_type == '1') {
-                                        echo "Furnished";
-                                    } elseif ($user[$i]->furnished_type == '2') {
-                                        echo 'Semi-Furnished';
-                                    } elseif ($user[$i]->furnished_type == '3') {
-                                        echo 'Un-Furnished';
+                                } elseif ($user[$i]->type == '2') {
+                                    //echo "<td data-th='Property Status'><div>" . 'Rent' . "</div></td>";
+                                    if (!empty($user[$i]->rent_price)) {
+                                        echo '<td data-th="Price(€)" style="text-align: right"><div> RP. ' . '€ ' . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
+                                    } else {
+                                        echo "<td data-th='Price(€)'><div></div> </td>";
                                     }
+                                } elseif ($user[$i]->type == '3') {
+                                    //echo "<td data-th='Property Status'><div>" . 'Both(Sale/Rent)' . "</div></td>";
+                                    if (!empty($user[$i]->sale_price) || !empty($user[$i]->rent_price)) {
+                                        echo '<td data-th="Price(€)" style="text-align: min-width:85px" ><div> SP. € ' . number_format($user[$i]->sale_price, 0, ".", ",") . " <br /> RP. € " . number_format($user[$i]->rent_price, 0, ".", ",") . '</div></td>';
+                                    } else {
+                                        echo "<td data-th='Price(€)'><div></div> </td>";
+                                    }
+                                } else {
+                                    //echo "<td data-th='Property Status'><div></div> </td>";
+                                    echo "<td data-th='Price(€)'><div> </div></td>";
+                                }
+                                echo '<td data-th="Furnish Type" style="min-width:60px"><div>';
+                                if ($user[$i]->furnished_type == '1') {
+                                    echo "Furnished";
+                                } elseif ($user[$i]->furnished_type == '2') {
+                                    echo 'Semi-Furnished';
+                                } elseif ($user[$i]->furnished_type == '3') {
+                                    echo 'Un-Furnished';
+                                }
+                                echo "</div></td>";
+                                //echo "<td>" . substr($user[$i]->short_decs, 0, 20).".....</td>";
+                                if (!empty($user[$i]->extra_image)) {
+                                    echo "<td data-th='Image'><div>";
+                                    echo '<img src="' . base_url() . 'img_prop/100x100/' . $user[$i]->extra_image . '" width="75" height="75">';
                                     echo "</div></td>";
-                                    //echo "<td>" . substr($user[$i]->short_decs, 0, 20).".....</td>";
-                                    if (!empty($user[$i]->extra_image)) {
-                                        echo "<td data-th='Image'><div>";
-                                        echo '<img src="' . base_url() . 'img_prop/100x100/' . $user[$i]->extra_image[0]->extra_image . '" width="75" height="75">';
-                                        echo "</div></td>";
-                                    } else {
-                                        echo "<td data-th='Image'><div>";
-                                        echo '<img src="' . base_url() . 'upload/property/100x100/noimage.jpg" width="75" height="75">';
-                                        echo "</div></td>";
-                                    }
-                                    ?>
+                                } else {
+                                    echo "<td data-th='Image'><div>";
+                                    echo '<img src="' . base_url() . 'upload/property/100x100/noimage.jpg" width="75" height="75">';
+                                    echo "</div></td>";
+                                }
+                                ?>
                                 <td data-th="Status">
                                     <div>
                                         <div class="sep"></div><div class="sep"></div><div class="sep"></div>
                                         <?php if ($user[$i]->status == 'Active') { ?>
                                             <span style="width:10px;height:10px;display:inline-block;background:#5cb85c;"></span> Active
-    <?php } else { ?>
+                                        <?php } else { ?>
                                             <span style="width:10px;height:10px;display:inline-block;background:#d9534f;"></span> Inactive
-                                        <?php } ?>
+    <?php } ?>
                                     </div>    
                                 </td>
                                 <td data-th="Actions">
                                     <div>
                                         <?php if ($user[$i]->status == 'Active') { ?>
                                             <a data-toggle="modal" data-target="#myModal" onclick="setPropertyId(<?php echo $user[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Send Inquiry"><i class="fa fa-paper-plane"></i></a> 
-    <?php } else { ?>
+                                        <?php } else { ?>
                                             <a onclick="sendinquiry_inactive(<?php echo $user[$i]->id; ?>)" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Send Inquiry"><i class="fa fa-paper-plane"></i></a> 
     <?php } ?>
                                         <a href="view_property/<?php echo $user[$i]->id; ?>"  target='_blank' class="btn btn-default btn-xs action-btn" rel="tooltip" title="View"><i class="fa fa-eye"></i></a> 
                                         <a href="add_property/<?php echo $user[$i]->id; ?>" class="btn btn-default btn-xs action-btn" rel="tooltip" title="Edit"><i class="fa fa-pencil"></i></a> 
 
 
-            <!-- <a href="add_property/<?php echo $user[$i]->id; ?>" class="btn btn-info btn-xs">Edit</a>  -->
-            <!-- &nbsp;<a href="view_property/<?php echo $user[$i]->id; ?>" target='_blank' class="btn btn-info btn-xs">View</a>  -->
-           <!--  &nbsp;<a data-toggle="modal" data-target="#myModal" class="btn btn-info btn-xs"  onclick="setPropertyId(<?php echo $user[$i]->id; ?>)">Send Inquiry</a>  -->
+                    <!-- <a href="add_property/<?php echo $user[$i]->id; ?>" class="btn btn-info btn-xs">Edit</a>  -->
+                    <!-- &nbsp;<a href="view_property/<?php echo $user[$i]->id; ?>" target='_blank' class="btn btn-info btn-xs">View</a>  -->
+                   <!--  &nbsp;<a data-toggle="modal" data-target="#myModal" class="btn btn-info btn-xs"  onclick="setPropertyId(<?php echo $user[$i]->id; ?>)">Send Inquiry</a>  -->
     <?php if ($this->session->userdata('logged_in_super_user')) { ?>
                                             <a href="delete_property/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs action-btn" rel="tooltip" title="Delete"><i class="fa fa-trash"></i></a>
                                             <!-- &nbsp;<a href="delete_property/<?php echo $user[$i]->id; ?>" onclick="return confirm('Are you sure want to delete this record?');" class="btn btn-danger btn-xs">Delete</a> -->
-                                <?php } ?>
+    <?php } ?>
                                     </div>
                                 </td>
                                 <?php
@@ -478,130 +496,193 @@ $this->load->view('footer');
 <script type="text/javascript" src="<?php echo base_url(); ?>js/property_excel_filel.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function () {
-    $('#property_search').hide();
+                                                $(document).ready(function () {
+                                                    $('#property_search').hide();
 
-    $(".checkboxall").change(function () {
+                                                    $(".checkboxall").change(function () {
 
-        if ($(this).val() == '0') {
-            if (this.checked) {
-                $('input:checkbox').prop('checked', 'checked');
-            } else {
-                $('input:checkbox').removeAttr('checked');
-            }
-        }
-    });
-    $('.rent_sale').click(function () {
+                                                        if ($(this).val() == '0') {
+                                                            if (this.checked) {
+                                                                $('input:checkbox').prop('checked', 'checked');
+                                                            } else {
+                                                                $('input:checkbox').removeAttr('checked');
+                                                            }
+                                                        }
+                                                    });
+                                                    $('.rent_sale').click(function () {
+                                                        var property_type_id = $(this).data('rentsleid');
+                                                        $('#property_type').val(property_type_id);
+                                                        // $(".buybtn-select").addClass("buybtn");
+                                                        // $(".buybtn-select").removeClass("buybtn-select");
 
-        var property_type_id = $(this).data('rentsleid');
-        $('#property_type').val(property_type_id);
-        // $(".buybtn-select").addClass("buybtn");
-        // $(".buybtn-select").removeClass("buybtn-select");
+                                                        // $(this).removeClass("buybtn");
+                                                        // $(this).addClass("buybtn-select");
+                                                    });
+                                                    $('.rent_sale').first().trigger('click');
 
-        // $(this).removeClass("buybtn");
-        // $(this).addClass("buybtn-select");
+                                                });
 
-    });
-});
-function search_result() {
+                                                function replaceAll(str, find, replace) {
+                                                    return str.replace(new RegExp(find, 'g'), replace);
+                                                }
 
-    var city_area_id = [];
-    $('.multiselect :checked').each(function () {
-        city_area_id.push($(this).val());
-    });
-    var property_category_id = [];
-    $('.scroll-box :checked').each(function () {
-        property_category_id.push($(this).val());
-    });
-    var property_type = $("#property_type").val();
-    var reference_no = $("#reference_no").val();
-    var country_id = $("#country_id").val();
-    var city = $("#city").val();
-    var bedroom = $("#bedroom").val();
-    var bathroom = $("#bathroom").val();
-    var furnished_type = $("#furnished_type").val();
-    var min_price = $("#min_price").val();
-    var max_price = $("#max_price").val();
-    $.ajax({
-        type: "post",
-        url: baseurl + "index.php/inquiry/property_search_result",
-        data: {city: city, selectItemcity_area: city_area_id, property_category: property_category_id, property_type: property_type, reference_no: reference_no, country_id: country_id, bedroom: bedroom, bathroom: bathroom, furnished_type: furnished_type, min_price: min_price, max_price: max_price},
-        //dataType:'json',
-        success: function (msg) {
-            $('#example').dataTable().fnDestroy();
-            $('#property_search_result').html(msg);
+                                                function search_result() {
 
-            $.fn.dataTable.moment = function (format, locale) {
-                var types = $.fn.dataTable.ext.type;
+                                                    var city_area_id = [];
+                                                    $('.multiselect :checked').each(function () {
+                                                        city_area_id.push($(this).val());
+                                                    });
+                                                    var property_category_id = [];
+                                                    $('.scroll-box :checked').each(function () {
+                                                        property_category_id.push($(this).val());
+                                                    });
+                                                    var property_type = $("#property_type").val();
+                                                    var reference_no = $("#reference_no").val();
+                                                    var country_id = $("#country_id").val();
+                                                    var city = $("#city").val();
+                                                    var bedroom = $("#bedroom").val();
+                                                    var bathroom = $("#bathroom").val();
+                                                    var furnished_type = $("#furnished_type").val();
+                                                    var min_price = $("#min_price").val();
+                                                    var max_price = $("#max_price").val();
+                                                    var agent_properties = 0;
+<?php if (isset($agent_properties)) { ?>
+                                                        agent_properties = 1;
+<?php } ?>
+                                                    $.ajax({
+                                                        type: "post",
+                                                        url: baseurl + "index.php/inquiry/property_search_result?time=" + Math.random() + '&agent_properties=' + agent_properties,
+                                                        data: {city: city, selectItemcity_area: city_area_id, property_category: property_category_id, property_type: property_type, reference_no: reference_no, country_id: country_id, bedroom: bedroom, bathroom: bathroom, furnished_type: furnished_type, min_price: min_price, max_price: max_price},
+                                                        //dataType:'json',
+                                                        success: function (msg) {
+                                                            $('#property-list').dataTable().fnDestroy();
 
-                // Add type detection
-                types.detect.unshift(function (d) {
-                    return moment(strip(d), format, locale, true).isValid() ?
-                            'moment-' + format :
-                            null;
-                });
-
-                // Add sorting method - use an integer for the sorting
-                types.order[ 'moment-' + format + '-pre' ] = function (d) {
-                    return moment(d, format, locale, true).unix();
-                };
-            };
-
-            $.fn.dataTable.moment('D-MMM-YYYY');
-
-            $('#example').DataTable({
-                "lengthMenu": [15, 30, 45, 60, 75],
-                "order": [[0, "desc"]]
-            });
-
-            $('#example')
-                    .removeClass('display')
-                    .addClass('table table-striped table-bordered responsive-table');
+                                                            //$('#property-list').empty();
+                                                            $('#property_search_result').html(msg);
 
 
-        }
-    });
-}
-function get_city_area() {
-    $('#city_area').html('');
-    $.ajax({
-        type: "post",
-        url: baseurl + "index.php/home/get_city_area",
-        data: 'city_id=' + $("#city option:selected").val(),
-        dataType: 'json',
-        success: function (msg) {
-            var selected_city_area = <?php echo (isset($_POST['selectItemcity_area'])) ? json_encode($_POST['selectItemcity_area']) : "[]"; ?>;
 
-            for (var i = 0; i < msg.length; i++) {
-                var selected = '';
+                                                            $.fn.dataTable.moment = function (format, locale) {
+                                                                var types = $.fn.dataTable.ext.type;
 
-                if ($.inArray(msg[i].id, selected_city_area) != -1) {
-                    selected = 'selected="selected"';
-                }
-                if (selected_city_area.length < 1)
-                {
-                    selected = 'selected="selected"';
-                }
-                $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
-            }
+                                                                // Add type detection
+                                                                types.detect.unshift(function (d) {
+                                                                    return moment(strip(d), format, locale, true).isValid() ?
+                                                                            'moment-' + format :
+                                                                            null;
+                                                                });
 
-            $('#city_area.multiselect').multipleSelect({
-                filter: true,
-            });
+                                                                // Add sorting method - use an integer for the sorting
+                                                                types.order[ 'moment-' + format + '-pre' ] = function (d) {
+                                                                    return moment(d, format, locale, true).unix();
+                                                                };
+                                                            };
+
+                                                            function getPrice(name) {
+                                                                var rankNumber;
+
+                                                                rankNumber = replaceAll(name, "<div>", "");
+                                                                rankNumber = replaceAll(rankNumber, "</div>", "");
+                                                                rankNumber = replaceAll(rankNumber, "€", "");
+                                                                rankNumber = replaceAll(rankNumber, ",", "");
+                                                                rankNumber = replaceAll(rankNumber, "SP.", "");
+                                                                rankNumber = replaceAll(rankNumber, "RP.", "");
+                                                                rankNumber = replaceAll(rankNumber, "<br>", "");
+                                                                rankNumber = replaceAll(rankNumber, " ", "");
+                                                                rankNumber = replaceAll(rankNumber, "/", "");
+
+                                                                if (!isNaN(rankNumber) && rankNumber != "") {
+                                                                    rankNumber = parseInt(rankNumber);
+                                                                } else {
+                                                                    rankNumber = 0;
+                                                                }
+                                                                return rankNumber;
+                                                            }
+
+                                                            jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
 
 
-        }
-    });
-}
-function setPropertyId(propertyId)
-{
+                                                                var xVal = getPrice(x);
+                                                                var yVal = getPrice(y);
 
-    //var '<%Session["send_property_id"] = "' + propertyId + '"; %>';
-    $("#property_id").val(propertyId);
-}
- $(".property_next").click(function(){
-        $("#property_search").toggle();
-    });
+                                                                if (xVal < yVal) {
+                                                                    return 1;
+                                                                } else if (xVal > yVal) {
+                                                                    return -1;
+                                                                } else {
+                                                                    return 0;
+                                                                }
+
+                                                            };
+
+                                                            jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
+                                                                var xVal = getPrice(x);
+                                                                var yVal = getPrice(y);
+
+                                                                if (xVal < yVal) {
+                                                                    return -1;
+                                                                } else if (xVal > yVal) {
+                                                                    return 1;
+                                                                } else {
+                                                                    return 0;
+                                                                }
+                                                            }
+
+
+                                                            $.fn.dataTable.moment('D-MMM-YYYY');
+
+                                                            $('#property-list').DataTable({
+                                                                "lengthMenu": [15, 30, 45, 60, 75],
+                                                                "aoColumnDefs": [{"sType": 'price', "aTargets": [5]}],
+                                                                "order": [[0, "desc"]]
+                                                            });
+
+                                                            $('#property-list')
+                                                                    .removeClass('display')
+                                                                    .addClass('table table-striped table-bordered responsive-table');
+                                                        }
+                                                    });
+                                                }
+                                                function get_city_area() {
+                                                    $('#city_area').html('');
+                                                    $.ajax({
+                                                        type: "post",
+                                                        url: baseurl + "index.php/home/get_city_area",
+                                                        data: 'city_id=' + $("#city option:selected").val(),
+                                                        dataType: 'json',
+                                                        success: function (msg) {
+                                                            var selected_city_area = <?php echo (isset($_POST['selectItemcity_area'])) ? json_encode($_POST['selectItemcity_area']) : "[]"; ?>;
+
+                                                            for (var i = 0; i < msg.length; i++) {
+                                                                var selected = '';
+
+                                                                if ($.inArray(msg[i].id, selected_city_area) != -1) {
+                                                                    selected = 'selected="selected"';
+                                                                }
+                                                                if (selected_city_area.length < 1)
+                                                                {
+                                                                    selected = 'selected="selected"';
+                                                                }
+                                                                $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
+                                                            }
+
+                                                            $('#city_area.multiselect').multipleSelect({
+                                                                filter: true,
+                                                            });
+
+
+                                                        }
+                                                    });
+                                                }
+                                                function setPropertyId(propertyId)
+                                                {
+
+                                                    //var '<%Session["send_property_id"] = "' + propertyId + '"; %>';
+                                                    $("#property_id").val(propertyId);
+                                                }
+                                                $(".property_next").click(function () {
+                                                    $("#property_search").toggle();
+                                                });
 // $(".property_next").on("click", function (event) {
 //     event.preventDefault();
 //     $('#property_search').show();
@@ -614,49 +695,49 @@ function setPropertyId(propertyId)
 
 //     //exit;
 // });
-$(".new_exist_button").on("click", function (event) {
-    event.preventDefault();
-    var propertyIs = $("#property_id").val();
-    var new_exist_value = $(this).attr("href");
-    //alert(new_exist_value);
-    window.location = new_exist_value + "/" + propertyIs;
+                                                $(".new_exist_button").on("click", function (event) {
+                                                    event.preventDefault();
+                                                    var propertyIs = $("#property_id").val();
+                                                    var new_exist_value = $(this).attr("href");
+                                                    //alert(new_exist_value);
+                                                    window.location = new_exist_value + "/" + propertyIs;
 
-    //exit;
-});
+                                                    //exit;
+                                                });
 
-function numbersonly(e) {
-    var unicode = e.charCode ? e.charCode : e.keyCode;
+                                                function numbersonly(e) {
+                                                    var unicode = e.charCode ? e.charCode : e.keyCode;
 
-    if (unicode != 8) { //if the key isn't the backspace key (which we should allow)
+                                                    if (unicode != 8) { //if the key isn't the backspace key (which we should allow)
 
-        if ((unicode < 48 || unicode > 57) && unicode != 46) //if not a number
-            return false //disable key press
-    }
-}
-$("#excel_form").submit(function (event) {
+                                                        if ((unicode < 48 || unicode > 57) && unicode != 46) //if not a number
+                                                            return false //disable key press
+                                                    }
+                                                }
+                                                $("#excel_form").submit(function (event) {
 
-    if ($("#xls_files").val() != "") {
-        var ext = $('#xls_files').val().split('.').pop().toLowerCase();
+                                                    if ($("#xls_files").val() != "") {
+                                                        var ext = $('#xls_files').val().split('.').pop().toLowerCase();
 
-        if ($.inArray(ext, ['xls', 'xlsx']) == -1) {
-            alert('Please Only Upload Excel Files.');
-            return false;
-        } else {
-            $('#hd_sub').hide();
-            $('#message_sub').text("System processing your data, please wait for few mins.........................");
-            $("#excel_form").submit();
-        }
-    } else {
-        alert("Please Upload Import Property Details.");
-        return false;
-    }
-});
-function sendinquiry_inactive() {
-    alert('You can not send inquiry beacuse your property is inactive');
-}
-function view_property_agent(proview_agent) {
-    window.location = "<?php echo base_url(); ?>index.php/home/property_manage?view_agent=" + proview_agent;
-}
+                                                        if ($.inArray(ext, ['xls', 'xlsx']) == -1) {
+                                                            alert('Please Only Upload Excel Files.');
+                                                            return false;
+                                                        } else {
+                                                            $('#hd_sub').hide();
+                                                            $('#message_sub').text("System processing your data, please wait for few mins.........................");
+                                                            $("#excel_form").submit();
+                                                        }
+                                                    } else {
+                                                        alert("Please Upload Import Property Details.");
+                                                        return false;
+                                                    }
+                                                });
+                                                function sendinquiry_inactive() {
+                                                    alert('You can not send inquiry beacuse your property is inactive');
+                                                }
+                                                function view_property_agent(proview_agent) {
+                                                    window.location = "<?php echo base_url(); ?>index.php/home/property_manage?view_agent=" + proview_agent;
+                                                }
 // $(".pushme").click(function () {
 //     $('#hd_sub').hide();
 

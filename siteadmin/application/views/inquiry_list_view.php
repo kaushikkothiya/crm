@@ -18,7 +18,7 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
             <?php } ?>
             <h1 class="page-header">Inquiry List
                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-                    <a><button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right" type="button">Import Excel File</button></a>
+                    <a><button data-toggle="modal" data-target="#myModal3" class="btn btn-sm btn-info pull-right" type="button">Import Excel File</button></a>
                 <?php } ?>
             </h1>
             <div class="row">
@@ -63,18 +63,17 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Title</div>
                         <div class="panel-body padding-O">
                             <div>
-                                <table class="table table-striped responsive-table">
+                                <table class="table table-striped responsive-table dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Inquiry No.</th>
-                                            <th>Property<br>Status</th>
-                                            <th>Agent Name</th>
-                                            <th>Created By</th>
-                                            <th>Created On</th>
-                                            <th>Status</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "inquiry.incquiry_ref_no" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="inquiry.incquiry_ref_no">Inquiry No.</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "inquiry.aquired" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="inquiry.aquired">Property<br>Status</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "agent.fname agent.lname" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="agent.fname agent.lname">Agent Name</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "user.fname user.lname" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="user.fname user.lname">Created By</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "inquiry.created_date" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="inquiry.created_date">Created On</th>
+                                            <th class="sorting<?php echo (isset($calendar['order_by']) && $calendar['order_by'] == "inquiry.status inquiry.agent_status" && isset($calendar['order_type']))?"_".  strtolower($calendar['order_type']):""; ?>" data-field="inquiry.status inquiry.agent_status">Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -275,6 +274,33 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Import Database</h4>
+      </div>
+       <form name="inquireexcel_form" id="inquireexcel_form" method="post" action="<?php echo base_url(); ?>index.php/Excelread/inquire_export" enctype="multipart/form-data">
+       <fieldset>
+        <div class="modal-body">
+        <input type="file" name="inquire_xls_files" id="inquire_xls_files"><br>
+        Download Format Excel File:
+        <a class="" href="<?php echo base_url(); ?>files/example_file/Inquiries.xlsx">Click Here</a>
+        <br><br>
+        <div id="message_sub">
+        </div>
+      </div>
+      <div class="modal-footer" id="hd_sub">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" id="inq_submit" class="btn btn-primary" width="" value="Submit" >
+      </div>
+       </fieldset>
+    </form>
+    </div>
+  </div>
+</div>
 
 <form id="calendar-filter-form" name="calendar-filter-form" method="post">
     <input type="hidden" id="calendar_user_id" name="calendar[user_id]" value="<?php echo (isset($calendar) && isset($calendar['user_id']) && !empty($calendar['user_id'])) ? $calendar['user_id'] : ''; ?>" />
@@ -285,6 +311,8 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
     <input type="hidden" id="calendar_show_occupied_days" name="calendar[show_occupied_days]" value="<?php echo (isset($calendar) && isset($calendar['show_occupied_days']) && !empty($calendar['show_occupied_days'])) ? $calendar['show_occupied_days'] : ""; ?>" />
     <input type="hidden" id="calendar_view" name="calendar[view]" value="<?php echo (isset($calendar) && isset($calendar['view']) && !empty($calendar['view'])) ? $calendar['view'] : ""; ?>" />
     <input type="hidden" id="calendar_view_client" name="calendar[view_client]" value="<?php echo (isset($calendar) && isset($calendar['view_client']) && !empty($calendar['view_client'])) ? $calendar['view_client'] : ""; ?>" />
+    <input type="hidden" id="calendar_order_by" name="calendar[order_by]" value="<?php echo (isset($calendar) && isset($calendar['order_by']) && !empty($calendar['order_by'])) ? $calendar['order_by'] : ""; ?>" />
+    <input type="hidden" id="calendar_order_type" name="calendar[order_type]" value="<?php echo (isset($calendar) && isset($calendar['order_type']) && !empty($calendar['order_type'])) ? $calendar['order_type'] : ""; ?>" />
 </form>
 <form id="rechedule_form" action="<?php echo base_url(); ?>index.php/inquiry/agent_calendar" method="post">
     <input type="hidden" name="agent_id" id="rechedule_agent_id" value="" />
@@ -321,6 +349,42 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
         return dateObj;
     }
     $(document).ready(function () {
+        
+        $("th.sorting").on("click",function(){
+            $("#calendar_order_by").val($(this).data('field'));
+            $("#calendar_order_type").val('ASC');
+            $("#calendar-filter-form").submit();
+        });
+        
+        $("th.sorting_asc").on("click",function(){
+            $("#calendar_order_by").val($(this).data('field'));
+            $("#calendar_order_type").val('DESC');
+            $("#calendar-filter-form").submit();
+        });
+        
+        $("th.sorting_desc").on("click",function(){
+            $("#calendar_order_by").val($(this).data('field'));
+            $("#calendar_order_type").val('ASC');
+            $("#calendar-filter-form").submit();
+        });
+        
+        $("#inquireexcel_form").submit(function( event ) {
+            if($("#inquire_xls_files").val() != ""){
+                var ext = $('#inquire_xls_files').val().split('.').pop().toLowerCase();
+
+                if($.inArray(ext, ['xls','xlsx']) == -1) {
+                    alert('Please Only Upload Excel Files.');
+                    return false;
+                }else{
+                     $('#hd_sub').hide();
+                $('#message_sub').text("System processing your data, please wait for few mins.........................");
+                $("#inquireexcel_form").submit();
+                }
+            }else {
+                alert("Please Upload Import Inquiry Details.");
+                return false;
+            }
+        });
 
         $('#show_by_user').change(function () {
             $("#calendar_user_id").val($(this).val());
@@ -500,7 +564,7 @@ $action_color = array('1' => 'FFFF00', '2' => 'EBAF22', '3' => 'FFCCFF', '4' => 
                 } else if (msg == 'property_inactive') {
                     alert('This Inquiry Property is inactive');
                 } else if (msg == 'customer_inactive') {
-                    alert('This Inquiry Property is inactive');
+                    alert('This Inquiry client is inactive');
                 } else if (msg == 'customer_property_inactive') {
                     alert('This Inquiry Property and client is inactive');
                 } else {

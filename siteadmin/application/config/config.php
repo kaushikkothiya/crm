@@ -22,8 +22,11 @@ $config['TITLE'] = "Monopolion";
 $config['email_from'] = "info@monopolion.com";
 $config['title'] = "Monopolion";
 
-
 $config['property_type'] = array('1'=>'Duplex','2' =>'Apartment','3' =>'Penthouse','4' =>'Garden Apartments','5'=>'Studio','6' =>'Townhouse','7' =>'Villa','8' =>'Bungalow','9'=>'Land','10' =>'Shop','11' =>'Office','12' =>'Business','13'=>'Hotel','14' =>'Restaurant','15' =>'Building','16' =>'Industrial estate','17' =>'House','18' =>'Upper-House','19' =>'Maisonette');
+$config['get_architectural_design'] = array('1'=>'Contemporary','2' =>'Modern','3' =>'Classic');
+$config['get_room_size_id'] = array('1'=>'Small','2' =>'Medium','3' =>'Large');
+$config['aquired_type'] = array('1'=>'Sale','2' =>'Rent','3' =>'Both(Sale/Rent)');
+
 
 //pagination array
 $config['pagination'] = array();

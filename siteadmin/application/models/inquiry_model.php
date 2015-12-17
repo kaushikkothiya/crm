@@ -150,17 +150,18 @@ Class Inquiry_model extends CI_Model {
         // return $query->result();
     }
 
-    function getrelated_property($post) {
+    function getrelated_property($post,$agent_properties=FALSE) {
 
-        $this->db->select('property.*,city_area.title,city.id as city_id,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image', false);
+        $this->db->select('property.*,user.fname, user.lname, city_area.title,city.id as city_id,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image', false);
+        $this->db->join('user', 'user.id =property.agent_id', 'left');
         $this->db->join('city_area', 'city_area.id =property.city_area');
         $this->db->join('city', 'city.id =property.city_id');
         $this->db->from('property');
-        if (!empty($post['property_type'])) {
-            if ($post['property_type'] != '3') {
-                $this->db->where("( property.type = '" . $post['property_type'] . "' OR property.type = '3' )");
-            }
+        
+        if (isset($post['property_type']) && !empty($post['property_type'])) {
+            $this->db->where("(property.type = '". $post['property_type']."' OR property.type = '3')");
         }
+        
         // if(!empty($post['property_type'])){
         //     if($post['property_type'] !='3'){
         //         $this->db->where('property.type', $post['property_type']);
@@ -189,7 +190,6 @@ Class Inquiry_model extends CI_Model {
         if (!empty($post['bathroom']))
             $this->db->where('property.bathroom', $post['bathroom']);
 
-
         if (!empty($post['reference_no']))
             $this->db->where('property.reference_no', $post['reference_no']);
 
@@ -215,6 +215,11 @@ Class Inquiry_model extends CI_Model {
                 $this->db->or_where('property.rent_price <=', $post['max_price']);
             }
         }
+                
+        if(!empty($agent_properties)){
+            $this->db->where('agent_id', $post['user_id']);
+        }
+        
         $this->db->where('property.status', 'Active');
         $query = $this->db->get();
         return $query->result();
@@ -888,8 +893,8 @@ Class Inquiry_model extends CI_Model {
     function check_customer_exist($post) {
         $q = $this->db->select("*")
                 ->from('customer')
-                ->where('email', $post['email_mobile'])
-                ->or_where('mobile_no', $post['email_mobile'])
+                ->where("(email = '".$post['email_mobile']."' OR mobile_no = '".$post['email_mobile']."')" )
+                ->where('deleted',0)
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -1059,7 +1064,7 @@ Class Inquiry_model extends CI_Model {
     }
 
     function get_inquiry_data($id) {
-        $q = $this->db->select("inquiry.property_ref_no,inquiry.appoint_start_date,inquiry.appoint_end_date,customer.*")
+        $q = $this->db->select("inquiry.property_ref_no,inquiry.agent_id, inquiry.agent_status,inquiry.appoint_start_date,inquiry.appoint_end_date,customer.*")
                 ->from('inquiry')
                 ->join('customer', 'customer.id =inquiry.customer_id')
                 ->where('inquiry.id', $id)

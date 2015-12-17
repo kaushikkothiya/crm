@@ -61,9 +61,6 @@ class VerifyLogin extends MY_Controller {
             if($row->status=="Inactive") {
                 $this->session->set_flashdata('danger',"Your account has been deactivated.");
                 return false;
-            }else if($row->deleted==1) {
-                $this->session->set_flashdata('danger',"Account has not been exist.");
-                return false;
             }else {
                 $sess_array = array();
                 $sess_array = array(

@@ -362,9 +362,19 @@
             </ul>
          </div>
          <?php } ?>
-      
-      <?php if(!empty($data[0]->url_link)){
+         <?php if(!empty($data[0]->url_link)){
         $url= explode(',', $data[0]->url_link);
+      $url=array_unique($url);
+      if(count($url)==0){
+        $url=array(0=>'',1=>'',2=>'');
+      }
+      if(count($url)==1){
+        array_push($url,'');
+        array_push($url,'');
+      }
+      if(count($url)==2){
+        array_push($url,'');
+      }
       ?>
          <h4>Other Links</h4>
          <div class="pro-block otherlinks-block"><!-- pro-block -->
@@ -373,7 +383,7 @@
                 <div class="col-md-12 col-sm-12">
                   <div class="url-links-row">
                     <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
-                    <a href="javascript:;"><?php echo $url[0]; ?> </a>
+                    <a target="_blank" href="<?php echo $url[0]; ?>"><?php echo $url[0]; ?> </a>
                   </div>
                 </div>
             </div>
@@ -384,7 +394,7 @@
                 <div class="col-md-12 col-sm-12">
                   <div class="url-links-row">
                     <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
-                    <a href="javascript:;"><?php echo $url[1]; ?> </a>
+                    <a target="_blank" href="<?php echo $url[1]; ?>"><?php echo $url[1]; ?> </a>
                   </div>
                 </div>
             </div>
@@ -395,12 +405,11 @@
                 <div class="col-md-12 col-sm-12">
                   <div class="url-links-row">
                     <i class="link-icon"><img src="<?php echo base_url(); ?>images/links-icon.png" alt="" /></i>
-                    <a href="javascript:;"><?php echo $url[2]; ?> </a>
+                    <a target="_blank" href="<?php echo $url[2]; ?>"><?php echo $url[2]; ?> </a>
                   </div>
                 </div>
             </div>
             <?php } ?>
-
          </div><!-- /pro-block -->
          <?php } ?>
          <h4>Map </h4>

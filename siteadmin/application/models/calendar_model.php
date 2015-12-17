@@ -171,7 +171,7 @@ Class Calendar_model extends CI_Model {
         return array();
     }
 
-    function getAllinquiryPage($user,$limit=10,$offset=0,$show_completed=false,$selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="") {
+    function getAllinquiryPage($user,$limit=10,$offset=0,$show_completed=false,$selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="",$order_by="",$order_type="asc") {
 
         //$property_type = $this->config->item('property_type');
         $this->db->select('inquiry.*,user.fname,user.lname,agent.fname as agent_fname, agent.lname as agent_lname,property.bedroom, property.type as property_for,property.property_type');
@@ -214,7 +214,14 @@ Class Calendar_model extends CI_Model {
             $this->db->where("DATE_FORMAT(inquiry.created_date,'%m/%d/%Y') <=", $to_date);
         }
         
-        $this->db->order_by('inquiry.created_date','DESC');
+        if(empty($order_by)){
+            $this->db->order_by('inquiry.created_date','DESC');
+        }else{
+            $order_by = explode(" ", $order_by);
+            foreach ($order_by as $value){
+                $this->db->order_by($value,$order_type);
+            }
+        }
         $this->db->limit($limit,$offset);
         $query = $this->db->get();
 

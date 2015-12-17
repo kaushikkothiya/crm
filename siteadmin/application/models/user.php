@@ -10,7 +10,7 @@ Class User extends CI_Model {
         $this->db->where('password', MD5($password));
         //$this->db->where('role_name', 'admin');
         //$this->db->where('status', 'Active');
-        //$this->db->where('deleted', 0);
+        $this->db->where('deleted', 0);
         $this->db->limit(1);
 
         $query = $this->db->get();
@@ -164,8 +164,8 @@ Class User extends CI_Model {
         $q = $this->db->select("*")
                 ->from('user')
                 ->where('email', $post['email'])
-                ->where('status','Active')
-                ->where('deleted',0)
+                ->where('status', 'Active')
+                ->where('deleted', 0)
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();
@@ -650,7 +650,7 @@ Class User extends CI_Model {
 
     function getAllproperty($prop_agent) {
         if (empty($prop_agent)) {
-            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image", false)
                     ->from('property')
                     ->join('user', 'user.id =property.agent_id', 'left')
                     ->join('city_area', 'city_area.id =property.city_area', 'left')
@@ -661,7 +661,7 @@ Class User extends CI_Model {
             }
             return array();
         } else {
-            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image", false)
                     ->from('property')
                     ->join('user', 'user.id =property.agent_id', 'left')
                     ->join('city_area', 'city_area.id =property.city_area', 'left')
@@ -689,7 +689,7 @@ Class User extends CI_Model {
 
     function getregisted_properties() {
         if ($this->session->userdata('logged_in_super_user')) {
-            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image", false)
                     ->from('property')
                     ->join('user', 'user.id =property.agent_id')
                     ->join('city_area', 'city_area.id =property.city_area')
@@ -705,7 +705,7 @@ Class User extends CI_Model {
             $added_by = $sessionData['type'];
             $added_id = $sessionData['id'];
 
-            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image", false)
                     ->from('property')
                     ->join('user', 'user.id =property.agent_id')
                     ->join('city_area', 'city_area.id =property.city_area')
@@ -723,7 +723,7 @@ Class User extends CI_Model {
             $added_by = $sessionData['type'];
             $added_id = $sessionData['id'];
 
-            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title")
+            $q = $this->db->select("property.*,user.fname,user.lname,city_area.title,(select images.image from images where images.prop_id=property.id order by images.order asc limit 0,1) as extra_image", false)
                     ->from('property')
                     ->join('user', 'user.id =property.agent_id')
                     ->join('city_area', 'city_area.id =property.city_area')
@@ -853,9 +853,16 @@ Class User extends CI_Model {
         $url_link = implode(',', $url_mul);
         //echo $url_link;exit;
         $today_date = date('Y-m-d H:i:s');
+        
+        if(is_numeric($this->input->post('bedrooms'))){
+            $badrooms = (int) $this->input->post('bedrooms');
+        }else{
+            $badrooms = $this->input->post('bedrooms');
+        }
+        
         $new_category_insert_data = array(
             'type' => $this->input->post('type'),
-            'address' => $this->input->post('address'),
+            'address' => strip_tags($this->input->post('address')),
             'country_id' => $this->input->post('country_id'),
             'city_id' => $this->input->post('city_id'),
             'city_area' => $this->input->post('city_area_id'),
@@ -863,7 +870,7 @@ Class User extends CI_Model {
             'furnished_type' => $this->input->post('furnished_type'),
             'rent_price' => $this->input->post('rent_price'),
             'sale_price' => $this->input->post('sale_price'),
-            'bedroom' => $this->input->post('bedrooms'),
+            'bedroom' => $badrooms,
             'bathroom' => $this->input->post('bathrooms'),
             'reference_no' => $this->input->post('reference_no'),
             'short_decs' => $this->input->post('short_desc'),
@@ -889,7 +896,7 @@ Class User extends CI_Model {
             'email' => $this->input->post('email'),
             'mobile' => $this->input->post('mobile_no'),
             'coutry_code' => $this->input->post('county_code'),
-            'compny_name' => $this->input->post('cname'),
+            'compny_name' => strip_tags($this->input->post('cname')),
             'tearm_condition' => $checkval,
             'kitchen' => $this->input->post('Kitchen_id'),
             'architectural_design' => $this->input->post('architectural_design_id'),
@@ -964,9 +971,16 @@ Class User extends CI_Model {
         $url_mul = array('0' => $_POST['link_url'], '1' => $_POST['link_url1'], '2' => $_POST['link_url2']);
         $url_link = implode(',', $url_mul);
         $today_date = date('Y-m-d H:i:s');
+        
+        if(is_numeric($this->input->post('bedrooms'))){
+            $badrooms = (int) $this->input->post('bedrooms');
+        }else{
+            $badrooms = $this->input->post('bedrooms');
+        }
+        
         $new_category_insert_data = array(
             'type' => $this->input->post('type'),
-            'address' => $this->input->post('address'),
+            'address' => strip_tags($this->input->post('address')),
             'country_id' => $this->input->post('country_id'),
             'city_id' => $this->input->post('city_id'),
             'city_area' => $this->input->post('city_area_id'),
@@ -974,7 +988,7 @@ Class User extends CI_Model {
             'furnished_type' => $this->input->post('furnished_type'),
             'rent_price' => $this->input->post('rent_price'),
             'sale_price' => $this->input->post('sale_price'),
-            'bedroom' => $this->input->post('bedrooms'),
+            'bedroom' => $badrooms,
             'bathroom' => $this->input->post('bathrooms'),
             'reference_no' => $this->input->post('reference_no'),
             'short_decs' => $this->input->post('short_desc'),
@@ -997,7 +1011,7 @@ Class User extends CI_Model {
             'email' => $this->input->post('email'),
             'mobile' => $this->input->post('mobile_no'),
             'coutry_code' => $this->input->post('county_code'),
-            'compny_name' => $this->input->post('cname'),
+            'compny_name' => strip_tags($this->input->post('cname')),
             'tearm_condition' => $checkval,
             'kitchen' => $this->input->post('Kitchen_id'),
             'architectural_design' => $this->input->post('architectural_design_id'),

@@ -78,11 +78,32 @@
             }
        
             jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
-                return getPrice(x) < getPrice(y);
+                
+                
+                var xVal = getPrice(x);
+                var yVal = getPrice(y);
+
+                if (xVal < yVal) {
+                    return 1;
+                } else if (xVal > yVal) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+                
             };
 
             jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
-                return getPrice(x) > getPrice(y);
+                var xVal = getPrice(x);
+                var yVal = getPrice(y);
+
+                if (xVal < yVal) {
+                    return -1;
+                } else if (xVal > yVal) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
             
             $.fn.dataTable.moment('D-MMM-YYYY');
@@ -117,8 +138,6 @@
                     "visible": false
                 }]
             });
-             
-             
              
              $('#inquiry_list').DataTable({
               "lengthMenu": [ 15, 30, 45, 60, 75 ],

@@ -25,7 +25,7 @@ Class Newsletter_model extends CI_Model {
     function getMinMaxPriceByCustomerID($id, $sale_group = array(), $rent_group = array(), $type = 1) {
 
         if ($type == 1) {
-            $this->db->select('property.sale_price,property.rent_price,customer.email,customer.fname,customer.lname, customer.aquired')
+            $this->db->select('property.sale_price,property.rent_price,customer.email,customer.fname,customer.lname, customer.aquired, customer.status')
                     ->from('inquiry')
                     ->join('property', 'inquiry.property_ref_no = property.reference_no', 'left')
                     ->join('customer', 'inquiry.customer_id = customer.id', 'left')

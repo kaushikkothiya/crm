@@ -17,18 +17,18 @@ $(document).ready(function(){
  $.validator.addMethod('check_furnished', function (value,element) { 
      return this.optional(element) || value != 0;   
     }, "Please select furnished type");
- $.validator.addMethod('check_bedrooms', function (value,element) { 
-     return this.optional(element) || value != 0;   
-    }, "Please select bedrooms");
+ // $.validator.addMethod('check_bedrooms', function (value,element) { 
+ //     return this.optional(element) || value != 0;   
+ //    }, "Please select bedrooms");
  
- $.validator.addMethod('check_bathrooms', function (value,element) { 
-     if(value!='0' ||$('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16' ){
-        return true;
-    }else{
-        return false;
-    }
-     //return this.optional(element) || value != 0;   
-    }, "Please select bathrooms");
+ // $.validator.addMethod('check_bathrooms', function (value,element) { 
+ //     if(value!='0' || $('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16' ){
+ //        return true;
+ //    }else{
+ //        return false;
+ //    }
+ //     //return this.optional(element) || value != 0;   
+ //    }, "Please select bathrooms");
 
  $.validator.addMethod('check_type', function (value,element) { 
      return this.optional(element) || value != 0;   
@@ -68,9 +68,11 @@ $('#manage_form').validate({
                         lname:{
                           noHTML: true,
                         },
-                        // email:{
-                        //   required:true,
-                        //   email:true,
+                        email:{
+                          email:true,
+                        },
+                        //  cname:{
+                        //   noHTML: true,
                         // },
                         mobile_no:{
                           required:true,
@@ -83,7 +85,7 @@ $('#manage_form').validate({
                           check_agent_id:true
                         },  
                         address:{
-                          //required:true,
+                         // noHTML: true,
                           maxlength: 500
                         },
                         country_id:{
@@ -104,7 +106,7 @@ $('#manage_form').validate({
                         rent_price:{
                           required:true,
                           number:true,
-                          maxlength:10
+                         // maxlength:10
                         },
                         sale_price:{
                           required:true,
@@ -116,26 +118,27 @@ $('#manage_form').validate({
                           number:true,
                           //maxlength:10
                         },
-                        bedrooms:{
-                                required: function (element) {
+                        // bedrooms:{
+                        //         noHTML: true,
+                        //         required: function (element) {
                        
-                                 if($('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16'){
-                                  return '';                               
-                                 }
-                                 else
-                                 {
-                                    return true;
+                        //          if($('#property_category').val() =='5' || $('#property_category').val() =='9' || $('#property_category').val() =='10' || $('#property_category').val() =='11' || $('#property_category').val() =='12' || $('#property_category').val() =='16'){
+                        //           return '';                               
+                        //          }
+                        //          else
+                        //          {
+                        //             return true;
                                     
-                                 }  
-                              },
-                                //required:true,
-                               },
+                        //          }  
+                        //       },
+                        //         //required:true,
+                        //        },
                         // bedrooms:{
                         //       check_bedrooms:true
                         //       },
-                        bathrooms:{
-                              check_bathrooms:true
-                              },
+                        // bathrooms:{
+                        //       check_bathrooms:true
+                        //       },
                         link_url:{
                               //required:true,
                               url: true,
@@ -189,8 +192,10 @@ $('#manage_form').validate({
                         },
                         
                         short_desc:{
+                          //noHTML: true,
                           check_short_desc:true
                         },
+
                         //long_decs:{required:true},
                             
                         },
@@ -266,8 +271,10 @@ $('#manage_form').validate({
                                 if($("#type").val() =='1' || $("#type").val() =='3'){
                                   if(($("#checkbox1").is(":checked") ==true) && ($("#checkbox2").is(":checked") == true)){
                                     form.submit();
-                                  }else{
-                                    alert('Please select both check box');
+                                  }else if($("#checkbox1").is(":checked") ==false){
+                                    alert(' Please agree to "Title Deeds / Planning Permission / Building Permission".');
+                                  }else if($("#checkbox2").is(":checked") == false){
+                                    alert(' Please agree to "Commission Agreement".');
                                   }
                                 }
                                 else{

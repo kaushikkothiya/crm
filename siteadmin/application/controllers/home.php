@@ -277,11 +277,12 @@ class Home extends MY_Controller {
             } else {
                 $prop_view = '';
             }
+            
             $data['user'] = $this->user->getAllproperty($prop_view);
-
-            foreach ($data['user'] as $key => $value) {
+            
+            /* foreach ($data['user'] as $key => $value) {
                 $data['user'][$key]->extra_image = $this->user->getAllproperty_image($value->id);
-            }
+            } */
             $data['city'] = $this->inquiry_model->getAllcity();
             $data['agent'] = $this->inquiry_model->getAllpropertyAgent();
             $data['city_area'] = $this->inquiry_model->getAllcity_area();
@@ -290,6 +291,9 @@ class Home extends MY_Controller {
             $data['bedroom'] = array('1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7');
             $data['category'] = array('0' => ' [Select all]', '1' => 'Duplex', '2' => 'Apartment', '3' => 'Penthouse', '4' => 'Garden Apartments', '5' => 'Studio', '6' => 'Townhouse', '7' => 'Villa', '8' => 'Bungalow', '9' => 'Land', '10' => 'Shop', '11' => 'Office', '12' => 'Business', '13' => 'Hotel', '14' => 'Restaurant', '15' => 'Building', '16' => 'Industrial estate', '17' => 'House', '18' => 'Upper-House', '19' => 'Maisonette');
 
+            $data['property_types'] = $this->config->item('property_type');
+            $data['aquired_types']= $this->config->item('aquired_type');
+            
             $this->load->view('property_list_view', $data);
         } else {
             //If no session, redirect to login page
@@ -301,6 +305,18 @@ class Home extends MY_Controller {
     function registed_properties() {
         if ($this->session->userdata('logged_in_super_user') || $this->session->userdata('logged_in_agent') || $this->session->userdata('logged_in_employee')) {
             $data['user'] = $this->user->getregisted_properties();
+            
+            $data['agent_properties'] = true;
+            $data['city'] = $this->inquiry_model->getAllcity();
+            $data['agent'] = $this->inquiry_model->getAllpropertyAgent();
+            $data['city_area'] = $this->inquiry_model->getAllcity_area();
+            $data['bedroom'] = array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6);
+            $data['bathroom'] = array('1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7');
+            $data['bedroom'] = array('1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7');
+            $data['category'] = array('0' => ' [Select all]', '1' => 'Duplex', '2' => 'Apartment', '3' => 'Penthouse', '4' => 'Garden Apartments', '5' => 'Studio', '6' => 'Townhouse', '7' => 'Villa', '8' => 'Bungalow', '9' => 'Land', '10' => 'Shop', '11' => 'Office', '12' => 'Business', '13' => 'Hotel', '14' => 'Restaurant', '15' => 'Building', '16' => 'Industrial estate', '17' => 'House', '18' => 'Upper-House', '19' => 'Maisonette');
+
+            $data['property_types'] = $this->config->item('property_type');
+            $data['aquired_types']= $this->config->item('aquired_type');
 
             $this->load->view('property_list_view', $data);
         } else {

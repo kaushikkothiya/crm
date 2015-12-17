@@ -32,6 +32,18 @@ Class Blog_model extends CI_Model {
         }
         //return $data;
     }
+    
+    function get_property_image($id){
+        $q = $this->db->select("*")
+                    ->from('images')
+                     ->where('prop_id', $id)
+                    ->get();
+            if ($q->num_rows() > 0) {
+                return $q->result();
+            }
+            return array();
+    }
+    
     function get_city_area($city_id, $name)
     {
         $this->db->select('id');

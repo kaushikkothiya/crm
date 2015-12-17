@@ -77,11 +77,11 @@ Class Report_model extends CI_Model {
         }
         
         $active_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id =images.prop_id','left');
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
         $q = $q->where("property.status","Active");
@@ -94,11 +94,11 @@ Class Report_model extends CI_Model {
         $data['active_properties'] = $active_properties;
         
         $inactive_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id =images.prop_id','left');
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
         $q = $q->where("property.status","Inactive");
@@ -125,11 +125,11 @@ Class Report_model extends CI_Model {
         
         // added properties
         $added_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id =images.prop_id','left');
         if ($id !== 'all') {
             $q = $q->where('property.added_id',$id);
         }
@@ -145,13 +145,13 @@ Class Report_model extends CI_Model {
         
         // assigned properties
         $assigned_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('inquiry')
                 ->join('property','inquiry.property_id = property.id','left')
                 ->join('inquiry_status_history','inquiry.id = inquiry_status_history.inquiry_id and inquiry_status_history.inquiry_status = 4 and inquiry_status_history.inquiry_agent_status = 0','left')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id =images.prop_id','left');
         if ($id !== 'all') {
             //$q = $q->where('inquiry.agent_id',$id);
             $q = $q->where('inquiry_status_history.agent_id',$id);
@@ -184,11 +184,11 @@ Class Report_model extends CI_Model {
         }
         
         $active_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id = images.prop_id','left');
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
         $q = $q->where("property.status","Active");
@@ -201,11 +201,11 @@ Class Report_model extends CI_Model {
         $data['active_properties'] = $active_properties;
         
         $inactive_properties = array();
-        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,propety_extra_images.image_name')
+        $q = $this->db->select('property.*,user.fname,user.lname,city_area.title,images.image as image_name')
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('propety_extra_images','property.id =propety_extra_images.property_id','left');
+                ->join('images','property.id = images.prop_id','left');
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
         $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
         $q = $q->where("property.status","Inactive");
