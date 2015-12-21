@@ -62,12 +62,15 @@ Class Blog_model extends CI_Model {
         }
         //return $data;
     }
-    function get_adduser($value, $city_id){
+    function get_adduser($value, $city_id,$agent_details){
         $namevalue = $this->db->escape_like_str($value['B']);
 
         $this->db->select('id');
         $this->db->from('user');
-        $this->db->where("CONCAT(fname, ' ', lname) LIKE '%".$namevalue."%'", NULL, FALSE);
+        $this->db->where('email',trim($value['AI']));
+        //$this->db->where("(email = '".trim($value['AI'])."' OR  (mobile_no = '".trim($value['AJ'])."' AND mobile_no != '') )", NULL, FALSE);
+        $this->db->where('deleted', '0');
+        //$this->db->where("CONCAT(fname, ' ', lname) LIKE '%".$namevalue."%'", NULL, FALSE);
         $this->db->where('type', '2');
         $query=$this->db->get();
         $data = $query->result();
@@ -77,16 +80,19 @@ Class Blog_model extends CI_Model {
         
         $con_det = $this->get_country_code($value['AF']);
 
-        $save_data =  array('fname' => $name[0],'lname' => $name[1],'coutry_code' => $con_det,'contry_id' => '1','state_id' => '1', 'city_id'=> $city_id, 'status'=> 'Active', 'created_date'=> date('Y-m-d H:i:s'), 'type'=> '2');        
-        if (empty($data)) {  
+        $save_data =  array('fname' => $name[0],'lname' => $name[1],'email' =>trim($value['AI']),'mobile_no' => $value['AJ'],'coutry_code' => $con_det,'contry_id' => '1','state_id' => '1', 'city_id'=> $city_id, 'status'=> 'Active', 'created_date'=> date('Y-m-d H:i:s'), 'type'=> '2');        
+        if (empty($data) && !empty($value['AI'])) {  
+            $save_data['password'] = md5($value['password']);
             $this->db->insert('user', $save_data);
             $id = $this->db->insert_id();
             //return $this->db->insert_id();
-        }else{
+        }else if (!empty($data) && !empty($value['AI'])){
            $save_data['updated_date'] = date('Y-m-d H:i:s');
            unset($save_data['created_date']);
             $this->db->update('user', $save_data, array('id' => $data[0]->id));
             $id = $data[0]->id;            
+        }else{
+            $id=1;
         }
         return $id;
     }
@@ -100,6 +106,11 @@ Class Blog_model extends CI_Model {
         $data = $query->result();
         
         //echo "<pre>";print_r($data_prop);exit;
+        
+        foreach($data_prop as $key=>$value){
+            $data_prop[$key] = $this->db->escape_str($value);
+        }
+        
         if (empty($data)) {  
             $this->db->insert('property', $data_prop);
             $id = $this->db->insert_id();
@@ -160,31 +171,28 @@ Class Blog_model extends CI_Model {
         return $cityareaid;
     }
 
-function get_inquirecustomer($value)
-    {
+    function get_inquirecustomer($value) {
+        
         if (!empty($value['E'])) {
             $this->db->select('id');
             $this->db->from('customer');
-            $this->db->where('mobile_no', $value['E']);
+            $this->db->where("( email = '".$value["F"]."' OR (mobile_no = '".$value["E"]."' AND mobile_no != ''))");
             $query=$this->db->get();
             $customerdata = $query->result(); 
-        }
-        else{
+        } else {
             $customerdata = "";
             $mobileno = "";
         }
-        
-        $savecust_data =  array('fname' => $value['B'],'lname' => $value['C'],'mobile_no'=>$value['E'],'type'=>'0','status'=>'Active','created_date' => $value['A']);
 
+        $savecust_data =  array('email'=>$value["F"],'fname' => $value['B'],'lname' => $value['C'],'mobile_no'=>$value['E'],'type'=>'0','status'=>'Active','created_date' => $value['A']);
         if(empty($customerdata)){ 
             $this->db->insert('customer', $savecust_data);
             $customerid = $this->db->insert_id();
         }else{
             $customerid = $customerdata[0]->id;
         }
-        
-        return $customerid;
 
+        return $customerid;
     }
     
     
@@ -195,7 +203,9 @@ function get_inquirecustomer($value)
         
         $this->db->select('id');
         $this->db->from('user');
-        $this->db->where("email LIKE '%".$agent['email']."%' OR  email LIKE '%".$agent['mobile_no']."%'", NULL, FALSE);
+        $this->db->where('email',trim($agent['email']));
+        //$this->db->where("(email = '".$agent['email']."' OR  (mobile_no = '".$agent['mobile_no']."' AND mobile_no != '') )", NULL, FALSE);
+        $this->db->where('deleted', '0');
         $this->db->where('type', '2');
         $query=$this->db->get();
         $data = $query->row();
@@ -206,13 +216,17 @@ function get_inquirecustomer($value)
         }
     }
     
-    function saveAgent($agent){
+    function saveAgent($agent) {
         foreach($agent as $key=>$value){
+            if($key=='password'){
+                continue;
+            }
             $agent[$key] = $this->db->escape_like_str($value);
         }
+        
         $agent['status'] = 'Active';
         $agent['type'] = '2';
-        $agent['password'] = md5($agent['password']);
+        $agent['password'] = MD5($agent['password']);
         if($this->db->insert('user', $agent)){
             return $this->db->insert_id();
         }
@@ -226,8 +240,10 @@ function get_inquirecustomer($value)
         
         $this->db->select('id');
         $this->db->from('user');
-        $this->db->where("email LIKE '%".$agent['email']."%' OR  email LIKE '%".$agent['mobile_no']."%'", NULL, FALSE);
+        $this->db->where('email',trim($agent['email']));
+        //$this->db->where("(email = '".$agent['email']."' OR  (mobile_no = '".$agent['mobile_no']."' AND mobile_no != '') )", NULL, FALSE);
         $this->db->where('type', '2');
+        $this->db->where('deleted', '0');
         $query=$this->db->get();
         $data = $query->row();
         if(!empty($data)){
@@ -236,7 +252,7 @@ function get_inquirecustomer($value)
             $agent['status'] = 'Active';
             $agent['type'] = '2';
             $this->db->insert('user', $agent);
-            return $this->db->insert_id();       
+            return $this->db->insert_id();
         }
     }
     
@@ -306,7 +322,7 @@ function get_inquirecustomer($value)
 
     function property_export_data() {
         
-        $q = $this->db->select("property.*,user.fname as user_fname,user.lname as user_lname,city_area.title,city.title as city_title")
+        $q = $this->db->select("property.*,user.fname as user_fname,user.lname as user_lname,user.email as user_email,user.mobile_no as user_mobile_no,city_area.title,city.title as city_title")
                 ->from('property')
                 ->join('user', 'user.id =property.agent_id', 'left')
                 ->join('city', 'city.id =property.city_id', 'left')

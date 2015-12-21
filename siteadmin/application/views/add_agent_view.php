@@ -200,19 +200,19 @@ if (isset($user[0])) {
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">General experience :</label>
                     <div class="col-sm-8">
-	                   <textarea id="experience" class="form-control ckeditor" rows="3" name="experience" value="<?php echo $experience;?>"><?php echo $experience;?></textarea>
+	                   <textarea id="experience" class="form-control ckeditor" rows="3" name="experience"><?php echo $experience;?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">Diplomas :</label>
                     <div class="col-sm-8">
-	                    <textarea id="diplomas" class="form-control ckeditor" rows="3" name="diplomas" value="<?php echo $diplomas;?>"><?php echo $diplomas;?></textarea>
+	                    <textarea id="diplomas" class="form-control ckeditor" rows="3" name="diplomas" ><?php echo $diplomas;?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 col-sm-4 control-label">Languages :</label>
                     <div class="col-sm-8">
-	                    <textarea id="languages" class="form-control ckeditor" rows="3" name="languages" value="<?php echo $languages;?>"><?php echo $languages;?></textarea>
+	                    <textarea id="languages" class="form-control ckeditor" rows="3" name="languages"><?php echo $languages;?></textarea>
                     </div>
                   </div>
 

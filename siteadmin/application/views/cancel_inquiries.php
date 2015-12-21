@@ -85,7 +85,7 @@ for ($i = 0; $i < count($cancel_inquiries); $i++) {
         echo "<td data-th='Property Status'><div></div> </td>";
     }
 
-    if ((isset($cancel_inquiries[$i]->a_fname) && !empty($cancel_inquiries[$i]->a_fname) ) && isset($cancel_inquiries[$i]->a_lname) && !empty($cancel_inquiries[$i]->a_lname)) {
+    if ((isset($cancel_inquiries[$i]->a_fname) && !empty($cancel_inquiries[$i]->a_fname) ) || isset($cancel_inquiries[$i]->a_lname) && !empty($cancel_inquiries[$i]->a_lname)) {
         echo "<td data-th='Agent Name'><div>" . $cancel_inquiries[$i]->a_fname . ' ' . $cancel_inquiries[$i]->a_lname . "</div></td>";
     } else {
         echo "<td data-th='Agent Name'><div>" . '--Not assigned--' . "</div></td>";

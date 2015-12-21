@@ -1199,7 +1199,7 @@ if (isset($user[0])) {
                                     <div class="form-group">
                                         <label class="col-md-2 col-sm-4 hidden-xs control-label">Property Description :</label>
                                         <div class="col-md-10 col-sm-8">
-                                            <textarea id="short_desc" class="form-control ckeditor" rows="3" name="short_desc" value="<?php echo $short_decs; ?>"><?php echo $short_decs; ?></textarea>
+                                            <textarea id="short_desc" class="form-control ckeditor" rows="3" name="short_desc"><?php echo $short_decs; ?></textarea>
                                         </div>
                                     </div>
                                 </div>

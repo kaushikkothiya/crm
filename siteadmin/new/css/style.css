@@ -548,12 +548,12 @@ span.loader{
   font-weight: normal;
 }
 .user-select{
-  padding-right: 40px;
   position: relative;
   margin: 0px !important;
 }
 .user-select select{
-  min-width: 220px;
+  min-width: 80px;
+  max-width: 120px;
   height: 30px;
 }
 

@@ -13,7 +13,7 @@ $('#manage_form').validate({
                        // fname:{required:true,noHTML: true},
                         fname:{
                           //required:true
-                          noHTML: true,
+                          //noHTML: true,
                           required: function (element) {
                        
                                  if($('#lname').val() !=''){
@@ -27,7 +27,7 @@ $('#manage_form').validate({
                               },
                         }, 
                         lname:{
-                          noHTML: true
+                        //  noHTML: true
                         },
                         email:{
                           required:true,

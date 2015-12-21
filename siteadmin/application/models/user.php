@@ -1186,7 +1186,7 @@ Class User extends CI_Model {
             $agentData[0] = "Please select agent";
         }
         for ($i = 0; $i < count($data); $i++) {
-            $agentData[$data[$i]->id] = $data[$i]->fname . " " . $data[$i]->lname;
+            $agentData[$data[$i]->id] = $data[$i]->fname . " " . $data[$i]->lname.' ('.$data[$i]->email .')';
         }
         return $agentData;
     }
@@ -1495,10 +1495,11 @@ Class User extends CI_Model {
     }
 
     function getUserByID($id, $all = false) {
-        $q = $this->db->select("*")
+        $q = $this->db->select("user.*,county_code.prefix_code")
                 ->from('user')
-                ->where('id', $id)
-                ->where('deleted', 0);
+                ->join('county_code', 'county_code.prefix_code =user.coutry_code','left')
+                ->where('user.id', $id)
+                ->where('user.deleted', 0);
         if (!$all) {
             $q = $q->where('status', 'Active');
         }

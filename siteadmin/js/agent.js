@@ -12,7 +12,7 @@ $('#manage_form').validate({
                  rules:{
                         fname:{
                           //required:true
-                          noHTML: true,
+                          //noHTML: true,
                            required: function (element) {
                        
                                  if($('#lname').val() !=''){
@@ -26,7 +26,7 @@ $('#manage_form').validate({
                               },
                         }, 
                          lname:{
-                          noHTML: true
+                         // noHTML: true
                          },
                         //lname:{required:true},
                         email:{

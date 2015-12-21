@@ -26,7 +26,8 @@ $config['property_type'] = array('1'=>'Duplex','2' =>'Apartment','3' =>'Penthous
 $config['get_architectural_design'] = array('1'=>'Contemporary','2' =>'Modern','3' =>'Classic');
 $config['get_room_size_id'] = array('1'=>'Small','2' =>'Medium','3' =>'Large');
 $config['aquired_type'] = array('1'=>'Sale','2' =>'Rent','3' =>'Both(Sale/Rent)');
-
+$config['furnished_type'] = array('1' => 'Furnished', '2' => 'Semi-Furnished', '3' => 'Un-Furnished');
+$config['pets_type'] = array('0' => 'Allowed', '1' => 'Not Allowed');
 
 //pagination array
 $config['pagination'] = array();
@@ -39,8 +40,12 @@ $config['pagination']['num_links'] = 2;
 if (count($_REQUEST) > 0) $config['pagination']['suffix'] = '?' . http_build_query($_REQUEST, '', "&");
 $config['pagination']['reuse_query_string'] = FALSE;
 $config['pagination']['use_page_numbers'] = TRUE;
+$config['pagination']['first_url'] = (isset($config['pagination']['suffix']))?"1".$config['pagination']['suffix']:"";
 $config['pagination']['full_tag_open'] = '<nav class="col-sm-6 text-right text-center-sm"><ul class="pagination pagination-sm">';
 $config['pagination']['full_tag_close'] = '</ul></nav>';
+//$config['pagination']['full_tag_open'] = '<div class="dataTables_wrapper"><div class="property-list_paginate" >';
+//$config['pagination']['full_tag_close'] =  "</div></div>";
+
 $config['pagination']['first_link'] = '<span aria-hidden="true">First</span>';
 $config['pagination']['last_link'] = '<span aria-hidden="true">Last</span>';
 $config['pagination']['first_tag_open'] = '<li>';
@@ -58,6 +63,9 @@ $config['pagination']['cur_tag_open'] = '<li class="active"><a href="#">';
 $config['pagination']['cur_tag_close'] = '</a></li>';
 $config['pagination']['num_tag_open'] = '<li>';
 $config['pagination']['num_tag_close'] = '</li>';
+//$config['pagination']['num_tag_open'] = '<span class="paginate_button">';
+//$config['pagination']['num_tag_close'] = '</span>';
+
 
 /*
   |--------------------------------------------------------------------------

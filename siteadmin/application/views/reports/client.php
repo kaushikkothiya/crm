@@ -126,7 +126,7 @@
                                             <ul class="list-group">
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Total Clients Added by user"><?php echo count($reporting['added_clients']); ?></span>Added Clients</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Clients assigned to agent by user"><?php echo count($reporting['assigned_clients']); ?></span>Assigned Clients</li>
-                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Clients of Agent"><?php echo count($reporting['agent_clients']); ?></span>Agent Clients</li>
+                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Clients of Agent"><?php echo $reporting['agent_clients']; ?></span>Agent Clients</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Active Properties"><?php echo count($reporting['active_properties']); ?></span>Active Properties</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inactive Properties"><?php echo count($reporting['inactive_properties']); ?></span>Inactive Properties</li>
                                             </ul>

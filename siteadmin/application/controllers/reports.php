@@ -126,6 +126,7 @@ class Reports extends MY_Controller {
             $_REQUEST['to_date'] = $to_date;
 
             $data['reporting'] = $this->report_model->getPropertyReporting($user_id, $from_date, $to_date);
+            
             $this->load->view('reports/property', $data);
         } else {
             //If no session, redirect to login page

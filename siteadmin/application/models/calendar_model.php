@@ -100,7 +100,7 @@ Class Calendar_model extends CI_Model {
 
     }
 
-    function getAllinquiryCount($user, $show_completed=false, $selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="") {
+    function getAllinquiryCount($user, $show_completed=false, $selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="",$inc_search="") {
 
         //$property_type = $this->config->item('property_type');
         $this->db->select('id');
@@ -143,6 +143,17 @@ Class Calendar_model extends CI_Model {
             $this->db->where("DATE_FORMAT(inquiry.created_date,'%m/%d/%Y') >=", $from_date);
             $this->db->where("DATE_FORMAT(inquiry.created_date,'%m/%d/%Y') <=", $to_date);
         }
+        
+        if(!empty($inc_search)) {
+            $this->db->where("(inquiry.incquiry_ref_no like '%".$inc_search."%' "
+                    . "OR user.fname like '%".$inc_search."%' "
+                    . "OR user.lname like '%".$inc_search."%' "
+                    . "OR CONCAT(user.fname, ' ', user.lname) like '%".$inc_search."%' "
+                    . "OR agent.fname like '%".$inc_search."%' "
+                    . "OR agent.lname like '%".$inc_search."%' "
+                    . "OR CONCAT(agent.fname, ' ', agent.lname) like '%".$inc_search."%' "
+                    . ")");
+        }
 
         return $this->db->count_all_results();
     }
@@ -171,7 +182,7 @@ Class Calendar_model extends CI_Model {
         return array();
     }
 
-    function getAllinquiryPage($user,$limit=10,$offset=0,$show_completed=false,$selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="",$order_by="",$order_type="asc") {
+    function getAllinquiryPage($user,$limit=10,$offset=0,$show_completed=false,$selected_user=array(),$from_date="",$to_date="",$inquiry_for="",$inquiry_client="",$order_by="",$order_type="asc",$inc_search="") {
 
         //$property_type = $this->config->item('property_type');
         $this->db->select('inquiry.*,user.fname,user.lname,agent.fname as agent_fname, agent.lname as agent_lname,property.bedroom, property.type as property_for,property.property_type');
@@ -212,6 +223,17 @@ Class Calendar_model extends CI_Model {
         if(!empty($from_date) && !empty($to_date)){
             $this->db->where("DATE_FORMAT(inquiry.created_date,'%m/%d/%Y') >=", $from_date);
             $this->db->where("DATE_FORMAT(inquiry.created_date,'%m/%d/%Y') <=", $to_date);
+        }
+        
+        if(!empty($inc_search)) {
+            $this->db->where("(inquiry.incquiry_ref_no like '%".$inc_search."%' "
+                    . "OR user.fname like '%".$inc_search."%' "
+                    . "OR user.lname like '%".$inc_search."%' "
+                    . "OR CONCAT(user.fname, ' ', user.lname) like '%".$inc_search."%' "
+                    . "OR agent.fname like '%".$inc_search."%' "
+                    . "OR agent.lname like '%".$inc_search."%' "
+                    . "OR CONCAT(agent.fname, ' ', agent.lname) like '%".$inc_search."%' "
+                    . ")");
         }
         
         if(empty($order_by)){

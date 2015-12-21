@@ -12,6 +12,22 @@ class MY_Controller extends CI_Controller {
             $this->cur_user = $this->session->userdata('logged_in_agent');
         } else if($this->session->userdata('logged_in_employee')) {
             $this->cur_user = $this->session->userdata('logged_in_employee');
+        } else {
+            $controller = $this->router->fetch_class();
+            $action = $this->router->fetch_method();
+            $page = $controller."/".$action;
+            
+            if( !in_array($page, array(
+                "home/view_property",
+                "login/index",
+                "home/forgote_password",
+                "verifylogin/index",
+                "home/resetpassword",
+                "login/home",
+            ))) {
+                $this->session->set_userdata('redirect_url', current_url());
+                redirect(base_url()."login");
+            }
         }
     }
     
@@ -21,15 +37,15 @@ class MY_Controller extends CI_Controller {
         $chr_range = array(
             array(48,57),
             array(65,90),
-            array(97,122),
-            array(33,47),
-            array(58,64),
-            array(91,96),
-            array(123,126)
+            array(97,122)
+            //array(33,47),
+            //array(58,64),
+            //array(91,96),
+            //array(123,126)
         );
         
-        for($i=0;$i<=$length;$i++){
-            $range = $chr_range[rand(0,6)];
+        while(strlen($str)<$length){
+            $range = $chr_range[rand(0,2)];
             $new_char = chr(rand($range[0],$range[1]));
             $str.= $new_char;
         }

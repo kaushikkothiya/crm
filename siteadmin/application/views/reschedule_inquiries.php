@@ -85,7 +85,7 @@ for ($i = 0; $i < count($reschedule_inquiries); $i++) {
         echo "<td data-th='Property Status'><div> </div></td>";
     }
 
-    if ((isset($reschedule_inquiries[$i]->a_fname) && !empty($reschedule_inquiries[$i]->a_fname) ) && isset($reschedule_inquiries[$i]->a_lname) && !empty($reschedule_inquiries[$i]->a_lname)) {
+    if ((isset($reschedule_inquiries[$i]->a_fname) && !empty($reschedule_inquiries[$i]->a_fname) ) || isset($reschedule_inquiries[$i]->a_lname) && !empty($reschedule_inquiries[$i]->a_lname)) {
         echo "<td data-th='Agent Name'><div>" . $reschedule_inquiries[$i]->a_fname . ' ' . $reschedule_inquiries[$i]->a_lname . "</div></td>";
     } else {
         echo "<td data-th='Agent Name'><div>" . '--Not assigned--' . "</div></td>";

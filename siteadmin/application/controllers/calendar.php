@@ -127,6 +127,10 @@ class Calendar extends MY_Controller {
         $this->pagination->initialize($config);
 
         $offset = ($page * $config['per_page']) - $config['per_page'];
+        if( ($offset+1)>$total_rows ){
+            $page = 1;
+            $offset = ($page * $config['per_page']) - $config['per_page'];    
+        }
 
         $data['inquiries'] = $this->calendar_model->getAllinquiryPage($user,$config['per_page'],$offset,$show_completed,$selected_user,$from_date,$to_date);
         $data['expired_inquiries'] = $this->calendar_model->getExpiredInquiry($user, $selected_user, $from_date, $to_date);

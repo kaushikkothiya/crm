@@ -28,6 +28,48 @@
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.knob.js"></script>
 
 <script type="text/javascript" charset="utf-8">
+    
+    function getPrice(name) {
+        var rankNumber;
+
+        rankNumber = replaceAll(name,"<div>","");
+        rankNumber = replaceAll(rankNumber,"</div>","");
+        rankNumber = replaceAll(rankNumber,"€","");
+        rankNumber = replaceAll(rankNumber,",","");
+        rankNumber = replaceAll(rankNumber,"SP.","");
+        rankNumber = replaceAll(rankNumber,"RP.","");
+        rankNumber = replaceAll(rankNumber,"<br>","");
+        rankNumber = replaceAll(rankNumber," ","");
+        rankNumber = replaceAll(rankNumber,"/","");
+
+        if(!isNaN(rankNumber) && rankNumber!=""){
+            rankNumber = parseInt(rankNumber);
+        }else{
+            rankNumber = 0;
+        }
+        return rankNumber;
+    }
+    
+    function getRefno(val) {
+        var rankNumber;
+
+        rankNumber = replaceAll(val,"<div>","");
+        rankNumber = replaceAll(rankNumber,"</div>","");
+        rankNumber = rankNumber.split("<br>");
+        rankNumber = rankNumber[0];
+
+        if(!isNaN(rankNumber) && rankNumber!=""){
+            rankNumber = parseInt(rankNumber);
+        }else{
+            rankNumber = 0;
+        }
+        return rankNumber;
+    }
+    
+    function replaceAll(str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
+    
     function strip(html) {
         var tmp = document.createElement("DIV");
         tmp.innerHTML = html;
@@ -50,36 +92,8 @@
                     return moment( d, format, locale, true ).unix();
                 };
             };
-       
-       
-            function replaceAll(str, find, replace) {
-                return str.replace(new RegExp(find, 'g'), replace);
-            }
-       
-            function getPrice(name) {
-                var rankNumber;
-                
-                rankNumber = replaceAll(name,"<div>","");
-                rankNumber = replaceAll(rankNumber,"</div>","");
-                rankNumber = replaceAll(rankNumber,"€","");
-                rankNumber = replaceAll(rankNumber,",","");
-                rankNumber = replaceAll(rankNumber,"SP.","");
-                rankNumber = replaceAll(rankNumber,"RP.","");
-                rankNumber = replaceAll(rankNumber,"<br>","");
-                rankNumber = replaceAll(rankNumber," ","");
-                rankNumber = replaceAll(rankNumber,"/","");
-                
-                if(!isNaN(rankNumber) && rankNumber!=""){
-                    rankNumber = parseInt(rankNumber);
-                }else{
-                    rankNumber = 0;
-                }
-                return rankNumber;
-            }
-       
+                     
             jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
-                
-                
                 var xVal = getPrice(x);
                 var yVal = getPrice(y);
 
@@ -89,13 +103,38 @@
                     return -1;
                 } else {
                     return 0;
-                }
-                
+                }  
             };
 
             jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
                 var xVal = getPrice(x);
                 var yVal = getPrice(y);
+
+                if (xVal < yVal) {
+                    return -1;
+                } else if (xVal > yVal) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+                        
+            jQuery.fn.dataTableExt.oSort["refno-desc"] = function (x, y) {
+                var xVal = getRefno(x);
+                var yVal = getRefno(y);
+
+                if (xVal < yVal) {
+                    return 1;
+                } else if (xVal > yVal) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            };
+
+            jQuery.fn.dataTableExt.oSort["refno-asc"] = function (x, y) {
+                var xVal = getRefno(x);
+                var yVal = getRefno(y);
 
                 if (xVal < yVal) {
                     return -1;
@@ -122,6 +161,7 @@
             $('#property-list').DataTable({
                 "lengthMenu": [ 15, 30, 45, 60, 75 ],
                 "aoColumnDefs": [{ "sType": 'price', "aTargets": [5] }],
+                "aoColumnDefs": [{ "sType": 'refno', "aTargets": [1] }],
                 "order": [[ 0, "desc" ]],
                 "columnDefs": [{
                     "targets": [ 0 ],
@@ -132,6 +172,7 @@
             $('#search-property-list').DataTable({
                 "lengthMenu": [ 15, 30, 45, 60, 75 ],
                 "aoColumnDefs": [{ "sType": 'price', "aTargets": [5] }],
+                "aoColumnDefs": [{ "sType": 'refno', "aTargets": [1] }],
                 "order": [[ 0, "desc" ]],
                 "columnDefs": [{
                     "targets": [ 0 ],

@@ -126,7 +126,7 @@
                                             <ul class="list-group">
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Total Inquiries posted by you"><?php echo count($reporting['added_properties']); ?></span>Added Properties</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries assigned to agent by you"><?php echo count($reporting['assigned_properties']); ?></span>Assigned Properties</li>
-                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries assigned to agent by you"><?php echo count($reporting['agent_properties']); ?></span>Agent Properties</li>
+                                                <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries assigned to agent by you"><?php echo $reporting['agent_properties']; ?></span>Agent Properties</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries completed and posted by you"><?php echo count($reporting['active_properties']); ?></span>Active Properties</li>
                                                 <li class="list-group-item"><span class="badge" data-toggle="tooltip" title="Count of Inquiries completed and posted by you"><?php echo count($reporting['inactive_properties']); ?></span>Inactive Properties</li>
                                             </ul>

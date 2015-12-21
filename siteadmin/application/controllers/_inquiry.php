@@ -40,64 +40,7 @@ class Inquiry extends MY_Controller {
         if (!empty($_POST['agent']) && !empty($_POST['inquiry_id']) && !empty($_POST['property_id'])) {
             // code for reschedule inquiry
             $id = $_POST['inquiry_id'];
-            $property_id = $_POST['property_id'];
             $today_date = date('Y-m-d H:i:s');
-
-            $agent_id = $this->input->post('agent');
-            $inquiry_data = $this->inquiry_model->get_inquiry_recored($id);
-            $customer_detail = $this->inquiry_model->get_customer_detail($inquiry_data[0]->cust_id);
-            $agent_detail = $this->inquiry_model->get_agent_email($agent_id);
-            $agent_property_link_path = base_url() . "inquiry/new_inquiries/";
-            
-            $property_detail = $this->inquiry_model->get_property_detail($property_id);
-            $property_link = array();
-            $property_link_path = base_url() . "home/view_property/".$property_id;
-            $property_link[] = $property_link_path;
-            
-            if(!empty($agent_detail[0]->coutry_code)){
-                $agent_mobile_cntry_code = $this->user->get_contry_code($agent_detail[0]->coutry_code);
-                if (!empty($agent_mobile_cntry_code)) {
-                    $agentmcode = substr($agent_mobile_cntry_code[0]->prefix_code, 1);
-                    $agentcn_mobile_code = "00" . $agentmcode;
-                } else {
-                    $agentcn_mobile_code = "0000";
-                }
-            } else {
-                $agentcn_mobile_code = "0000";
-            }
-
-            if(!empty($customer_detail[0]->coutry_code)){
-                $clientcountry_code = $this->user->get_contry_code($customer_detail[0]->coutry_code);
-                if (!empty($clientcountry_code)) {
-                    $clientmcode = substr($clientcountry_code[0]->prefix_code, 1);
-                    $clientmobile_code = "00" . $clientmcode;
-                } else {
-                    $clientmobile_code = "0000";
-                }
-            }else {
-                $clientmobile_code = "0000";
-            }
-            
-            $data_notify = array(
-                'agent_email' => $agent_detail[0]->email,
-                'agent_mobile' => $agentcn_mobile_code . $agent_detail[0]->mobile_no,
-                'agent_name' => $agent_detail[0]->fname . ' ' . $agent_detail[0]->lname,
-                'customer_email' => $customer_detail[0]->email,
-                'customer_name' => $customer_detail[0]->fname . ' ' . $customer_detail[0]->lname,
-                'customer_mobile' => $clientmobile_code . $customer_detail[0]->mobile_no,
-                'property_ref_no' => $property_detail[0]->reference_no,
-                'start_date' => date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
-                'end_date' => date("Y-m-d H:i:s", strtotime($this->input->post('end_date'))),
-                //'property_link_url' => $property_link_url[0],
-                'property_link' => $property_link[0],
-                'agent_property_link_path' => $agent_property_link_path
-            );
-            
-            /* code for notificatin to agent and customer */
-            $this->load->model('customer_model');
-            $customer = $this->customer_model->getCustomer($inquiry_data[0]->cust_id);
-            $agent = $this->user->getUserByID($_POST['agent']);
-            
             $data = array(
                 'agent_id' => $this->input->post('agent'),
                 'appoint_start_date' => date("Y-m-d H:i:s", strtotime($this->input->post('start_date'))),
@@ -108,33 +51,12 @@ class Inquiry extends MY_Controller {
                 'agent_status' => '0'
             );
 
-            /* Notify customer */
-            $subject = "Your appointment has been rescheduled";
-            $message = $this->load->view("email/property_client_appointment_email", $data_notify, TRUE);
-
-            $sms = "Dear " . $customer->fname . " " . $customer->lname . ", your request for appointment on :" . $_POST['start_date'] . ' to ' . $_POST['end_date'];
-            $sms .= " for the property with Reference No: " . $property_detail[0]->reference_no . ",";
-            $sms .= " has been rescheduled by our agent: " . $agent->fname . " " . $agent->lname . ", Mobile Number: +" . $agentcn_mobile_code . $agent->mobile_no;
-            $sms .= " shortly";
-            $this->notifyUser($customer, $subject, $message, $sms, $id);
-
-            /* Notify agent */
-            $subject = "New Property Inquiry Assigned to you, Please check and confirm Appointment";
-            $message = $this->load->view("email/property_agent_appointment_email", $data_notify, TRUE);
-
-            $sms = "Dear " . $agent->fname . " " . $agent->lname . ", new property inquiry assigned to you for appointment on " . $_POST['start_date'] . " to " . $_POST['end_date'];
-            $sms .= " for the property with Reference No: " . $property_detail[0]->reference_no . ",";
-            $sms .= " Inquiry from: " . $customer->fname . " " . $customer->lname . ", Mobile Number: +" . $clientmobile_code . $customer->mobile_no . ",";
-            $sms .= " Confirmation link: " . $agent_property_link_path;
-            $this->notifyUser($agent, $subject, $message, $sms, $id);
-
             if ($this->inquiry_model->rescheduleInquiry($id, $data)) {
                 $this->session->set_flashdata('success', 'Inquiry has been rescheduled!');
             } else {
                 $this->session->set_flashdata('error', 'Inquiry has not been rescheduled! Please try again.');
             }
             redirect('/inquiry/reschedule_inquiries');
-            
         } elseif (!empty($_POST['agent'])) {
 
             $inquiry_num = $this->unic_inquiry_num();
@@ -153,31 +75,22 @@ class Inquiry extends MY_Controller {
             $this->mailChimpSubscribe($cust_id);
 
             $agent_detail = $this->inquiry_model->get_agent_email($_POST['agent']);
-            //$agent_property_link_path = base_url() . "home/appointment_conform/" . $data_inqury . "/" . $agent_detail[0]->id;
-            $agent_property_link_path = base_url() . "inquiry/new_inquiries/";
+            $agent_property_link_path = base_url() . "home/appointment_conform/" . $data_inqury . "/" . $agent_detail[0]->id;
 
-            
-            if(!empty($agent_detail[0]->coutry_code)){
-                $agent_mobile_cntry_code = $this->user->get_contry_code($agent_detail[0]->coutry_code);
-                if (!empty($agent_mobile_cntry_code)) {
-                    $agentmcode = substr($agent_mobile_cntry_code[0]->prefix_code, 1);
-                    $agentcn_mobile_code = "00" . $agentmcode;
-                } else {
-                    $agentcn_mobile_code = "0000";
-                }
-            }else {
+            $agent_mobile_cntry_code = $this->user->get_contry_code($agent_detail[0]->coutry_code);
+
+            if (!empty($agent_mobile_cntry_code)) {
+                $agentmcode = substr($agent_mobile_cntry_code[0]->prefix_code, 1);
+                $agentcn_mobile_code = "00" . $agentmcode;
+            } else {
                 $agentcn_mobile_code = "0000";
             }
             // echo'<pre>';print_r($customer_detail);exit; 
-            if(!empty($customer_detail[0]->coutry_code)){
-                $clientcountry_code = $this->user->get_contry_code($customer_detail[0]->coutry_code);
-                if (!empty($clientcountry_code)) {
-                    $clientmcode = substr($clientcountry_code[0]->prefix_code, 1);
-                    $clientmobile_code = "00" . $clientmcode;
-                } else {
-                    $clientmobile_code = "0000";
-                }
-            }else{
+            $clientcountry_code = $this->user->get_contry_code($customer_detail[0]->coutry_code);
+            if (!empty($clientcountry_code)) {
+                $clientmcode = substr($clientcountry_code[0]->prefix_code, 1);
+                $clientmobile_code = "00" . $clientmcode;
+            } else {
                 $clientmobile_code = "0000";
             }
             $data = array(
@@ -200,25 +113,24 @@ class Inquiry extends MY_Controller {
             $customer = $this->customer_model->getCustomer($cust_id);
             $agent = $this->user->getUserByID($_POST['agent']);
 
-
             /* Notify customer */
             $subject = "Your appointment assigned to agent";
             $message = $this->load->view("email/property_client_appointment_email", $data, TRUE);
 
             $sms = "Dear " . $customer->fname . " " . $customer->lname . ", your request for appointment on :" . $_POST['start_date'] . ' to ' . $_POST['end_date'];
             $sms .= " for the property with Reference No: " . $property_detail[0]->reference_no . ",";
-            $sms .= " will be confirmed by our agent: " . $agent->fname . " " . $agent->lname . ", Mobile Number: +" . $agentcn_mobile_code . $agent->mobile_no;
+            $sms .= " will be confirmed by our agent: " . $agent->fname . " " . $agent->lname . ", Mobile Number: +" . $agent->prefix_code . $agent->mobile_no;
             $sms .= " shortly";
 
             $this->notifyUser($customer, $subject, $message, $sms, $data_inqury);
 
             /* Notify agent */
-            $subject = "New Property Inquiry Assigned to you, Please check and confirm Appointment";
+            $subject = "New appointment need to confirm";
             $message = $this->load->view("email/property_agent_appointment_email", $data, TRUE);
 
             $sms = "Dear " . $agent->fname . " " . $agent->lname . ", new request for appointment on " . $_POST['start_date'] . " to " . $_POST['end_date'];
             $sms .= " for the property with Reference No: " . $property_detail[0]->reference_no . ",";
-            $sms .= " Inquiry from: " . $customer->fname . " " . $customer->lname . ", Mobile Number: +" . $clientmobile_code . $customer->mobile_no . ",";
+            $sms .= " Inquiry from: " . $customer->fname . " " . $customer->lname . ", Mobile Number: +" . $customer->prefix_code . $customer->mobile_no . ",";
             $sms .= " Confirmation link: " . $agent_property_link_path;
 
             $this->notifyUser($agent, $subject, $message, $sms, $data_inqury);
@@ -276,12 +188,7 @@ class Inquiry extends MY_Controller {
 
         $this->pagination->initialize($config);
 
-        
         $offset = ($page * $config['per_page']) - $config['per_page'];
-        if( ($offset+1)>$total_rows ){
-            $page = 1;
-            $offset = ($page * $config['per_page']) - $config['per_page'];    
-        }
 
         $order_by = 'inquiry.created_date';
         $order_type = 'desc';
@@ -1082,27 +989,19 @@ class Inquiry extends MY_Controller {
 
             if (!empty($aget_record)) {
                 $aget_record = $aget_record[0];
-                if(!empty($aget_record->coutry_code)){
-                    $agentcountry_code = $this->user->get_contry_code($aget_record->coutry_code);
-                    $mcode_agent = substr($agentcountry_code[0]->prefix_code, 1);
-                    $mobile_code_agent = "00" . $mcode_agent;
-                }else{
-                    $mobile_code_agent = "0000";
-                }
+                $agentcountry_code = $this->user->get_contry_code($aget_record->coutry_code);
+                $mcode_agent = substr($agentcountry_code[0]->prefix_code, 1);
+                $mobile_code_agent = "00" . $mcode_agent;
             } else {
                 $mobile_code_agent = "0000";
             }
 
             if (!empty($employee_record)) {
                 $employee_record = $employee_record[0];
-                if(!empty($employee_record->coutry_code)){
-                    $employeecountry_code = $this->user->get_contry_code($employee_record->coutry_code);
-                    $mcode_employee = substr($employeecountry_code[0]->prefix_code, 1);
-                    $mobile_code_employee = "00" . $mcode_employee;
-                    $employee_name = $employee_record->fname . " " . $employee_record->lname;
-                }else{
-                    $mobile_code_employee = "0000";
-                }
+                $employeecountry_code = $this->user->get_contry_code($employee_record->coutry_code);
+                $mcode_employee = substr($employeecountry_code[0]->prefix_code, 1);
+                $mobile_code_employee = "00" . $mcode_employee;
+                $employee_name = $employee_record->fname . " " . $employee_record->lname;
             } else {
                 $mobile_code_employee = "0000";
                 $employee_name = " ";
@@ -1110,13 +1009,9 @@ class Inquiry extends MY_Controller {
 
             if (!empty($inquiry_and_customer_record)) {
                 $inquiry_and_customer_record = $inquiry_and_customer_record[0];
-                if(!empty($inquiry_and_customer_record->coutry_code)){
-                    $customercountry_code = $this->user->get_contry_code($inquiry_and_customer_record->coutry_code);
-                    $mcode_customer = substr($customercountry_code[0]->prefix_code, 1);
-                    $mobile_code_customer = "00" . $mcode_customer;
-                } else {
-                    $mobile_code_customer = "0000";
-                }
+                $customercountry_code = $this->user->get_contry_code($inquiry_and_customer_record->coutry_code);
+                $mcode_customer = substr($customercountry_code[0]->prefix_code, 1);
+                $mobile_code_customer = "00" . $mcode_customer;
             } else {
                 $mobile_code_customer = "0000";
             }
@@ -1245,27 +1140,19 @@ class Inquiry extends MY_Controller {
 
             if (!empty($aget_record)) {
                 $aget_record = $aget_record[0];
-                if(!empty($aget_record->coutry_code)){
-                    $agentcountry_code = $this->user->get_contry_code($aget_record->coutry_code);
-                    $mcode_agent = substr($agentcountry_code[0]->prefix_code, 1);
-                    $mobile_code_agent = "00" . $mcode_agent;
-                }else{
-                    $mobile_code_agent = "0000";
-                }
+                $agentcountry_code = $this->user->get_contry_code($aget_record->coutry_code);
+                $mcode_agent = substr($agentcountry_code[0]->prefix_code, 1);
+                $mobile_code_agent = "00" . $mcode_agent;
             } else {
                 $mobile_code_agent = "0000";
             }
 
             if (!empty($employee_record)) {
                 $employee_record = $employee_record[0];
-                if(!empty($employee_record->coutry_code)){
-                    $employeecountry_code = $this->user->get_contry_code($employee_record->coutry_code);
-                    $mcode_employee = substr($employeecountry_code[0]->prefix_code, 1);
-                    $mobile_code_employee = "00" . $mcode_employee;
-                    $employee_name = $employee_record->fname . " " . $employee_record->lname;
-                }else{
-                    $mobile_code_employee = "0000";
-                }
+                $employeecountry_code = $this->user->get_contry_code($employee_record->coutry_code);
+                $mcode_employee = substr($employeecountry_code[0]->prefix_code, 1);
+                $mobile_code_employee = "00" . $mcode_employee;
+                $employee_name = $employee_record->fname . " " . $employee_record->lname;
             } else {
                 $mobile_code_employee = "0000";
                 $employee_name = " ";
@@ -1273,13 +1160,9 @@ class Inquiry extends MY_Controller {
 
             if (!empty($inquiry_and_customer_record)) {
                 $inquiry_and_customer_record = $inquiry_and_customer_record[0];
-                if(!empty($inquiry_and_customer_record->coutry_code)){
-                    $customercountry_code = $this->user->get_contry_code($inquiry_and_customer_record->coutry_code);
-                    $mcode_customer = substr($customercountry_code[0]->prefix_code, 1);
-                    $mobile_code_customer = "00" . $mcode_customer;
-                }else{
-                    $mobile_code_customer = "0000";
-                }
+                $customercountry_code = $this->user->get_contry_code($inquiry_and_customer_record->coutry_code);
+                $mcode_customer = substr($customercountry_code[0]->prefix_code, 1);
+                $mobile_code_customer = "00" . $mcode_customer;
             } else {
                 $mobile_code_customer = "0000";
             }
@@ -1314,7 +1197,8 @@ class Inquiry extends MY_Controller {
                 $message = $this->load->view("email/appointment_confirm_employee", $data, TRUE);
 
                 $sms = "Dear " . $employee_name . ",";
-                $sms .= " Your assigned appointment for property with Reference No:" . $inquiry_and_customer_record->property_ref_no." is confirmed by Agent that scheduled on ." . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date;
+                $sms .= " You  that your  appointment on." . $inquiry_and_customer_record->appoint_start_date . " to " . $inquiry_and_customer_record->appoint_end_date;
+                $sms .=" For the property with Reference No:" . $inquiry_and_customer_record->property_ref_no;
                 $sms .= " Inquiry from, " . $inquiry_and_customer_record->fname . ' ' . $inquiry_and_customer_record->lname;
                 $this->notifyUser($employee_record, $subject, $message, $sms, $id);
             } else if ($agent_status == 2) {

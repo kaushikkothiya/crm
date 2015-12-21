@@ -16,7 +16,7 @@
                         <!--Email header start-->
                         <tbody>
                             <tr>
-                                <td height="40" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
+                                <td height="70" align="left" valign="top" bgcolor="#ffffff" style="border-bottom: solid 1px #eeeeee;">
                                     <img src="<?php echo base_url(); ?>img/cmr.png" height="70" alt="Monopolion" style="padding-top:8px; padding-left:8px; border:0;" alt="" />
                                 </td>
                             </tr>
@@ -29,30 +29,14 @@
                         <tr>
                             <td align="center" valign="top" bgcolor="#FFFFFF"><table width="94%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
-                                       <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                        <?php if($type=="Confirm Appointment" || $type==1){ ?>
-                                            <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
-                                            <p>Your appointment for the property with Reference No :<?php echo $property_ref_no; ?>, has been confirmed on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
-                                          </td>   
-                                        <?php }if($type=="Submit" || $type==3){ ?>
-                                            <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
-                                            <p>your appointment for the property with Reference No :<?php echo $property_ref_no; ?>, has been cancelled on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
-                                            </td>
-                                        <?php }elseif ($type=="reschedule" || $type==2) {  ?>
-                                            <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
-                                            <p style="margin: 0px;" >Dear <b><?php echo $customer_name;?></b>,</p>
-                                            <p>your appointment for the property with Reference No :<?php echo $property_ref_no; ?>, has been rescheduled on <?php echo $appointment_start.' to '.$appointment_end ; ?>. For any further info kindly contact our Agent: <?php echo $agent_name.', Mobile Number: +'.$agent_mobile; ?> or 8000 7000</p>
-                                            <p>Thanks & Regards</p>
-                                            <p>Monopolion Team</p>
-                                            </td>
-                                           <?php } ?>
-                                             
+                                        <td align="left" style="font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:20px;">
+                                            <p style="margin: 0px;" >Dear  <b><?php echo $fname;?>&nbsp;<?php echo $lname;?></b>,</p>
+                                            <p>Welcome to <?php echo $this->config->item('TITLE'); ?> Your Agent account has been created</p>
+                                            <p>You can login to you account using following credentials.</p> 
+                                            <p>URL <?php echo base_url(); ?></p>
+                                            <p>Email : <?php echo $email; ?></p>
+                                            <p>Password : <?php echo $password; ?></p>
+                                            <p>You can login to you account using following credentials</p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -82,7 +66,6 @@
                         <!--Email footer end-->
                     </tbody>
                     </table>
-
                 </td>
             </tr>
         </table>

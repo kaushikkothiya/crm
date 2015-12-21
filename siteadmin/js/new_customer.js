@@ -13,7 +13,7 @@ $(document).ready(function(){
         rules:{
             fname:{
                 // required:true,
-                noHTML: true,
+                //noHTML: true,
                 required: function (element) {
                     if($('#lname').val() !='') {
                         return '';
@@ -24,7 +24,7 @@ $(document).ready(function(){
             },
 
             lname:{
-                noHTML: true,
+               // noHTML: true,
              },
             email:{
                 // required:true,

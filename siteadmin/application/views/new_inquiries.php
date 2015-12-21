@@ -85,7 +85,7 @@ $this->load->view('leftmenu');
                                         echo "<td data-th='Property Status'> <div></div></td>";
                                     }
 
-                                    if ((isset($inquiries[$i]->a_fname) && !empty($inquiries[$i]->a_fname) ) && isset($inquiries[$i]->a_lname) && !empty($inquiries[$i]->a_lname)) {
+                                    if ((isset($inquiries[$i]->a_fname) && !empty($inquiries[$i]->a_fname) ) || isset($inquiries[$i]->a_lname) && !empty($inquiries[$i]->a_lname)) {
                                         echo "<td data-th='Agent Name'><div>" . $inquiries[$i]->a_fname . ' ' . $inquiries[$i]->a_lname . "</div></td>";
                                     } else {
                                         echo "<td data-th='Agent Name'><div>" . '--Not assigned--' . "</div></td>";

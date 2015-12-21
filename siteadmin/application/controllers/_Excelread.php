@@ -104,22 +104,23 @@ class Excelread extends MY_Controller {
                         $sms = strip_tags($message);
                         $this->notifyUser($user, $subject, $message, $sms);
                     }
-                    $prop_type = $this->config->item('property_type');
+
+                    $prop_type = array('1' => 'Duplex', '2' => 'Apartment', '3' => 'Penthouse', '4' => 'Garden Apartments', '5' => 'Studio', '6' => 'Townhouse', '7' => 'Villa', '8' => 'Bungalow', '9' => 'Land', '10' => 'Shop', '11' => 'Office', '12' => 'Business', '13' => 'Hotel', '14' => 'Restaurant', '15' => 'Building', '16' => 'Industrial estate', '17' => 'House', '18' => 'Upper-House', '19' => 'Maisonette');
                     $propkey = array_search("" . $value['J'] . "", $prop_type);
 
-                    $propsell_type = $this->config->item('aquired_type');
+                    $propsell_type = array('1' => 'Sale', '2' => 'Rent', '3' => 'Both');
                     $proprty_typekey = array_search("" . $value['K'] . "", $propsell_type);
 
-                    $furnished_type = $this->config->item('furnished_type');
+                    $furnished_type = array('1' => 'Furnished', '2' => 'semi-Furnished', '3' => 'Un-Furnished');
                     $furnished_typekey = array_search("" . $value['L'] . "", $furnished_type);
 
-                    $pets_type = $this->config->item('pets_type');
-		    $pets_typekey = array_search("" . $value['X'] . "", $pets_type);	
+                    $pets_type = array('0' => 'Allowed', '1' => 'Not Allowed');
+                    $pets_typekey = array_search("" . $value['X'] . "", $pets_type);
 
-                    $artich_design = $this->config->item('get_architectural_design');
+                    $artich_design = array('1' => 'Contemporary', '2' => 'Modern', '3' => 'Classic');
                     $artich_designkey = array_search("" . $value['Y'] . "", $artich_design);
 
-                    $size_rm = $this->config->item('get_room_size_id');
+                    $size_rm = array('1' => 'Small', '2' => 'Medium', '3' => 'Large');
                     $size_rmkey = array_search("" . $value['M'] . "", $size_rm);
 
                     $link_str = "";
@@ -357,14 +358,14 @@ class Excelread extends MY_Controller {
                 if (empty($value['P'])) {
                     $proprty_typekey = "";
                 } else {
-                    $propsell_type = $this->config->item('aquired_type');
+                    $propsell_type = array('1' => 'Sale', '2' => 'Rent', '3' => 'Both');
                     $proprty_typekey = array_search("" . $value['P'] . "", $propsell_type);
                 }
 
                 if (empty($value['O'])) {
                     $furnished_typekey = "";
                 } else {
-                    $furnished_type = $this->config->item('furnished_type');
+                    $furnished_type = array('1' => 'Furnished', '2' => 'semi-Furnished', '3' => 'Un-Furnished');
                     $furnished_typekey = array_search("" . $value['O'] . "", $furnished_type);
                 }
 
@@ -780,34 +781,43 @@ class Excelread extends MY_Controller {
             }
 
             /* get furnished type name as defind id */
-            if(!empty($value->furnished_type) && $value->furnished_type!=0){
-            $furnished_type_key = $this->config->item('furnished_type');
-            $furnished_type=$furnished_type_key[$value->furnished_type];
-            }else{
-                $furnished_type="";
+            if ($value->furnished_type == 1) {
+                $furnished_type = "Furnished";
+            } else if ($value->furnished_type == 2) {
+                $furnished_type = "Semi-Furnished";
+            } else if ($value->furnished_type == 3) {
+                $furnished_type = "Un-Furnished";
+            } else {
+                $furnished_type = "";
             }
             /* get room size name as defind id */
-            if(!empty($value->room_size) && $value->room_size!=0){
-            $get_room_size_id = $this->config->item('get_room_size_id');
-            $room_size=$get_room_size_id[$value->room_size];
-            }else{
-                $room_size="";
+            if ($value->room_size == 1) {
+                $room_size = "Small";
+            } else if ($value->room_size == 2) {
+                $room_size = "Medium";
+            } else if ($value->room_size == 3) {
+                $room_size = "Large";
+            } else {
+                $room_size = "";
             }
             /* get architectural design name as defind id */
-            if(!empty($value->architectural_design) && $value->architectural_design!=0){
-            $get_architectural_design = $this->config->item('get_architectural_design');
-            $architectural_design=$get_architectural_design[$value->architectural_design];
-            }else{
-                $architectural_design="";
+            if ($value->architectural_design == 1) {
+                $architectural_design = "Contemporary";
+            } else if ($value->architectural_design == 2) {
+                $architectural_design = "Modern";
+            } else if ($value->architectural_design == 3) {
+                $architectural_design = "Classic";
+            } else {
+                $architectural_design = "";
             }
             /* get pets name as defind id */
-            if(!empty($value->pets)){
-            $pets_type = $this->config->item('pets_type');
-            $pets=$pets_type[$value->pets];
-            }else{
-                $pets="";
+            if ($value->pets == 0) {
+                $pets = "Allowed";
+            } else if ($value->pets == 1) {
+                $pets = "Not Allowed";
+            } else {
+                $pets = "";
             }
-
             $objPHPExcel->getActiveSheet()->SetCellValue('A' . $Count, $value->reference_no);
             $objPHPExcel->getActiveSheet()->SetCellValue('B' . $Count, $value->user_fname . ' ' . $value->user_lname);
             $objPHPExcel->getActiveSheet()->SetCellValue('C' . $Count, $rent_price);

@@ -22,8 +22,8 @@ $this->load->view('header');
                     echo ($url_mothod == 'property_manage') ? "Property List" : "Registed Property";
                     ?></span>
                 <?php if ($this->session->userdata('logged_in_super_user')) { ?>
-                    <button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Import Excel File</button>
-                    <a href="<?php echo base_url(); ?>Excelread/export_data"><button class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Export Property</button></a>
+                    <button data-toggle="modal" data-target="#myModal1" class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Import Properties</button>
+                    <a href="<?php echo base_url(); ?>Excelread/export_data"><button class="btn btn-sm btn-info pull-right fluid-btn" style="margin-left:5px;" type="button">Export Properties</button></a>
                 <?php } ?>
                     <?php if ($url_mothod == 'property_manage') { ?>
                 <button class="btn btn-sm btn-info pull-right fluid-btn" type="button" style="margin-left:5px;" onClick="window.location.href = 'add_property';">Create Property</button>
@@ -208,7 +208,7 @@ $this->load->view('header');
                                     if (!empty($_GET['view_agent']) && $_GET['view_agent'] == $value->id) {
                                         echo "selected";
                                     }
-                                    ?> ><?php echo $value->fname . ' ' . $value->lname; ?></option>
+                                    ?> ><?php echo $value->fname . ' ' . $value->lname.'('.$value->email.')'; ?></option>
     <?php } ?>
                             </select>
                         </span> 
@@ -239,7 +239,7 @@ $this->load->view('header');
                                 for ($i = 0; $i < count($user); $i++) {
                                     echo "<tr>";
                                     echo "<td data-th='id.' hidden><div>" . $user[$i]->id . "</div></td>";
-                                    echo "<td data-th='Reference No.'><div>" . $user[$i]->reference_no . '</br></br>Created on ' . date("d-M-Y", strtotime($user[$i]->created_date)) . '</br></br>Updated on  ' . date("d-M-Y", strtotime($user[$i]->updated_date)) . "</div></td>";
+                                    echo "<td data-th='Reference No.'><div>" . $user[$i]->reference_no . '<br /><br />Created on ' . date("d-M-Y", strtotime($user[$i]->created_date)) . '<br /><br />Updated on  ' . date("d-M-Y", strtotime($user[$i]->updated_date)) . "</div></td>";
                                     ?>
                                 <td data-th='Title'><div><?php
                                         if (!empty($user[$i]->bedroom) && $user[$i]->bedroom != 0) {
@@ -494,195 +494,204 @@ $this->load->view('footer');
 ?>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/selectmulcheck/jquery.multiple.select.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/property_excel_filel.js"></script>
-
 <script type="text/javascript">
-                                                $(document).ready(function () {
-                                                    $('#property_search').hide();
+    $(document).ready(function () {
+        $('#property_search').hide();
 
-                                                    $(".checkboxall").change(function () {
+        $(".checkboxall").change(function () {
 
-                                                        if ($(this).val() == '0') {
-                                                            if (this.checked) {
-                                                                $('input:checkbox').prop('checked', 'checked');
-                                                            } else {
-                                                                $('input:checkbox').removeAttr('checked');
-                                                            }
-                                                        }
-                                                    });
-                                                    $('.rent_sale').click(function () {
-                                                        var property_type_id = $(this).data('rentsleid');
-                                                        $('#property_type').val(property_type_id);
-                                                        // $(".buybtn-select").addClass("buybtn");
-                                                        // $(".buybtn-select").removeClass("buybtn-select");
+            if ($(this).val() == '0') {
+                if (this.checked) {
+                    $('input:checkbox').prop('checked', 'checked');
+                } else {
+                    $('input:checkbox').removeAttr('checked');
+                }
+            }
+        });
+        $('.rent_sale').click(function () {
+            var property_type_id = $(this).data('rentsleid');
+            $('#property_type').val(property_type_id);
+            // $(".buybtn-select").addClass("buybtn");
+            // $(".buybtn-select").removeClass("buybtn-select");
 
-                                                        // $(this).removeClass("buybtn");
-                                                        // $(this).addClass("buybtn-select");
-                                                    });
-                                                    $('.rent_sale').first().trigger('click');
+            // $(this).removeClass("buybtn");
+            // $(this).addClass("buybtn-select");
+        });
+        $('.rent_sale').first().trigger('click');
 
-                                                });
+    });
 
-                                                function replaceAll(str, find, replace) {
-                                                    return str.replace(new RegExp(find, 'g'), replace);
-                                                }
+    function search_result() {
 
-                                                function search_result() {
+        var city_area_id = [];
+        $('.multiselect :checked').each(function () {
+            city_area_id.push($(this).val());
+        });
+        var property_category_id = [];
+        $('.scroll-box :checked').each(function () {
+            property_category_id.push($(this).val());
+        });
+        var property_type = $("#property_type").val();
+        var reference_no = $("#reference_no").val();
+        var country_id = $("#country_id").val();
+        var city = $("#city").val();
+        var bedroom = $("#bedroom").val();
+        var bathroom = $("#bathroom").val();
+        var furnished_type = $("#furnished_type").val();
+        var min_price = $("#min_price").val();
+        var max_price = $("#max_price").val();
+        var agent_properties = 0;
+    <?php if (isset($agent_properties)) { ?>
+            agent_properties = 1;
+    <?php } ?>
+        $.ajax({
+            type: "post",
+            url: baseurl + "index.php/inquiry/property_search_result?time=" + Math.random() + '&agent_properties=' + agent_properties,
+            data: {city: city, selectItemcity_area: city_area_id, property_category: property_category_id, property_type: property_type, reference_no: reference_no, country_id: country_id, bedroom: bedroom, bathroom: bathroom, furnished_type: furnished_type, min_price: min_price, max_price: max_price},
+            //dataType:'json',
+            success: function (msg) {
+                $('#property-list').dataTable().fnDestroy();
 
-                                                    var city_area_id = [];
-                                                    $('.multiselect :checked').each(function () {
-                                                        city_area_id.push($(this).val());
-                                                    });
-                                                    var property_category_id = [];
-                                                    $('.scroll-box :checked').each(function () {
-                                                        property_category_id.push($(this).val());
-                                                    });
-                                                    var property_type = $("#property_type").val();
-                                                    var reference_no = $("#reference_no").val();
-                                                    var country_id = $("#country_id").val();
-                                                    var city = $("#city").val();
-                                                    var bedroom = $("#bedroom").val();
-                                                    var bathroom = $("#bathroom").val();
-                                                    var furnished_type = $("#furnished_type").val();
-                                                    var min_price = $("#min_price").val();
-                                                    var max_price = $("#max_price").val();
-                                                    var agent_properties = 0;
-<?php if (isset($agent_properties)) { ?>
-                                                        agent_properties = 1;
-<?php } ?>
-                                                    $.ajax({
-                                                        type: "post",
-                                                        url: baseurl + "index.php/inquiry/property_search_result?time=" + Math.random() + '&agent_properties=' + agent_properties,
-                                                        data: {city: city, selectItemcity_area: city_area_id, property_category: property_category_id, property_type: property_type, reference_no: reference_no, country_id: country_id, bedroom: bedroom, bathroom: bathroom, furnished_type: furnished_type, min_price: min_price, max_price: max_price},
-                                                        //dataType:'json',
-                                                        success: function (msg) {
-                                                            $('#property-list').dataTable().fnDestroy();
-
-                                                            //$('#property-list').empty();
-                                                            $('#property_search_result').html(msg);
+                //$('#property-list').empty();
+                $('#property_search_result').html(msg);
 
 
 
-                                                            $.fn.dataTable.moment = function (format, locale) {
-                                                                var types = $.fn.dataTable.ext.type;
+                $.fn.dataTable.moment = function (format, locale) {
+                    var types = $.fn.dataTable.ext.type;
 
-                                                                // Add type detection
-                                                                types.detect.unshift(function (d) {
-                                                                    return moment(strip(d), format, locale, true).isValid() ?
-                                                                            'moment-' + format :
-                                                                            null;
-                                                                });
+                    // Add type detection
+                    types.detect.unshift(function (d) {
+                        return moment(strip(d), format, locale, true).isValid() ?
+                                'moment-' + format :
+                                null;
+                    });
 
-                                                                // Add sorting method - use an integer for the sorting
-                                                                types.order[ 'moment-' + format + '-pre' ] = function (d) {
-                                                                    return moment(d, format, locale, true).unix();
-                                                                };
-                                                            };
+                    // Add sorting method - use an integer for the sorting
+                    types.order[ 'moment-' + format + '-pre' ] = function (d) {
+                        return moment(d, format, locale, true).unix();
+                    };
+                };
 
-                                                            function getPrice(name) {
-                                                                var rankNumber;
-
-                                                                rankNumber = replaceAll(name, "<div>", "");
-                                                                rankNumber = replaceAll(rankNumber, "</div>", "");
-                                                                rankNumber = replaceAll(rankNumber, "€", "");
-                                                                rankNumber = replaceAll(rankNumber, ",", "");
-                                                                rankNumber = replaceAll(rankNumber, "SP.", "");
-                                                                rankNumber = replaceAll(rankNumber, "RP.", "");
-                                                                rankNumber = replaceAll(rankNumber, "<br>", "");
-                                                                rankNumber = replaceAll(rankNumber, " ", "");
-                                                                rankNumber = replaceAll(rankNumber, "/", "");
-
-                                                                if (!isNaN(rankNumber) && rankNumber != "") {
-                                                                    rankNumber = parseInt(rankNumber);
-                                                                } else {
-                                                                    rankNumber = 0;
-                                                                }
-                                                                return rankNumber;
-                                                            }
-
-                                                            jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
+                jQuery.fn.dataTableExt.oSort["price-desc"] = function (x, y) {
 
 
-                                                                var xVal = getPrice(x);
-                                                                var yVal = getPrice(y);
+                    var xVal = getPrice(x);
+                    var yVal = getPrice(y);
 
-                                                                if (xVal < yVal) {
-                                                                    return 1;
-                                                                } else if (xVal > yVal) {
-                                                                    return -1;
-                                                                } else {
-                                                                    return 0;
-                                                                }
+                    if (xVal < yVal) {
+                        return 1;
+                    } else if (xVal > yVal) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
 
-                                                            };
+                };
 
-                                                            jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
-                                                                var xVal = getPrice(x);
-                                                                var yVal = getPrice(y);
+                jQuery.fn.dataTableExt.oSort["price-asc"] = function (x, y) {
+                    var xVal = getPrice(x);
+                    var yVal = getPrice(y);
 
-                                                                if (xVal < yVal) {
-                                                                    return -1;
-                                                                } else if (xVal > yVal) {
-                                                                    return 1;
-                                                                } else {
-                                                                    return 0;
-                                                                }
-                                                            }
-
-
-                                                            $.fn.dataTable.moment('D-MMM-YYYY');
-
-                                                            $('#property-list').DataTable({
-                                                                "lengthMenu": [15, 30, 45, 60, 75],
-                                                                "aoColumnDefs": [{"sType": 'price', "aTargets": [5]}],
-                                                                "order": [[0, "desc"]]
-                                                            });
-
-                                                            $('#property-list')
-                                                                    .removeClass('display')
-                                                                    .addClass('table table-striped table-bordered responsive-table');
-                                                        }
-                                                    });
-                                                }
-                                                function get_city_area() {
-                                                    $('#city_area').html('');
-                                                    $.ajax({
-                                                        type: "post",
-                                                        url: baseurl + "index.php/home/get_city_area",
-                                                        data: 'city_id=' + $("#city option:selected").val(),
-                                                        dataType: 'json',
-                                                        success: function (msg) {
-                                                            var selected_city_area = <?php echo (isset($_POST['selectItemcity_area'])) ? json_encode($_POST['selectItemcity_area']) : "[]"; ?>;
-
-                                                            for (var i = 0; i < msg.length; i++) {
-                                                                var selected = '';
-
-                                                                if ($.inArray(msg[i].id, selected_city_area) != -1) {
-                                                                    selected = 'selected="selected"';
-                                                                }
-                                                                if (selected_city_area.length < 1)
-                                                                {
-                                                                    selected = 'selected="selected"';
-                                                                }
-                                                                $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
-                                                            }
-
-                                                            $('#city_area.multiselect').multipleSelect({
-                                                                filter: true,
-                                                            });
+                    if (xVal < yVal) {
+                        return -1;
+                    } else if (xVal > yVal) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
 
 
-                                                        }
-                                                    });
-                                                }
-                                                function setPropertyId(propertyId)
-                                                {
 
-                                                    //var '<%Session["send_property_id"] = "' + propertyId + '"; %>';
-                                                    $("#property_id").val(propertyId);
-                                                }
-                                                $(".property_next").click(function () {
-                                                    $("#property_search").toggle();
-                                                });
+                jQuery.fn.dataTableExt.oSort["refno-desc"] = function (x, y) {
+
+
+                    var xVal = getRefno(x);
+                    var yVal = getRefno(y);
+
+                    if (xVal < yVal) {
+                        return 1;
+                    } else if (xVal > yVal) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+
+                };
+
+                jQuery.fn.dataTableExt.oSort["refno-asc"] = function (x, y) {
+                    var xVal = getRefno(x);
+                    var yVal = getRefno(y);
+
+                    if (xVal < yVal) {
+                        return -1;
+                    } else if (xVal > yVal) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+
+                $.fn.dataTable.moment('D-MMM-YYYY');
+
+                $('#property-list').DataTable({
+                    "lengthMenu": [ 15, 30, 45, 60, 75 ],
+                    "aoColumnDefs": [{ "sType": 'price', "aTargets": [5] }],
+                    "aoColumnDefs": [{ "sType": 'refno', "aTargets": [1] }],
+                    "order": [[ 0, "desc" ]],
+                    "columnDefs": [{
+                        "targets": [ 0 ],
+                        "visible": false
+                    }]
+                });
+
+                $('#property-list')
+                        .removeClass('display')
+                        .addClass('table table-striped table-bordered responsive-table');
+            }
+        });
+    }
+    function get_city_area() {
+        $('#city_area').html('');
+        $.ajax({
+            type: "post",
+            url: baseurl + "index.php/home/get_city_area",
+            data: 'city_id=' + $("#city option:selected").val(),
+            dataType: 'json',
+            success: function (msg) {
+                var selected_city_area = <?php echo (isset($_POST['selectItemcity_area'])) ? json_encode($_POST['selectItemcity_area']) : "[]"; ?>;
+
+                for (var i = 0; i < msg.length; i++) {
+                    var selected = '';
+
+                    if ($.inArray(msg[i].id, selected_city_area) != -1) {
+                        selected = 'selected="selected"';
+                    }
+                    if (selected_city_area.length < 1)
+                    {
+                        selected = 'selected="selected"';
+                    }
+                    $('#city_area').append("<option value='" + msg[i].id + "' " + selected + ">" + msg[i].title + '</option>');
+                }
+
+                $('#city_area.multiselect').multipleSelect({
+                    filter: true,
+                });
+
+
+            }
+        });
+    }
+    function setPropertyId(propertyId)
+    {
+
+        //var '<%Session["send_property_id"] = "' + propertyId + '"; %>';
+        $("#property_id").val(propertyId);
+    }
+    $(".property_next").click(function () {
+        $("#property_search").toggle();
+    });
 // $(".property_next").on("click", function (event) {
 //     event.preventDefault();
 //     $('#property_search').show();
@@ -695,49 +704,49 @@ $this->load->view('footer');
 
 //     //exit;
 // });
-                                                $(".new_exist_button").on("click", function (event) {
-                                                    event.preventDefault();
-                                                    var propertyIs = $("#property_id").val();
-                                                    var new_exist_value = $(this).attr("href");
-                                                    //alert(new_exist_value);
-                                                    window.location = new_exist_value + "/" + propertyIs;
+    $(".new_exist_button").on("click", function (event) {
+        event.preventDefault();
+        var propertyIs = $("#property_id").val();
+        var new_exist_value = $(this).attr("href");
+        //alert(new_exist_value);
+        window.location = new_exist_value + "/" + propertyIs;
 
-                                                    //exit;
-                                                });
+        //exit;
+    });
 
-                                                function numbersonly(e) {
-                                                    var unicode = e.charCode ? e.charCode : e.keyCode;
+    function numbersonly(e) {
+        var unicode = e.charCode ? e.charCode : e.keyCode;
 
-                                                    if (unicode != 8) { //if the key isn't the backspace key (which we should allow)
+        if (unicode != 8) { //if the key isn't the backspace key (which we should allow)
 
-                                                        if ((unicode < 48 || unicode > 57) && unicode != 46) //if not a number
-                                                            return false //disable key press
-                                                    }
-                                                }
-                                                $("#excel_form").submit(function (event) {
+            if ((unicode < 48 || unicode > 57) && unicode != 46) //if not a number
+                return false //disable key press
+        }
+    }
+    $("#excel_form").submit(function (event) {
 
-                                                    if ($("#xls_files").val() != "") {
-                                                        var ext = $('#xls_files').val().split('.').pop().toLowerCase();
+        if ($("#xls_files").val() != "") {
+            var ext = $('#xls_files').val().split('.').pop().toLowerCase();
 
-                                                        if ($.inArray(ext, ['xls', 'xlsx']) == -1) {
-                                                            alert('Please Only Upload Excel Files.');
-                                                            return false;
-                                                        } else {
-                                                            $('#hd_sub').hide();
-                                                            $('#message_sub').text("System processing your data, please wait for few mins.........................");
-                                                            $("#excel_form").submit();
-                                                        }
-                                                    } else {
-                                                        alert("Please Upload Import Property Details.");
-                                                        return false;
-                                                    }
-                                                });
-                                                function sendinquiry_inactive() {
-                                                    alert('You can not send inquiry beacuse your property is inactive');
-                                                }
-                                                function view_property_agent(proview_agent) {
-                                                    window.location = "<?php echo base_url(); ?>index.php/home/property_manage?view_agent=" + proview_agent;
-                                                }
+            if ($.inArray(ext, ['xls', 'xlsx']) == -1) {
+                alert('Please Only Upload Excel Files.');
+                return false;
+            } else {
+                $('#hd_sub').hide();
+                $('#message_sub').text("System is processing imported data, please wait for few mins...");
+                $("#excel_form").submit();
+            }
+        } else {
+            alert("Please Upload Import Property Details.");
+            return false;
+        }
+    });
+    function sendinquiry_inactive() {
+        alert('You can not send inquiry beacuse your property is inactive');
+    }
+    function view_property_agent(proview_agent) {
+        window.location = "<?php echo base_url(); ?>index.php/home/property_manage?view_agent=" + proview_agent;
+    }
 // $(".pushme").click(function () {
 //     $('#hd_sub').hide();
 

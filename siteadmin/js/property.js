@@ -52,7 +52,7 @@ $('#manage_form').validate({
                  rules:{
                         fname:{
                           //required:true
-                          noHTML: true,
+                          //noHTML: true,
                            required: function (element) {
                        
                                  if($('#lname').val() !=''){
@@ -66,7 +66,7 @@ $('#manage_form').validate({
                               },
                         }, 
                         lname:{
-                          noHTML: true,
+                          //noHTML: true,
                         },
                         email:{
                           email:true,
@@ -161,7 +161,7 @@ $('#manage_form').validate({
                               url: true,
                               },      
                         reference_no:{
-                          noHTML: true,
+                         // noHTML: true,
                           required:true,
                           remote: {
                                 url:baseurl+"index.php/home/property_ref_check",

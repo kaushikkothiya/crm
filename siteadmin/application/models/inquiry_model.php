@@ -323,6 +323,7 @@ Class Inquiry_model extends CI_Model {
         $query = $this->db->get();
         $data = $query->result();
 
+        $agentData = array();
         for ($i = 0; $i < count($data); $i++) {
             $agentData[$data[$i]->id] = $data[$i]->fname . " " . $data[$i]->lname;
         }
@@ -876,7 +877,9 @@ Class Inquiry_model extends CI_Model {
                 ->from('inquiry')
                 ->where('agent_id', trim($post['id']))
                 ->where("(appoint_start_date BETWEEN '$startDate' and '$endDate') OR (appoint_end_date BETWEEN '$startDate' and '$endDate')")
-                // ->or_where('appoint_end_date BETWEEN "'. date('Y-m-d H:i:s', strtotime($post['start_date'])). '" and "'. date('Y-m-d H:i:s', strtotime($post['end_date'])).'"')
+                ->where('status', 4)
+                ->where("(agent_status = '1' OR agent_status = '0')")
+                // ->or_where("appoint_end_date BETWEEN "'. date('Y-m-d H:i:s', strtotime($post['start_date'])). '" and "'. date('Y-m-d H:i:s', strtotime($post['end_date'])).'"')
 
                 /* ->where('appoint_start_date <=',date("Y-m-d H:i:s", strtotime($post['start_date'])))
                   ->where('appoint_end_date >=',date("Y-m-d H:i:s", strtotime($post['start_date'])))
@@ -986,7 +989,7 @@ Class Inquiry_model extends CI_Model {
 
     function get_inquiry_recored($inquiryid) {
 
-        $q = $this->db->select("customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,inquiry_history.*,city_area.title")
+        $q = $this->db->select("customer.id as cust_id, customer.fname as c_fname,customer.lname as c_lname,customer.email, county_code.prefix_code,customer.mobile_no,inquiry.*,inquiry_history.*,city_area.title")
                 ->from('inquiry')
                 ->join('inquiry_history', 'inquiry_history.inquiry_id = inquiry.id', 'left')
                 ->join('city_area', 'city_area.id = inquiry_history.city_area', 'left')
@@ -1064,7 +1067,7 @@ Class Inquiry_model extends CI_Model {
     }
 
     function get_inquiry_data($id) {
-        $q = $this->db->select("inquiry.property_ref_no,inquiry.agent_id, inquiry.agent_status,inquiry.appoint_start_date,inquiry.appoint_end_date,customer.*")
+        $q = $this->db->select("inquiry.property_ref_no,inquiry.agent_id, inquiry.incquiry_ref_no,inquiry.agent_status,inquiry.appoint_start_date,inquiry.appoint_end_date,customer.*")
                 ->from('inquiry')
                 ->join('customer', 'customer.id =inquiry.customer_id')
                 ->where('inquiry.id', $id)
@@ -1091,7 +1094,7 @@ Class Inquiry_model extends CI_Model {
                 ->from('inquiry')
                 ->join('user', 'user.id =inquiry.created_by')
                 ->where('inquiry.id', $id)
-                ->where('user.type', "3")
+                //->where('user.type', "3")
                 ->get();
         if ($q->num_rows() > 0) {
             return $q->result();

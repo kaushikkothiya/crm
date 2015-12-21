@@ -38,6 +38,11 @@ class VerifyLogin extends MY_Controller {
             $this->load->view('login_view');
         } else {
             //Go to private area
+            if($this->session->userdata('redirect_url')){
+                $url = $this->session->userdata('redirect_url');
+                $this->session->unset_userdata('redirect_url');
+                redirect($url, 'refresh');
+            }
             redirect('home', 'refresh');
 
         }

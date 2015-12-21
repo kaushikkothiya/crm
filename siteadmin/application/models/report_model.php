@@ -82,8 +82,12 @@ Class Report_model extends CI_Model {
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
                 ->join('images','property.id =images.prop_id','left');
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        if ($user[0]->type == 2) {
+            $q = $q->where('property.agent_id',$user[0]->id);
+        }
+        
         $q = $q->where("property.status","Active");
         $q = $q->group_by("property.id");
         $q = $q->order_by("property.updated_date", "desc");
@@ -99,8 +103,11 @@ Class Report_model extends CI_Model {
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
                 ->join('images','property.id =images.prop_id','left');
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        if ($user[0]->type == 2) {
+            $q = $q->where('property.agent_id',$user[0]->id);
+        }
         $q = $q->where("property.status","Inactive");
         $q = $q->group_by("property.id");
         $q = $q->order_by("property.updated_date", "desc");
@@ -122,6 +129,7 @@ Class Report_model extends CI_Model {
             $_REQUEST['user_type'] = (!isset($_REQUEST['user_type']))?1:$_REQUEST['user_type'];
             $user[0] = (Object) array('type' => $_REQUEST['user_type']);
         }
+        
         
         // added properties
         $added_properties = array();
@@ -172,7 +180,7 @@ Class Report_model extends CI_Model {
             $q = $this->db->select('count(property.id) as cnt')
                 ->from('property');
             if ($id !== 'all') {
-                $q = $q->where('property.added_id',$id);
+                $q = $q->where('property.agent_id',$id);
             }            
             $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
             $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
@@ -188,9 +196,13 @@ Class Report_model extends CI_Model {
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('images','property.id = images.prop_id','left');
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+                ->join('images','property.id =images.prop_id','left');
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        if ($user[0]->type == 2) {
+            $q = $q->where('property.agent_id',$user[0]->id);
+        }
+        
         $q = $q->where("property.status","Active");
         $q = $q->group_by("property.id");
         $q = $q->order_by("property.updated_date", "desc");
@@ -205,9 +217,12 @@ Class Report_model extends CI_Model {
                 ->from('property')
                 ->join('user','user.id =property.agent_id','left')
                 ->join('city_area','city_area.id =property.city_area','left')
-                ->join('images','property.id = images.prop_id','left');
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
-        $q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+                ->join('images','property.id =images.prop_id','left');
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') >=", $from_date);
+        //$q = $q->where("DATE_FORMAT(property.updated_date,'%m/%d/%Y') <=", $to_date);
+        if ($user[0]->type == 2) {
+            $q = $q->where('property.agent_id',$user[0]->id);
+        }
         $q = $q->where("property.status","Inactive");
         $q = $q->group_by("property.id");
         $q = $q->order_by("property.updated_date", "desc");
@@ -216,7 +231,6 @@ Class Report_model extends CI_Model {
             $inactive_properties = $q->result();
         }
         $data['inactive_properties'] = $inactive_properties;
-        
         return $data;
     }
     
